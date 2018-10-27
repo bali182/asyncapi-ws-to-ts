@@ -23,7 +23,7 @@ export class NameProvider {
     return `${this.getParametersTypeName(operationName)}${pascalCase(paramName)}`
   }
   getNestedItemName(parentName: string): string {
-    return `${parentName}ArrayItem`
+    return `${parentName}Item`
   }
   getNestedOneOfName(parentName: string, no: number): string {
     return `${parentName}OneOf${no}`

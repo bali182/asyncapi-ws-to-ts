@@ -118,7 +118,7 @@ class TypeRegistry {
         }
         if (isObjectType(schema) && schema.properties) {
             for (const [fieldName, subSchema] of entries(schema.properties)) {
-                if (fieldName === 'type' && isEnumType(subSchema) && subSchema.enum.length === 1) {
+                if (isSchemaType(subSchema) && isEnumType(subSchema) && subSchema.enum.length === 1) {
                     continue;
                 }
                 this.registerTypeRecursively(this.nameProvider.getNestedTypeName(name, fieldName), subSchema, false);
@@ -380,10 +380,27 @@ class TypeGuardGenerator extends BaseGenerator {
         super(registry);
         this.typeRefGenerator = new TypeRefGenerator(registry);
     }
+    generateBody(schema) {
+        if (isObjectType(schema) && this.isIdentifiedByType(schema)) {
+            return this.generateTypeIdentifiedObjectBody(schema);
+        }
+        return `return false // TODO`;
+    }
+    generateTypeIdentifiedObjectBody(schema) {
+        const type = schema.properties.type;
+        return `return input instanceof Object && input.type === '${type.enum[0]}'`;
+    }
+    isIdentifiedByType(schema) {
+        if (!schema.properties || !schema.properties.type) {
+            return false;
+        }
+        const type = schema.properties.type;
+        return isSchemaType(type) && isEnumType(type) && type.enum.length === 1;
+    }
     generate(name) {
-        // const schema = this.registry.getSchemaByName(name)
+        const schema = this.registry.getSchemaByName(name);
         return `export function is${name}(input: any): input is ${name} {
-      return false // TODO
+      ${this.generateBody(schema)}
     }`;
     }
 }
@@ -425,7 +442,7 @@ class NameProvider {
         return `${this.getParametersTypeName(operationName)}${pascalCase(paramName)}`;
     }
     getNestedItemName(parentName) {
-        return `${parentName}ArrayItem`;
+        return `${parentName}Item`;
     }
     getNestedOneOfName(parentName, no) {
         return `${parentName}OneOf${no}`;

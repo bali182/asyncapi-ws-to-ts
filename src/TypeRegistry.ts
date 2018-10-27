@@ -8,6 +8,7 @@ import {
   isAnyOfType,
   isPureMapType,
   isRefType,
+  isSchemaType,
 } from './utils'
 import { TypeWrapper } from './TypeWrapper'
 import { NameProvider } from './NameProvider'
@@ -72,7 +73,7 @@ export class TypeRegistry {
 
     if (isObjectType(schema) && schema.properties) {
       for (const [fieldName, subSchema] of entries(schema.properties)) {
-        if (fieldName === 'type' && isEnumType(subSchema) && (subSchema as SchemaObject).enum.length === 1) {
+        if (isSchemaType(subSchema) && isEnumType(subSchema) && subSchema.enum.length === 1) {
           continue
         }
         this.registerTypeRecursively(this.nameProvider.getNestedTypeName(name, fieldName), subSchema, false)

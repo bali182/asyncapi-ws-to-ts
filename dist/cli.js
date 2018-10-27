@@ -43,7 +43,8 @@ function isSimpleType(input) {
             input.type === 'boolean' ||
             input.type === 'integer' ||
             input.type === 'null' ||
-            input.type === 'any'));
+            input.type === 'any') &&
+        !input.enum);
 }
 function isOneOfType(input) {
     return Boolean(input.oneOf);
@@ -117,6 +118,9 @@ class TypeRegistry {
         }
         if (isObjectType(schema) && schema.properties) {
             for (const [fieldName, subSchema] of entries(schema.properties)) {
+                if (fieldName === 'type' && isEnumType(subSchema) && subSchema.enum.length === 1) {
+                    continue;
+                }
                 this.registerTypeRecursively(this.nameProvider.getNestedTypeName(name, fieldName), subSchema, false);
             }
         }
@@ -179,6 +183,9 @@ class TypeRefGenerator extends BaseGenerator {
             else if (isSimpleType(schema)) {
                 return this.generatePrimitiveType(schema);
             }
+            else if (isEnumType(schema)) {
+                return this.generateEnumType(schema);
+            }
             else if (isPureMapType(schema)) {
                 return this.generateMapType(schema.additionalProperties);
             }
@@ -211,6 +218,9 @@ class TypeRefGenerator extends BaseGenerator {
     }
     generateCompositeSchema(schemas, glue) {
         return schemas.map((e) => this.generate(e)).join(glue);
+    }
+    generateEnumType(schema) {
+        return schema.enum.map((val) => `'${val}'`).join('|');
     }
     generateRefType(ref) {
         const name = pascalCase(last(ref.$ref.split('/')));

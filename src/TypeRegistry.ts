@@ -72,6 +72,9 @@ export class TypeRegistry {
 
     if (isObjectType(schema) && schema.properties) {
       for (const [fieldName, subSchema] of entries(schema.properties)) {
+        if (fieldName === 'type' && isEnumType(subSchema) && (subSchema as SchemaObject).enum.length === 1) {
+          continue
+        }
         this.registerTypeRecursively(this.nameProvider.getNestedTypeName(name, fieldName), subSchema, false)
       }
     }

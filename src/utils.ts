@@ -38,7 +38,8 @@ export function isSimpleType(input: SchemaObject): boolean {
       input.type === 'boolean' ||
       input.type === 'integer' ||
       input.type === 'null' ||
-      input.type === 'any')
+      input.type === 'any') &&
+    !input.enum
   )
 }
 export function isOneOfType(input: any): boolean {

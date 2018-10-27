@@ -10,6 +10,7 @@ import {
   isAnyOfType,
   isRefType,
   isObjectType,
+  isEnumType,
 } from './utils'
 import last from 'lodash/last'
 import entries from 'lodash/entries'
@@ -30,6 +31,8 @@ export class TypeRefGenerator extends BaseGenerator<SchemaOrRef> {
         return this.generateRegisteredType(schema)
       } else if (isSimpleType(schema)) {
         return this.generatePrimitiveType(schema)
+      } else if (isEnumType(schema)) {
+        return this.generateEnumType(schema)
       } else if (isPureMapType(schema)) {
         return this.generateMapType(schema.additionalProperties)
       } else if (isArrayType(schema)) {
@@ -61,6 +64,10 @@ export class TypeRefGenerator extends BaseGenerator<SchemaOrRef> {
 
   generateCompositeSchema(schemas: SchemaOrRef[], glue: string): string {
     return schemas.map((e) => this.generate(e)).join(glue)
+  }
+
+  generateEnumType(schema: SchemaObject): string {
+    return schema.enum.map((val) => `'${val}'`).join('|')
   }
 
   generateRefType(ref: ReferenceObject): string {

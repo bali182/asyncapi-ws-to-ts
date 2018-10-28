@@ -105,6 +105,9 @@ class TypeRegistry {
         const names = new Set(entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)));
         return this.getTypes().filter(({ name }) => names.has(name));
     }
+    getReceiveRefs() {
+        return this.spec.events.receive.filter(isRefType);
+    }
     registerType(name, schema) {
         const byName = this.types.find(({ name: n }) => n === name);
         if (byName !== undefined) {
@@ -436,9 +439,107 @@ class TypeGuardsGenerator extends BaseGenerator {
     }
 }
 
+class ListenerTypeGenerator extends BaseGenerator {
+    generateListenerMethodSignature(ref) {
+        const np = this.registry.getNameProvider();
+        const name = last(ref.$ref.split('/'));
+        return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void`;
+    }
+    generateListenerMethodSignatures() {
+        return this.registry
+            .getReceiveRefs()
+            .map((ref) => this.generateListenerMethodSignature(ref))
+            .join('\n');
+    }
+    generate() {
+        const np = this.registry.getNameProvider();
+        return `export type ${np.getListenerTypeName()} = {
+      ${this.generateListenerMethodSignatures()}
+    }`;
+    }
+}
+
+class ListenerDispatcherGenerator extends BaseGenerator {
+    generateListenerMethodSignature(ref) {
+        const np = this.registry.getNameProvider();
+        const name = last(ref.$ref.split('/'));
+        return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void`;
+    }
+    generateListenerMethodSignatures() {
+        return this.registry
+            .getReceiveRefs()
+            .map((ref) => this.generateListenerMethodSignature(ref))
+            .join('\n');
+    }
+    getRawName(ref) {
+        return last(ref.$ref.split('/'));
+    }
+    generateCondition(ref) {
+        const np = this.registry.getNameProvider();
+        return `${np.getTypeGuardName(np.getPayloadTypeName(this.getRawName(ref)))}(input)`;
+    }
+    generateDispatch(ref) {
+        const np = this.registry.getNameProvider();
+        return `this.__listener.${np.getListenerMethodName(this.getRawName(ref))}(input)`;
+    }
+    generateConditions() {
+        const refs = this.registry.getReceiveRefs();
+        return refs
+            .map((ref, i) => {
+            const keyword = i === 0 ? 'if' : 'else if';
+            return `${keyword}(${this.generateCondition(ref)}) {
+        ${this.generateDispatch(ref)}
+      }`;
+        })
+            .join('\n');
+    }
+    generate() {
+        const np = this.registry.getNameProvider();
+        // ${this.generateListenerMethodSignatures()}
+        return `export class ${np.getDispatcherTypeName()} {
+      private readonly __listener: ${np.getListenerTypeName()}
+      constructor(listener: ${np.getListenerTypeName()}) {
+        this.__listener = listener
+      }
+      dispatch(input: any): void {
+        ${this.generateConditions()}
+        throw new TypeError('Unrecognized payload value!')
+      }
+    }`;
+    }
+}
+
+class ListenerStubGenerator extends BaseGenerator {
+    generateListenerMethodSignature(ref) {
+        const np = this.registry.getNameProvider();
+        const name = last(ref.$ref.split('/'));
+        return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void {
+      /* implement me! */
+    }`;
+    }
+    generateListenerMethodSignatures() {
+        return this.registry
+            .getReceiveRefs()
+            .map((ref) => this.generateListenerMethodSignature(ref))
+            .join('\n');
+    }
+    generate() {
+        const np = this.registry.getNameProvider();
+        return `export abstract class ${np.getListenerStubTypeName()} implements ${np.getListenerTypeName()} {
+      ${this.generateListenerMethodSignatures()}
+    }`;
+    }
+}
+
 class RootGenerator extends BaseGenerator {
     generate() {
-        const generators = [new TypesGenerator(this.registry), new TypeGuardsGenerator(this.registry)];
+        const generators = [
+            new TypesGenerator(this.registry),
+            new TypeGuardsGenerator(this.registry),
+            new ListenerTypeGenerator(this.registry),
+            new ListenerStubGenerator(this.registry),
+            new ListenerDispatcherGenerator(this.registry),
+        ];
         return this.format(generators.map((g) => g.generate()).join('\n'));
     }
 }
@@ -491,6 +592,25 @@ class NameProvider {
     }
     getPayloadTypeName(messageName) {
         return `${pascalCase(messageName)}Payload`;
+    }
+    getListenerTypeName() {
+        return `${pascalCase(this.apiTypeName)}Listener`;
+    }
+    getListenerStubTypeName() {
+        return `${pascalCase(this.apiTypeName)}ListenerStub`;
+    }
+    getDispatcherTypeName() {
+        return `${pascalCase(this.apiTypeName)}Dispatcher`;
+    }
+    getTypeGuardName(name) {
+        return `is${pascalCase(name)}`;
+    }
+    getListenerMethodName(name) {
+        if (name.startsWith('on')) {
+            return name;
+        }
+        const pcName = pascalCase(name);
+        return `on${pcName}`;
     }
 }
 

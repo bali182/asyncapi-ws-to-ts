@@ -52,4 +52,23 @@ export class NameProvider {
   getPayloadTypeName(messageName: string) {
     return `${pascalCase(messageName)}Payload`
   }
+  getListenerTypeName() {
+    return `${pascalCase(this.apiTypeName)}Listener`
+  }
+  getListenerStubTypeName() {
+    return `${pascalCase(this.apiTypeName)}ListenerStub`
+  }
+  getDispatcherTypeName() {
+    return `${pascalCase(this.apiTypeName)}Dispatcher`
+  }
+  getTypeGuardName(name: string) {
+    return `is${pascalCase(name)}`
+  }
+  getListenerMethodName(name: string) {
+    if (name.startsWith('on')) {
+      return name
+    }
+    const pcName = pascalCase(name)
+    return `on${pcName}`
+  }
 }

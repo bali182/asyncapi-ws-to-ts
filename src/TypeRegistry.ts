@@ -12,7 +12,7 @@ import {
 } from './utils'
 import { TypeWrapper } from './TypeWrapper'
 import { NameProvider } from './NameProvider'
-import { AsyncApiSpec, SchemaObject } from './AyncApiTypings'
+import { AsyncApiSpec, SchemaObject, ReferenceObject } from './AyncApiTypings'
 
 export class TypeRegistry {
   private readonly types: TypeWrapper[] = []
@@ -60,6 +60,9 @@ export class TypeRegistry {
       entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)),
     )
     return this.getTypes().filter(({ name }) => names.has(name))
+  }
+  getReceiveRefs(): ReferenceObject[] {
+    return this.spec.events.receive.filter(isRefType) as ReferenceObject[]
   }
   protected registerType(name: string, schema: SchemaObject): void {
     const byName = this.types.find(({ name: n }) => n === name)

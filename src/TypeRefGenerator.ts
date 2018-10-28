@@ -16,7 +16,7 @@ import last from 'lodash/last'
 import entries from 'lodash/entries'
 import isVarName from 'is-var-name'
 import pascalCase from 'pascalcase'
-import { SchemaObject, ReferenceObject } from './OpenApiTypings'
+import { SchemaObject, ReferenceObject } from './AyncApiTypings'
 
 export class TypeRefGenerator extends BaseGenerator<SchemaOrRef> {
   generate(schema: SchemaOrRef): string {

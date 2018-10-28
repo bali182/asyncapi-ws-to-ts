@@ -334,20 +334,11 @@ export type OutgoingMessagePayload = {
   channel?: string
   text?: string
 }
-export function isAttachment(input: any): input is Attachment {
-  return false // TODO
-}
-export function isAttachmentFieldsItem(input: any): input is AttachmentFieldsItem {
-  return false // TODO
-}
 export function isHelloPayload(input: any): input is HelloPayload {
   return input instanceof Object && input.type === 'hello'
 }
 export function isConnectionErrorPayload(input: any): input is ConnectionErrorPayload {
   return input instanceof Object && input.type === 'error'
-}
-export function isConnectionErrorPayloadError(input: any): input is ConnectionErrorPayloadError {
-  return false // TODO
 }
 export function isAccountsChangedPayload(input: any): input is AccountsChangedPayload {
   return input instanceof Object && input.type === 'accounts_changed'
@@ -355,23 +346,14 @@ export function isAccountsChangedPayload(input: any): input is AccountsChangedPa
 export function isBotAddedPayload(input: any): input is BotAddedPayload {
   return input instanceof Object && input.type === 'bot_added'
 }
-export function isBotAddedPayloadBot(input: any): input is BotAddedPayloadBot {
-  return false // TODO
-}
 export function isBotChangedPayload(input: any): input is BotChangedPayload {
   return input instanceof Object && input.type === 'bot_added'
-}
-export function isBotChangedPayloadBot(input: any): input is BotChangedPayloadBot {
-  return false // TODO
 }
 export function isChannelArchivePayload(input: any): input is ChannelArchivePayload {
   return input instanceof Object && input.type === 'channel_archive'
 }
 export function isChannelCreatedPayload(input: any): input is ChannelCreatedPayload {
   return input instanceof Object && input.type === 'channel_created'
-}
-export function isChannelCreatedPayloadChannel(input: any): input is ChannelCreatedPayloadChannel {
-  return false // TODO
 }
 export function isChannelDeletedPayload(input: any): input is ChannelDeletedPayload {
   return input instanceof Object && input.type === 'channel_deleted'
@@ -382,9 +364,6 @@ export function isChannelHistoryChangedPayload(input: any): input is ChannelHist
 export function isChannelJoinedPayload(input: any): input is ChannelJoinedPayload {
   return input instanceof Object && input.type === 'channel_joined'
 }
-export function isChannelJoinedPayloadChannel(input: any): input is ChannelJoinedPayloadChannel {
-  return false // TODO
-}
 export function isChannelLeftPayload(input: any): input is ChannelLeftPayload {
   return input instanceof Object && input.type === 'channel_left'
 }
@@ -393,9 +372,6 @@ export function isChannelMarkedPayload(input: any): input is ChannelMarkedPayloa
 }
 export function isChannelRenamePayload(input: any): input is ChannelRenamePayload {
   return input instanceof Object && input.type === 'channel_rename'
-}
-export function isChannelRenamePayloadChannel(input: any): input is ChannelRenamePayloadChannel {
-  return false // TODO
 }
 export function isChannelUnarchivePayload(input: any): input is ChannelUnarchivePayload {
   return input instanceof Object && input.type === 'channel_unarchive'
@@ -406,53 +382,32 @@ export function isCommandsChangedPayload(input: any): input is CommandsChangedPa
 export function isDndUpdatedPayload(input: any): input is DndUpdatedPayload {
   return input instanceof Object && input.type === 'dnd_updated'
 }
-export function isDndUpdatedPayloadDndStatus(input: any): input is DndUpdatedPayloadDndStatus {
-  return false // TODO
-}
 export function isDndUpdatedUserPayload(input: any): input is DndUpdatedUserPayload {
   return input instanceof Object && input.type === 'dnd_updated_user'
-}
-export function isDndUpdatedUserPayloadDndStatus(input: any): input is DndUpdatedUserPayloadDndStatus {
-  return false // TODO
 }
 export function isEmailDomainChangedPayload(input: any): input is EmailDomainChangedPayload {
   return input instanceof Object && input.type === 'email_domain_changed'
 }
 export function isEmojiRemovedPayload(input: any): input is EmojiRemovedPayload {
-  return input instanceof Object && input.type === 'emoji_changed'
+  return input instanceof Object && input.type === 'emoji_changed' && input.subtype === 'remove'
 }
 export function isEmojiAddedPayload(input: any): input is EmojiAddedPayload {
-  return input instanceof Object && input.type === 'emoji_changed'
+  return input instanceof Object && input.type === 'emoji_changed' && input.subtype === 'add'
 }
 export function isFileChangePayload(input: any): input is FileChangePayload {
   return input instanceof Object && input.type === 'file_change'
 }
-export function isFileChangePayloadFile(input: any): input is FileChangePayloadFile {
-  return false // TODO
-}
 export function isFileCommentAddedPayload(input: any): input is FileCommentAddedPayload {
   return input instanceof Object && input.type === 'file_comment_added'
-}
-export function isFileCommentAddedPayloadFile(input: any): input is FileCommentAddedPayloadFile {
-  return false // TODO
 }
 export function isFileCommentDeletedPayload(input: any): input is FileCommentDeletedPayload {
   return input instanceof Object && input.type === 'file_comment_deleted'
 }
-export function isFileCommentDeletedPayloadFile(input: any): input is FileCommentDeletedPayloadFile {
-  return false // TODO
-}
 export function isFileCommentEditedPayload(input: any): input is FileCommentEditedPayload {
   return input instanceof Object && input.type === 'file_comment_edited'
 }
-export function isFileCommentEditedPayloadFile(input: any): input is FileCommentEditedPayloadFile {
-  return false // TODO
-}
 export function isFileCreatedPayload(input: any): input is FileCreatedPayload {
   return input instanceof Object && input.type === 'file_created'
-}
-export function isFileCreatedPayloadFile(input: any): input is FileCreatedPayloadFile {
-  return false // TODO
 }
 export function isFileDeletedPayload(input: any): input is FileDeletedPayload {
   return input instanceof Object && input.type === 'file_deleted'
@@ -460,20 +415,11 @@ export function isFileDeletedPayload(input: any): input is FileDeletedPayload {
 export function isFilePublicPayload(input: any): input is FilePublicPayload {
   return input instanceof Object && input.type === 'file_public'
 }
-export function isFilePublicPayloadFile(input: any): input is FilePublicPayloadFile {
-  return false // TODO
-}
 export function isFileSharedPayload(input: any): input is FileSharedPayload {
   return input instanceof Object && input.type === 'file_shared'
 }
-export function isFileSharedPayloadFile(input: any): input is FileSharedPayloadFile {
-  return false // TODO
-}
 export function isFileUnsharedPayload(input: any): input is FileUnsharedPayload {
   return input instanceof Object && input.type === 'file_unshared'
-}
-export function isFileUnsharedPayloadFile(input: any): input is FileUnsharedPayloadFile {
-  return false // TODO
 }
 export function isGoodbyePayload(input: any): input is GoodbyePayload {
   return input instanceof Object && input.type === 'goodbye'
@@ -490,9 +436,6 @@ export function isGroupHistoryChangedPayload(input: any): input is GroupHistoryC
 export function isGroupJoinedPayload(input: any): input is GroupJoinedPayload {
   return input instanceof Object && input.type === 'group_joined'
 }
-export function isGroupJoinedPayloadChannel(input: any): input is GroupJoinedPayloadChannel {
-  return false // TODO
-}
 export function isGroupLeftPayload(input: any): input is GroupLeftPayload {
   return input instanceof Object && input.type === 'group_left'
 }
@@ -505,9 +448,6 @@ export function isGroupOpenPayload(input: any): input is GroupOpenPayload {
 export function isGroupRenamePayload(input: any): input is GroupRenamePayload {
   return input instanceof Object && input.type === 'group_rename'
 }
-export function isGroupRenamePayloadChannel(input: any): input is GroupRenamePayloadChannel {
-  return false // TODO
-}
 export function isGroupUnarchivePayload(input: any): input is GroupUnarchivePayload {
   return input instanceof Object && input.type === 'group_unarchive'
 }
@@ -516,9 +456,6 @@ export function isImClosePayload(input: any): input is ImClosePayload {
 }
 export function isImCreatedPayload(input: any): input is ImCreatedPayload {
   return input instanceof Object && input.type === 'im_created'
-}
-export function isImCreatedPayloadChannel(input: any): input is ImCreatedPayloadChannel {
-  return false // TODO
 }
 export function isImMarkedPayload(input: any): input is ImMarkedPayload {
   return input instanceof Object && input.type === 'im_marked'
@@ -532,20 +469,11 @@ export function isManualPresenceChangePayload(input: any): input is ManualPresen
 export function isMemberJoinedChannelPayload(input: any): input is MemberJoinedChannelPayload {
   return input instanceof Object && input.type === 'member_joined_channel'
 }
-export function isMemberJoinedChannelPayloadChannelType(input: any): input is MemberJoinedChannelPayloadChannelType {
-  return false // TODO
-}
 export function isMemberLeftChannelPayload(input: any): input is MemberLeftChannelPayload {
   return input instanceof Object && input.type === 'member_left_channel'
 }
-export function isMemberLeftChannelPayloadChannelType(input: any): input is MemberLeftChannelPayloadChannelType {
-  return false // TODO
-}
 export function isMessagePayload(input: any): input is MessagePayload {
   return input instanceof Object && input.type === 'message'
-}
-export function isMessagePayloadEdited(input: any): input is MessagePayloadEdited {
-  return false // TODO
 }
 export function isOutgoingMessagePayload(input: any): input is OutgoingMessagePayload {
   return input instanceof Object && input.type === 'message'

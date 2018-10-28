@@ -1,4 +1,4 @@
-import { SchemaObject } from "./OpenApiTypings";
+import { SchemaObject } from "./AyncApiTypings";
 
 export class TypeWrapper {
   public readonly name: string

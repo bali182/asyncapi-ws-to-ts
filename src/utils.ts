@@ -1,6 +1,6 @@
 import keys from 'lodash/keys'
 import isNil from 'lodash/isNil'
-import { SchemaObject, ReferenceObject } from './OpenApiTypings'
+import { SchemaObject, ReferenceObject } from './AyncApiTypings'
 
 export function unique<T>(items: T[]): T[] {
   const set = new Set(items)

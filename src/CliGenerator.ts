@@ -5,7 +5,7 @@ import { TypeRegistry } from './TypeRegistry'
 import { RootGenerator } from './RootGenerator'
 import YAML from 'yamljs'
 import { NameProvider } from './NameProvider'
-import { AsyncApiSpec } from './OpenApiTypings'
+import { AsyncApiSpec } from './AyncApiTypings'
 
 type Args = {
   file: string

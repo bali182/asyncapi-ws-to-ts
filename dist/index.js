@@ -96,6 +96,10 @@ class TypeRegistry {
         }
         return wrapper.name;
     }
+    getMessageTypes() {
+        const names = new Set(entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)));
+        return this.getTypes().filter(({ name }) => names.has(name));
+    }
     registerType(name, schema) {
         const byName = this.types.find(({ name: n }) => n === name);
         if (byName !== undefined) {
@@ -376,26 +380,43 @@ class TypeGuardGenerator extends BaseGenerator {
         this.typeRefGenerator = new TypeRefGenerator(registry);
     }
     generateBody(schema) {
-        if (isObjectType(schema) && this.isIdentifiedByType(schema)) {
-            return this.generateTypeIdentifiedObjectBody(schema);
+        if (isObjectType(schema)) {
+            return this.generateObjectTypeGuard(schema);
         }
         return `return false // TODO`;
     }
-    generateTypeIdentifiedObjectBody(schema) {
-        const type = schema.properties.type;
-        return `return input instanceof Object && input.type === '${type.enum[0]}'`;
+    getConstantEnumFieldNames(schema) {
+        return entries(schema.properties)
+            .filter(([, field]) => isSchemaType(field) && isEnumType(field) && field.enum.length === 1)
+            .map(([name]) => name);
     }
-    isIdentifiedByType(schema) {
-        if (!schema.properties || !schema.properties.type) {
-            return false;
-        }
-        const type = schema.properties.type;
-        return isSchemaType(type) && isEnumType(type) && type.enum.length === 1;
+    generateObjectTypeGuard(schema) {
+        const constEnumFields = this.getConstantEnumFieldNames(schema);
+        const nonConstEnumFields = entries(schema.properties)
+            .map(([name]) => name)
+            .filter((name) => constEnumFields.indexOf(name) < 0);
+        const constEnumFieldChecks = constEnumFields.map((name) => {
+            const type = schema.properties[name];
+            const varName = isVarName(name) ? `input.${name}` : `input['${name}']`;
+            return `${varName} === '${type.enum[0]}'`;
+        });
+        const nonConstEnumFieldChecks = nonConstEnumFields
+            .map((name) => {
+            const type = schema.properties[name];
+            if (isRefType(type) || (isSchemaType(type) && !type.required)) {
+                return null;
+            }
+            const varName = isVarName(name) ? `input.${name}` : `input['${name}']`;
+            return `${varName} !== undefined`; // TODO
+        })
+            .filter((check) => check !== null);
+        const constFieldChecksStr = constEnumFieldChecks.length > 0 ? ` && ${constEnumFieldChecks.join('&&')}` : '';
+        const nonConstFieldChecksStr = nonConstEnumFieldChecks.length > 0 ? ` && ${nonConstEnumFieldChecks.join('&&')}` : '';
+        return `return input instanceof Object${constFieldChecksStr}${nonConstFieldChecksStr}`;
     }
-    generate(name) {
-        const schema = this.registry.getSchemaByName(name);
-        return `export function is${name}(input: any): input is ${name} {
-      ${this.generateBody(schema)}
+    generate(t) {
+        return `export function is${t.name}(input: any): input is ${t.name} {
+      ${this.generateBody(t.schema)}
     }`;
     }
 }
@@ -404,8 +425,8 @@ class TypeGuardsGenerator extends BaseGenerator {
     generate() {
         const generator = new TypeGuardGenerator(this.registry);
         return this.registry
-            .getTypeNames()
-            .map((name) => generator.generate(name))
+            .getMessageTypes()
+            .map((type) => generator.generate(type))
             .join('\n');
     }
 }

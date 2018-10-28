@@ -4,7 +4,7 @@ import { BaseGenerator } from './BaseGenerator'
 import { SchemaOrRef } from './typings'
 import { TypeRegistry } from './TypeRegistry'
 import { TypeRefGenerator } from './TypeRefGenerator'
-import { SchemaObject } from './OpenApiTypings'
+import { SchemaObject } from './AyncApiTypings'
 
 export class TypeGenerator extends BaseGenerator<string> {
   private readonly typeRefGenerator: TypeRefGenerator

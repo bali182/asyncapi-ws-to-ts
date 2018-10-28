@@ -5,8 +5,8 @@ export class TypeGuardsGenerator extends BaseGenerator<void> {
   generate(): string {
     const generator = new TypeGuardGenerator(this.registry)
     return this.registry
-      .getTypeNames()
-      .map((name) => generator.generate(name))
+      .getMessageTypes()
+      .map((type) => generator.generate(type))
       .join('\n')
   }
 }

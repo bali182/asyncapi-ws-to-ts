@@ -1,4 +1,4 @@
-import { MessageObject } from './OpenApiTypings'
+import { MessageObject } from './AyncApiTypings'
 
 export class MessageWrapper {
   public readonly name: string

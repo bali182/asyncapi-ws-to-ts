@@ -12,7 +12,7 @@ import {
 } from './utils'
 import { TypeWrapper } from './TypeWrapper'
 import { NameProvider } from './NameProvider'
-import { AsyncApiSpec, SchemaObject } from './OpenApiTypings'
+import { AsyncApiSpec, SchemaObject } from './AyncApiTypings'
 
 export class TypeRegistry {
   private readonly types: TypeWrapper[] = []
@@ -54,6 +54,12 @@ export class TypeRegistry {
       throw new TypeError(`Type for schema "${JSON.stringify(schema, null, 2)}" is not registered!`)
     }
     return wrapper.name
+  }
+  getMessageTypes(): TypeWrapper[] {
+    const names = new Set(
+      entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)),
+    )
+    return this.getTypes().filter(({ name }) => names.has(name))
   }
   protected registerType(name: string, schema: SchemaObject): void {
     const byName = this.types.find(({ name: n }) => n === name)

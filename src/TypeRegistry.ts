@@ -64,6 +64,9 @@ export class TypeRegistry {
   getReceiveRefs(): ReferenceObject[] {
     return this.spec.events.receive.filter(isRefType) as ReferenceObject[]
   }
+  getSendRefs(): ReferenceObject[] {
+    return this.spec.events.send.filter(isRefType) as ReferenceObject[]
+  }
   protected registerType(name: string, schema: SchemaObject): void {
     const byName = this.types.find(({ name: n }) => n === name)
     if (byName !== undefined) {

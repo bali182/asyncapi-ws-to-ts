@@ -479,292 +479,301 @@ export function isOutgoingMessagePayload(input: any): input is OutgoingMessagePa
   return input instanceof Object && input.type === 'message'
 }
 export type SlackApiListener = {
-  onHello(payload: HelloPayload): void
-  onConnectionError(payload: ConnectionErrorPayload): void
-  onAccountsChanged(payload: AccountsChangedPayload): void
-  onBotAdded(payload: BotAddedPayload): void
-  onBotChanged(payload: BotChangedPayload): void
-  onChannelArchive(payload: ChannelArchivePayload): void
-  onChannelCreated(payload: ChannelCreatedPayload): void
-  onChannelDeleted(payload: ChannelDeletedPayload): void
-  onChannelHistoryChanged(payload: ChannelHistoryChangedPayload): void
-  onChannelJoined(payload: ChannelJoinedPayload): void
-  onChannelLeft(payload: ChannelLeftPayload): void
-  onChannelMarked(payload: ChannelMarkedPayload): void
-  onChannelRename(payload: ChannelRenamePayload): void
-  onChannelUnarchive(payload: ChannelUnarchivePayload): void
-  onCommandsChanged(payload: CommandsChangedPayload): void
-  onDndUpdated(payload: DndUpdatedPayload): void
-  onDndUpdatedUser(payload: DndUpdatedUserPayload): void
-  onEmailDomainChanged(payload: EmailDomainChangedPayload): void
-  onEmojiRemoved(payload: EmojiRemovedPayload): void
-  onEmojiAdded(payload: EmojiAddedPayload): void
-  onFileChange(payload: FileChangePayload): void
-  onFileCommentAdded(payload: FileCommentAddedPayload): void
-  onFileCommentDeleted(payload: FileCommentDeletedPayload): void
-  onFileCommentEdited(payload: FileCommentEditedPayload): void
-  onFileCreated(payload: FileCreatedPayload): void
-  onFileDeleted(payload: FileDeletedPayload): void
-  onFilePublic(payload: FilePublicPayload): void
-  onFileShared(payload: FileSharedPayload): void
-  onFileUnshared(payload: FileUnsharedPayload): void
-  onGoodbye(payload: GoodbyePayload): void
-  onGroupArchive(payload: GroupArchivePayload): void
-  onGroupClose(payload: GroupClosePayload): void
-  onGroupHistoryChanged(payload: GroupHistoryChangedPayload): void
-  onGroupJoined(payload: GroupJoinedPayload): void
-  onGroupLeft(payload: GroupLeftPayload): void
-  onGroupMarked(payload: GroupMarkedPayload): void
-  onGroupOpen(payload: GroupOpenPayload): void
-  onGroupRename(payload: GroupRenamePayload): void
-  onGroupUnarchive(payload: GroupUnarchivePayload): void
-  onImClose(payload: ImClosePayload): void
-  onImCreated(payload: ImCreatedPayload): void
-  onImMarked(payload: ImMarkedPayload): void
-  onImOpen(payload: ImOpenPayload): void
-  onManualPresenceChange(payload: ManualPresenceChangePayload): void
-  onMemberJoinedChannel(payload: MemberJoinedChannelPayload): void
-  onMessage(payload: MessagePayload): void
+  hello(payload: HelloPayload): void
+  connectionError(payload: ConnectionErrorPayload): void
+  accountsChanged(payload: AccountsChangedPayload): void
+  botAdded(payload: BotAddedPayload): void
+  botChanged(payload: BotChangedPayload): void
+  channelArchive(payload: ChannelArchivePayload): void
+  channelCreated(payload: ChannelCreatedPayload): void
+  channelDeleted(payload: ChannelDeletedPayload): void
+  channelHistoryChanged(payload: ChannelHistoryChangedPayload): void
+  channelJoined(payload: ChannelJoinedPayload): void
+  channelLeft(payload: ChannelLeftPayload): void
+  channelMarked(payload: ChannelMarkedPayload): void
+  channelRename(payload: ChannelRenamePayload): void
+  channelUnarchive(payload: ChannelUnarchivePayload): void
+  commandsChanged(payload: CommandsChangedPayload): void
+  dndUpdated(payload: DndUpdatedPayload): void
+  dndUpdatedUser(payload: DndUpdatedUserPayload): void
+  emailDomainChanged(payload: EmailDomainChangedPayload): void
+  emojiRemoved(payload: EmojiRemovedPayload): void
+  emojiAdded(payload: EmojiAddedPayload): void
+  fileChange(payload: FileChangePayload): void
+  fileCommentAdded(payload: FileCommentAddedPayload): void
+  fileCommentDeleted(payload: FileCommentDeletedPayload): void
+  fileCommentEdited(payload: FileCommentEditedPayload): void
+  fileCreated(payload: FileCreatedPayload): void
+  fileDeleted(payload: FileDeletedPayload): void
+  filePublic(payload: FilePublicPayload): void
+  fileShared(payload: FileSharedPayload): void
+  fileUnshared(payload: FileUnsharedPayload): void
+  goodbye(payload: GoodbyePayload): void
+  groupArchive(payload: GroupArchivePayload): void
+  groupClose(payload: GroupClosePayload): void
+  groupHistoryChanged(payload: GroupHistoryChangedPayload): void
+  groupJoined(payload: GroupJoinedPayload): void
+  groupLeft(payload: GroupLeftPayload): void
+  groupMarked(payload: GroupMarkedPayload): void
+  groupOpen(payload: GroupOpenPayload): void
+  groupRename(payload: GroupRenamePayload): void
+  groupUnarchive(payload: GroupUnarchivePayload): void
+  imClose(payload: ImClosePayload): void
+  imCreated(payload: ImCreatedPayload): void
+  imMarked(payload: ImMarkedPayload): void
+  imOpen(payload: ImOpenPayload): void
+  manualPresenceChange(payload: ManualPresenceChangePayload): void
+  memberJoinedChannel(payload: MemberJoinedChannelPayload): void
+  message(payload: MessagePayload): void
 }
 export abstract class SlackApiListenerStub implements SlackApiListener {
-  onHello(payload: HelloPayload): void {
+  hello(payload: HelloPayload): void {
     /* implement me! */
   }
-  onConnectionError(payload: ConnectionErrorPayload): void {
+  connectionError(payload: ConnectionErrorPayload): void {
     /* implement me! */
   }
-  onAccountsChanged(payload: AccountsChangedPayload): void {
+  accountsChanged(payload: AccountsChangedPayload): void {
     /* implement me! */
   }
-  onBotAdded(payload: BotAddedPayload): void {
+  botAdded(payload: BotAddedPayload): void {
     /* implement me! */
   }
-  onBotChanged(payload: BotChangedPayload): void {
+  botChanged(payload: BotChangedPayload): void {
     /* implement me! */
   }
-  onChannelArchive(payload: ChannelArchivePayload): void {
+  channelArchive(payload: ChannelArchivePayload): void {
     /* implement me! */
   }
-  onChannelCreated(payload: ChannelCreatedPayload): void {
+  channelCreated(payload: ChannelCreatedPayload): void {
     /* implement me! */
   }
-  onChannelDeleted(payload: ChannelDeletedPayload): void {
+  channelDeleted(payload: ChannelDeletedPayload): void {
     /* implement me! */
   }
-  onChannelHistoryChanged(payload: ChannelHistoryChangedPayload): void {
+  channelHistoryChanged(payload: ChannelHistoryChangedPayload): void {
     /* implement me! */
   }
-  onChannelJoined(payload: ChannelJoinedPayload): void {
+  channelJoined(payload: ChannelJoinedPayload): void {
     /* implement me! */
   }
-  onChannelLeft(payload: ChannelLeftPayload): void {
+  channelLeft(payload: ChannelLeftPayload): void {
     /* implement me! */
   }
-  onChannelMarked(payload: ChannelMarkedPayload): void {
+  channelMarked(payload: ChannelMarkedPayload): void {
     /* implement me! */
   }
-  onChannelRename(payload: ChannelRenamePayload): void {
+  channelRename(payload: ChannelRenamePayload): void {
     /* implement me! */
   }
-  onChannelUnarchive(payload: ChannelUnarchivePayload): void {
+  channelUnarchive(payload: ChannelUnarchivePayload): void {
     /* implement me! */
   }
-  onCommandsChanged(payload: CommandsChangedPayload): void {
+  commandsChanged(payload: CommandsChangedPayload): void {
     /* implement me! */
   }
-  onDndUpdated(payload: DndUpdatedPayload): void {
+  dndUpdated(payload: DndUpdatedPayload): void {
     /* implement me! */
   }
-  onDndUpdatedUser(payload: DndUpdatedUserPayload): void {
+  dndUpdatedUser(payload: DndUpdatedUserPayload): void {
     /* implement me! */
   }
-  onEmailDomainChanged(payload: EmailDomainChangedPayload): void {
+  emailDomainChanged(payload: EmailDomainChangedPayload): void {
     /* implement me! */
   }
-  onEmojiRemoved(payload: EmojiRemovedPayload): void {
+  emojiRemoved(payload: EmojiRemovedPayload): void {
     /* implement me! */
   }
-  onEmojiAdded(payload: EmojiAddedPayload): void {
+  emojiAdded(payload: EmojiAddedPayload): void {
     /* implement me! */
   }
-  onFileChange(payload: FileChangePayload): void {
+  fileChange(payload: FileChangePayload): void {
     /* implement me! */
   }
-  onFileCommentAdded(payload: FileCommentAddedPayload): void {
+  fileCommentAdded(payload: FileCommentAddedPayload): void {
     /* implement me! */
   }
-  onFileCommentDeleted(payload: FileCommentDeletedPayload): void {
+  fileCommentDeleted(payload: FileCommentDeletedPayload): void {
     /* implement me! */
   }
-  onFileCommentEdited(payload: FileCommentEditedPayload): void {
+  fileCommentEdited(payload: FileCommentEditedPayload): void {
     /* implement me! */
   }
-  onFileCreated(payload: FileCreatedPayload): void {
+  fileCreated(payload: FileCreatedPayload): void {
     /* implement me! */
   }
-  onFileDeleted(payload: FileDeletedPayload): void {
+  fileDeleted(payload: FileDeletedPayload): void {
     /* implement me! */
   }
-  onFilePublic(payload: FilePublicPayload): void {
+  filePublic(payload: FilePublicPayload): void {
     /* implement me! */
   }
-  onFileShared(payload: FileSharedPayload): void {
+  fileShared(payload: FileSharedPayload): void {
     /* implement me! */
   }
-  onFileUnshared(payload: FileUnsharedPayload): void {
+  fileUnshared(payload: FileUnsharedPayload): void {
     /* implement me! */
   }
-  onGoodbye(payload: GoodbyePayload): void {
+  goodbye(payload: GoodbyePayload): void {
     /* implement me! */
   }
-  onGroupArchive(payload: GroupArchivePayload): void {
+  groupArchive(payload: GroupArchivePayload): void {
     /* implement me! */
   }
-  onGroupClose(payload: GroupClosePayload): void {
+  groupClose(payload: GroupClosePayload): void {
     /* implement me! */
   }
-  onGroupHistoryChanged(payload: GroupHistoryChangedPayload): void {
+  groupHistoryChanged(payload: GroupHistoryChangedPayload): void {
     /* implement me! */
   }
-  onGroupJoined(payload: GroupJoinedPayload): void {
+  groupJoined(payload: GroupJoinedPayload): void {
     /* implement me! */
   }
-  onGroupLeft(payload: GroupLeftPayload): void {
+  groupLeft(payload: GroupLeftPayload): void {
     /* implement me! */
   }
-  onGroupMarked(payload: GroupMarkedPayload): void {
+  groupMarked(payload: GroupMarkedPayload): void {
     /* implement me! */
   }
-  onGroupOpen(payload: GroupOpenPayload): void {
+  groupOpen(payload: GroupOpenPayload): void {
     /* implement me! */
   }
-  onGroupRename(payload: GroupRenamePayload): void {
+  groupRename(payload: GroupRenamePayload): void {
     /* implement me! */
   }
-  onGroupUnarchive(payload: GroupUnarchivePayload): void {
+  groupUnarchive(payload: GroupUnarchivePayload): void {
     /* implement me! */
   }
-  onImClose(payload: ImClosePayload): void {
+  imClose(payload: ImClosePayload): void {
     /* implement me! */
   }
-  onImCreated(payload: ImCreatedPayload): void {
+  imCreated(payload: ImCreatedPayload): void {
     /* implement me! */
   }
-  onImMarked(payload: ImMarkedPayload): void {
+  imMarked(payload: ImMarkedPayload): void {
     /* implement me! */
   }
-  onImOpen(payload: ImOpenPayload): void {
+  imOpen(payload: ImOpenPayload): void {
     /* implement me! */
   }
-  onManualPresenceChange(payload: ManualPresenceChangePayload): void {
+  manualPresenceChange(payload: ManualPresenceChangePayload): void {
     /* implement me! */
   }
-  onMemberJoinedChannel(payload: MemberJoinedChannelPayload): void {
+  memberJoinedChannel(payload: MemberJoinedChannelPayload): void {
     /* implement me! */
   }
-  onMessage(payload: MessagePayload): void {
+  message(payload: MessagePayload): void {
     /* implement me! */
   }
 }
-export class SlackApiDispatcher {
+export class SlackApiReceiver {
   private readonly __listener: SlackApiListener
   constructor(listener: SlackApiListener) {
     this.__listener = listener
   }
   dispatch(input: any): void {
     if (isHelloPayload(input)) {
-      this.__listener.onHello(input)
+      this.__listener.hello(input)
     } else if (isConnectionErrorPayload(input)) {
-      this.__listener.onConnectionError(input)
+      this.__listener.connectionError(input)
     } else if (isAccountsChangedPayload(input)) {
-      this.__listener.onAccountsChanged(input)
+      this.__listener.accountsChanged(input)
     } else if (isBotAddedPayload(input)) {
-      this.__listener.onBotAdded(input)
+      this.__listener.botAdded(input)
     } else if (isBotChangedPayload(input)) {
-      this.__listener.onBotChanged(input)
+      this.__listener.botChanged(input)
     } else if (isChannelArchivePayload(input)) {
-      this.__listener.onChannelArchive(input)
+      this.__listener.channelArchive(input)
     } else if (isChannelCreatedPayload(input)) {
-      this.__listener.onChannelCreated(input)
+      this.__listener.channelCreated(input)
     } else if (isChannelDeletedPayload(input)) {
-      this.__listener.onChannelDeleted(input)
+      this.__listener.channelDeleted(input)
     } else if (isChannelHistoryChangedPayload(input)) {
-      this.__listener.onChannelHistoryChanged(input)
+      this.__listener.channelHistoryChanged(input)
     } else if (isChannelJoinedPayload(input)) {
-      this.__listener.onChannelJoined(input)
+      this.__listener.channelJoined(input)
     } else if (isChannelLeftPayload(input)) {
-      this.__listener.onChannelLeft(input)
+      this.__listener.channelLeft(input)
     } else if (isChannelMarkedPayload(input)) {
-      this.__listener.onChannelMarked(input)
+      this.__listener.channelMarked(input)
     } else if (isChannelRenamePayload(input)) {
-      this.__listener.onChannelRename(input)
+      this.__listener.channelRename(input)
     } else if (isChannelUnarchivePayload(input)) {
-      this.__listener.onChannelUnarchive(input)
+      this.__listener.channelUnarchive(input)
     } else if (isCommandsChangedPayload(input)) {
-      this.__listener.onCommandsChanged(input)
+      this.__listener.commandsChanged(input)
     } else if (isDndUpdatedPayload(input)) {
-      this.__listener.onDndUpdated(input)
+      this.__listener.dndUpdated(input)
     } else if (isDndUpdatedUserPayload(input)) {
-      this.__listener.onDndUpdatedUser(input)
+      this.__listener.dndUpdatedUser(input)
     } else if (isEmailDomainChangedPayload(input)) {
-      this.__listener.onEmailDomainChanged(input)
+      this.__listener.emailDomainChanged(input)
     } else if (isEmojiRemovedPayload(input)) {
-      this.__listener.onEmojiRemoved(input)
+      this.__listener.emojiRemoved(input)
     } else if (isEmojiAddedPayload(input)) {
-      this.__listener.onEmojiAdded(input)
+      this.__listener.emojiAdded(input)
     } else if (isFileChangePayload(input)) {
-      this.__listener.onFileChange(input)
+      this.__listener.fileChange(input)
     } else if (isFileCommentAddedPayload(input)) {
-      this.__listener.onFileCommentAdded(input)
+      this.__listener.fileCommentAdded(input)
     } else if (isFileCommentDeletedPayload(input)) {
-      this.__listener.onFileCommentDeleted(input)
+      this.__listener.fileCommentDeleted(input)
     } else if (isFileCommentEditedPayload(input)) {
-      this.__listener.onFileCommentEdited(input)
+      this.__listener.fileCommentEdited(input)
     } else if (isFileCreatedPayload(input)) {
-      this.__listener.onFileCreated(input)
+      this.__listener.fileCreated(input)
     } else if (isFileDeletedPayload(input)) {
-      this.__listener.onFileDeleted(input)
+      this.__listener.fileDeleted(input)
     } else if (isFilePublicPayload(input)) {
-      this.__listener.onFilePublic(input)
+      this.__listener.filePublic(input)
     } else if (isFileSharedPayload(input)) {
-      this.__listener.onFileShared(input)
+      this.__listener.fileShared(input)
     } else if (isFileUnsharedPayload(input)) {
-      this.__listener.onFileUnshared(input)
+      this.__listener.fileUnshared(input)
     } else if (isGoodbyePayload(input)) {
-      this.__listener.onGoodbye(input)
+      this.__listener.goodbye(input)
     } else if (isGroupArchivePayload(input)) {
-      this.__listener.onGroupArchive(input)
+      this.__listener.groupArchive(input)
     } else if (isGroupClosePayload(input)) {
-      this.__listener.onGroupClose(input)
+      this.__listener.groupClose(input)
     } else if (isGroupHistoryChangedPayload(input)) {
-      this.__listener.onGroupHistoryChanged(input)
+      this.__listener.groupHistoryChanged(input)
     } else if (isGroupJoinedPayload(input)) {
-      this.__listener.onGroupJoined(input)
+      this.__listener.groupJoined(input)
     } else if (isGroupLeftPayload(input)) {
-      this.__listener.onGroupLeft(input)
+      this.__listener.groupLeft(input)
     } else if (isGroupMarkedPayload(input)) {
-      this.__listener.onGroupMarked(input)
+      this.__listener.groupMarked(input)
     } else if (isGroupOpenPayload(input)) {
-      this.__listener.onGroupOpen(input)
+      this.__listener.groupOpen(input)
     } else if (isGroupRenamePayload(input)) {
-      this.__listener.onGroupRename(input)
+      this.__listener.groupRename(input)
     } else if (isGroupUnarchivePayload(input)) {
-      this.__listener.onGroupUnarchive(input)
+      this.__listener.groupUnarchive(input)
     } else if (isImClosePayload(input)) {
-      this.__listener.onImClose(input)
+      this.__listener.imClose(input)
     } else if (isImCreatedPayload(input)) {
-      this.__listener.onImCreated(input)
+      this.__listener.imCreated(input)
     } else if (isImMarkedPayload(input)) {
-      this.__listener.onImMarked(input)
+      this.__listener.imMarked(input)
     } else if (isImOpenPayload(input)) {
-      this.__listener.onImOpen(input)
+      this.__listener.imOpen(input)
     } else if (isManualPresenceChangePayload(input)) {
-      this.__listener.onManualPresenceChange(input)
+      this.__listener.manualPresenceChange(input)
     } else if (isMemberJoinedChannelPayload(input)) {
-      this.__listener.onMemberJoinedChannel(input)
+      this.__listener.memberJoinedChannel(input)
     } else if (isMessagePayload(input)) {
-      this.__listener.onMessage(input)
+      this.__listener.message(input)
     }
     throw new TypeError('Unrecognized payload value!')
+  }
+}
+export class SlackApiSender {
+  private readonly __dispatcher: { send: (any) => void }
+  constructor(dispatcher: { send: (any) => void }) {
+    this.__dispatcher = dispatcher
+  }
+  outgoingMessage(payload: OutgoingMessagePayload): void {
+    this.__dispatcher.send(payload)
   }
 }

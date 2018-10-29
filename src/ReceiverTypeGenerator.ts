@@ -2,7 +2,7 @@ import { BaseGenerator } from './BaseGenerator'
 import { ReferenceObject } from './AyncApiTypings'
 import last from 'lodash/last'
 
-export class ListenerDispatcherGenerator extends BaseGenerator<void> {
+export class ReceiverTypeGenerator extends BaseGenerator<void> {
   generateListenerMethodSignature(ref: ReferenceObject): string {
     const np = this.registry.getNameProvider()
     const name = last(ref.$ref.split('/'))
@@ -39,7 +39,7 @@ export class ListenerDispatcherGenerator extends BaseGenerator<void> {
   generate(): string {
     const np = this.registry.getNameProvider()
     // ${this.generateListenerMethodSignatures()}
-    return `export class ${np.getDispatcherTypeName()} {
+    return `export class ${np.getReceiverTypeName()} {
       private readonly __listener: ${np.getListenerTypeName()}
       constructor(listener: ${np.getListenerTypeName()}) {
         this.__listener = listener

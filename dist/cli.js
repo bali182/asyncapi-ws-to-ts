@@ -108,6 +108,9 @@ class TypeRegistry {
     getReceiveRefs() {
         return this.spec.events.receive.filter(isRefType);
     }
+    getSendRefs() {
+        return this.spec.events.send.filter(isRefType);
+    }
     registerType(name, schema) {
         const byName = this.types.find(({ name: n }) => n === name);
         if (byName !== undefined) {
@@ -459,7 +462,7 @@ class ListenerTypeGenerator extends BaseGenerator {
     }
 }
 
-class ListenerDispatcherGenerator extends BaseGenerator {
+class ReceiverTypeGenerator extends BaseGenerator {
     generateListenerMethodSignature(ref) {
         const np = this.registry.getNameProvider();
         const name = last(ref.$ref.split('/'));
@@ -496,7 +499,7 @@ class ListenerDispatcherGenerator extends BaseGenerator {
     generate() {
         const np = this.registry.getNameProvider();
         // ${this.generateListenerMethodSignatures()}
-        return `export class ${np.getDispatcherTypeName()} {
+        return `export class ${np.getReceiverTypeName()} {
       private readonly __listener: ${np.getListenerTypeName()}
       constructor(listener: ${np.getListenerTypeName()}) {
         this.__listener = listener
@@ -531,6 +534,30 @@ class ListenerStubGenerator extends BaseGenerator {
     }
 }
 
+class SenderTypeGenerator extends BaseGenerator {
+    generateMethod(ref) {
+        const np = this.registry.getNameProvider();
+        const name = last(ref.$ref.split('/'));
+        return `${np.getSendMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void {
+      this.__dispatcher.send(payload)
+    }`;
+    }
+    generate() {
+        const np = this.registry.getNameProvider();
+        const methods = this.registry
+            .getSendRefs()
+            .map((ref) => this.generateMethod(ref))
+            .join('\n');
+        return `export class ${np.getSenderTypeName()} {
+      private readonly __dispatcher: { send: (any) => void }
+      constructor(dispatcher: { send: (any) => void }) {
+        this.__dispatcher = dispatcher
+      }
+      ${methods}
+    }`;
+    }
+}
+
 class RootGenerator extends BaseGenerator {
     generate() {
         const generators = [
@@ -538,7 +565,8 @@ class RootGenerator extends BaseGenerator {
             new TypeGuardsGenerator(this.registry),
             new ListenerTypeGenerator(this.registry),
             new ListenerStubGenerator(this.registry),
-            new ListenerDispatcherGenerator(this.registry),
+            new ReceiverTypeGenerator(this.registry),
+            new SenderTypeGenerator(this.registry),
         ];
         return this.format(generators.map((g) => g.generate()).join('\n'));
     }
@@ -599,18 +627,20 @@ class NameProvider {
     getListenerStubTypeName() {
         return `${pascalCase(this.apiTypeName)}ListenerStub`;
     }
-    getDispatcherTypeName() {
-        return `${pascalCase(this.apiTypeName)}Dispatcher`;
+    getReceiverTypeName() {
+        return `${pascalCase(this.apiTypeName)}Receiver`;
+    }
+    getSenderTypeName() {
+        return `${pascalCase(this.apiTypeName)}Sender`;
     }
     getTypeGuardName(name) {
         return `is${pascalCase(name)}`;
     }
     getListenerMethodName(name) {
-        if (name.startsWith('on')) {
-            return name;
-        }
-        const pcName = pascalCase(name);
-        return `on${pcName}`;
+        return camelCase(name);
+    }
+    getSendMethodName(name) {
+        return camelCase(name);
     }
 }
 

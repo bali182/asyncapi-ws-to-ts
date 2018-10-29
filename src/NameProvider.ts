@@ -58,17 +58,19 @@ export class NameProvider {
   getListenerStubTypeName() {
     return `${pascalCase(this.apiTypeName)}ListenerStub`
   }
-  getDispatcherTypeName() {
-    return `${pascalCase(this.apiTypeName)}Dispatcher`
+  getReceiverTypeName() {
+    return `${pascalCase(this.apiTypeName)}Receiver`
+  }
+  getSenderTypeName() {
+    return `${pascalCase(this.apiTypeName)}Sender`
   }
   getTypeGuardName(name: string) {
     return `is${pascalCase(name)}`
   }
   getListenerMethodName(name: string) {
-    if (name.startsWith('on')) {
-      return name
-    }
-    const pcName = pascalCase(name)
-    return `on${pcName}`
+    return camelCase(name)
+  }
+  getSendMethodName(name: string) {
+    return camelCase(name)
   }
 }

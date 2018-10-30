@@ -499,7 +499,7 @@ class ReceiverTypeGenerator extends BaseGenerator {
       constructor(listener: ${np.getListenerTypeName()}) {
         this.__listener = listener
       }
-      dispatch(input: any): void {
+      receive(input: any): void {
         ${this.generateConditions()}
         throw new TypeError('Unrecognized payload value!')
       }
@@ -533,8 +533,12 @@ class SenderTypeGenerator extends BaseGenerator {
     generateMethod(ref) {
         const np = this.registry.getNameProvider();
         const name = last(ref.$ref.split('/'));
-        return `${np.getSendMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void {
-      this.__dispatcher.send(payload)
+        const payloadType = np.getPayloadTypeName(name);
+        return `${np.getSendMethodName(name)}(payload: ${payloadType}): void {
+      if(!${np.getTypeGuardName(payloadType)}(payload)) {
+        throw new TypeError('Parameter payload should be of type ${payloadType}!')
+      }
+      this.__adapter.send(payload)
     }`;
     }
     generate() {
@@ -544,9 +548,9 @@ class SenderTypeGenerator extends BaseGenerator {
             .map((ref) => this.generateMethod(ref))
             .join('\n');
         return `export class ${np.getSenderTypeName()} {
-      private readonly __dispatcher: { send: (any) => void }
-      constructor(dispatcher: { send: (any) => void }) {
-        this.__dispatcher = dispatcher
+      private readonly __adapter: { send: (any) => void }
+      constructor(adapter: { send: (any) => void }) {
+        this.__adapter = adapter
       }
       ${methods}
     }`;

@@ -671,7 +671,7 @@ export class SlackApiReceiver {
   constructor(listener: SlackApiListener) {
     this.__listener = listener
   }
-  dispatch(input: any): void {
+  receive(input: any): void {
     if (isHelloPayload(input)) {
       this.__listener.hello(input)
     } else if (isConnectionErrorPayload(input)) {
@@ -769,11 +769,14 @@ export class SlackApiReceiver {
   }
 }
 export class SlackApiSender {
-  private readonly __dispatcher: { send: (any) => void }
-  constructor(dispatcher: { send: (any) => void }) {
-    this.__dispatcher = dispatcher
+  private readonly __adapter: { send: (any) => void }
+  constructor(adapter: { send: (any) => void }) {
+    this.__adapter = adapter
   }
   outgoingMessage(payload: OutgoingMessagePayload): void {
-    this.__dispatcher.send(payload)
+    if (!isOutgoingMessagePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type OutgoingMessagePayload!')
+    }
+    this.__adapter.send(payload)
   }
 }

@@ -44,7 +44,7 @@ export class ReceiverTypeGenerator extends BaseGenerator<void> {
       constructor(listener: ${np.getListenerTypeName()}) {
         this.__listener = listener
       }
-      dispatch(input: any): void {
+      receive(input: any): void {
         ${this.generateConditions()}
         throw new TypeError('Unrecognized payload value!')
       }

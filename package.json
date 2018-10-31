@@ -4,7 +4,7 @@
   "description": "TypeSript code generator from AsyncApi + Websocket transport",
   "main": "./dist/index.js",
   "bin": {
-    "swag": "./dist/cli.js"
+    "asyncapi-ws-to-ts": "./dist/cli.js"
   },
   "directories": {
     "test": "test"
@@ -18,8 +18,8 @@
     "on-sample": "npm run build && npm run generate-sample-client && npm run generate-sample-server",
     "generate-sample-client": "node dist/cli.js -f slack-rtm.yml -t client -n SlackApiClient > examples/slackApiClient.ts",
     "generate-sample-server": "node dist/cli.js -f slack-rtm.yml -t server -n SlackApiServer > examples/slackApiServer.ts",
-    "start-sample-server": "ts-node examples/slackApiServerWithWs.ts",
-    "start-sample-client": "ts-node examples/slackApiClientWithWs.ts"
+    "sample-server": "ts-node examples/slackApiServerWithWs.ts",
+    "sample-client": "ts-node examples/slackApiClientWithWs.ts"
   },
   "repository": {
     "type": "git",

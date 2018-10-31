@@ -69,6 +69,7 @@ export interface TagObject {
   description: string
 }
 export interface MessageObject {
+  operationId?: string
   headers?: SchemaObject | ReferenceObject
   summary?: string
   description?: string
@@ -81,7 +82,7 @@ export interface EventsObject {
 }
 export interface ComponentsObject {
   schemas?: StringKeyedMap<SchemaObject>
-  messages?: StringKeyedMap<MessageObject | ReferenceObject>
+  messages?: StringKeyedMap<MessageObject>
   securitySchemes?: any // TODO
 }
 export interface AsyncApiSpec {

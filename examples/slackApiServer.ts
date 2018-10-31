@@ -1,3 +1,6 @@
+export type __SendMessageAdapter = {
+  send(payload: any): void
+}
 export type Attachment = {
   fallback?: string
   color?: string
@@ -469,313 +472,310 @@ export function isManualPresenceChangePayload(input: any): input is ManualPresen
 export function isMemberJoinedChannelPayload(input: any): input is MemberJoinedChannelPayload {
   return input instanceof Object && input.type === 'member_joined_channel'
 }
-export function isMemberLeftChannelPayload(input: any): input is MemberLeftChannelPayload {
-  return input instanceof Object && input.type === 'member_left_channel'
-}
 export function isMessagePayload(input: any): input is MessagePayload {
   return input instanceof Object && input.type === 'message'
 }
 export function isOutgoingMessagePayload(input: any): input is OutgoingMessagePayload {
   return input instanceof Object && input.type === 'message'
 }
-export type SlackApiListener = {
-  hello(payload: HelloPayload): void
-  connectionError(payload: ConnectionErrorPayload): void
-  accountsChanged(payload: AccountsChangedPayload): void
-  botAdded(payload: BotAddedPayload): void
-  botChanged(payload: BotChangedPayload): void
-  channelArchive(payload: ChannelArchivePayload): void
-  channelCreated(payload: ChannelCreatedPayload): void
-  channelDeleted(payload: ChannelDeletedPayload): void
-  channelHistoryChanged(payload: ChannelHistoryChangedPayload): void
-  channelJoined(payload: ChannelJoinedPayload): void
-  channelLeft(payload: ChannelLeftPayload): void
-  channelMarked(payload: ChannelMarkedPayload): void
-  channelRename(payload: ChannelRenamePayload): void
-  channelUnarchive(payload: ChannelUnarchivePayload): void
-  commandsChanged(payload: CommandsChangedPayload): void
-  dndUpdated(payload: DndUpdatedPayload): void
-  dndUpdatedUser(payload: DndUpdatedUserPayload): void
-  emailDomainChanged(payload: EmailDomainChangedPayload): void
-  emojiRemoved(payload: EmojiRemovedPayload): void
-  emojiAdded(payload: EmojiAddedPayload): void
-  fileChange(payload: FileChangePayload): void
-  fileCommentAdded(payload: FileCommentAddedPayload): void
-  fileCommentDeleted(payload: FileCommentDeletedPayload): void
-  fileCommentEdited(payload: FileCommentEditedPayload): void
-  fileCreated(payload: FileCreatedPayload): void
-  fileDeleted(payload: FileDeletedPayload): void
-  filePublic(payload: FilePublicPayload): void
-  fileShared(payload: FileSharedPayload): void
-  fileUnshared(payload: FileUnsharedPayload): void
-  goodbye(payload: GoodbyePayload): void
-  groupArchive(payload: GroupArchivePayload): void
-  groupClose(payload: GroupClosePayload): void
-  groupHistoryChanged(payload: GroupHistoryChangedPayload): void
-  groupJoined(payload: GroupJoinedPayload): void
-  groupLeft(payload: GroupLeftPayload): void
-  groupMarked(payload: GroupMarkedPayload): void
-  groupOpen(payload: GroupOpenPayload): void
-  groupRename(payload: GroupRenamePayload): void
-  groupUnarchive(payload: GroupUnarchivePayload): void
-  imClose(payload: ImClosePayload): void
-  imCreated(payload: ImCreatedPayload): void
-  imMarked(payload: ImMarkedPayload): void
-  imOpen(payload: ImOpenPayload): void
-  manualPresenceChange(payload: ManualPresenceChangePayload): void
-  memberJoinedChannel(payload: MemberJoinedChannelPayload): void
-  message(payload: MessagePayload): void
+export type SlackApiServerListener = {
+  outgoingMessage(payload: OutgoingMessagePayload): void
 }
-export abstract class SlackApiListenerStub implements SlackApiListener {
-  hello(payload: HelloPayload): void {
-    /* implement me! */
-  }
-  connectionError(payload: ConnectionErrorPayload): void {
-    /* implement me! */
-  }
-  accountsChanged(payload: AccountsChangedPayload): void {
-    /* implement me! */
-  }
-  botAdded(payload: BotAddedPayload): void {
-    /* implement me! */
-  }
-  botChanged(payload: BotChangedPayload): void {
-    /* implement me! */
-  }
-  channelArchive(payload: ChannelArchivePayload): void {
-    /* implement me! */
-  }
-  channelCreated(payload: ChannelCreatedPayload): void {
-    /* implement me! */
-  }
-  channelDeleted(payload: ChannelDeletedPayload): void {
-    /* implement me! */
-  }
-  channelHistoryChanged(payload: ChannelHistoryChangedPayload): void {
-    /* implement me! */
-  }
-  channelJoined(payload: ChannelJoinedPayload): void {
-    /* implement me! */
-  }
-  channelLeft(payload: ChannelLeftPayload): void {
-    /* implement me! */
-  }
-  channelMarked(payload: ChannelMarkedPayload): void {
-    /* implement me! */
-  }
-  channelRename(payload: ChannelRenamePayload): void {
-    /* implement me! */
-  }
-  channelUnarchive(payload: ChannelUnarchivePayload): void {
-    /* implement me! */
-  }
-  commandsChanged(payload: CommandsChangedPayload): void {
-    /* implement me! */
-  }
-  dndUpdated(payload: DndUpdatedPayload): void {
-    /* implement me! */
-  }
-  dndUpdatedUser(payload: DndUpdatedUserPayload): void {
-    /* implement me! */
-  }
-  emailDomainChanged(payload: EmailDomainChangedPayload): void {
-    /* implement me! */
-  }
-  emojiRemoved(payload: EmojiRemovedPayload): void {
-    /* implement me! */
-  }
-  emojiAdded(payload: EmojiAddedPayload): void {
-    /* implement me! */
-  }
-  fileChange(payload: FileChangePayload): void {
-    /* implement me! */
-  }
-  fileCommentAdded(payload: FileCommentAddedPayload): void {
-    /* implement me! */
-  }
-  fileCommentDeleted(payload: FileCommentDeletedPayload): void {
-    /* implement me! */
-  }
-  fileCommentEdited(payload: FileCommentEditedPayload): void {
-    /* implement me! */
-  }
-  fileCreated(payload: FileCreatedPayload): void {
-    /* implement me! */
-  }
-  fileDeleted(payload: FileDeletedPayload): void {
-    /* implement me! */
-  }
-  filePublic(payload: FilePublicPayload): void {
-    /* implement me! */
-  }
-  fileShared(payload: FileSharedPayload): void {
-    /* implement me! */
-  }
-  fileUnshared(payload: FileUnsharedPayload): void {
-    /* implement me! */
-  }
-  goodbye(payload: GoodbyePayload): void {
-    /* implement me! */
-  }
-  groupArchive(payload: GroupArchivePayload): void {
-    /* implement me! */
-  }
-  groupClose(payload: GroupClosePayload): void {
-    /* implement me! */
-  }
-  groupHistoryChanged(payload: GroupHistoryChangedPayload): void {
-    /* implement me! */
-  }
-  groupJoined(payload: GroupJoinedPayload): void {
-    /* implement me! */
-  }
-  groupLeft(payload: GroupLeftPayload): void {
-    /* implement me! */
-  }
-  groupMarked(payload: GroupMarkedPayload): void {
-    /* implement me! */
-  }
-  groupOpen(payload: GroupOpenPayload): void {
-    /* implement me! */
-  }
-  groupRename(payload: GroupRenamePayload): void {
-    /* implement me! */
-  }
-  groupUnarchive(payload: GroupUnarchivePayload): void {
-    /* implement me! */
-  }
-  imClose(payload: ImClosePayload): void {
-    /* implement me! */
-  }
-  imCreated(payload: ImCreatedPayload): void {
-    /* implement me! */
-  }
-  imMarked(payload: ImMarkedPayload): void {
-    /* implement me! */
-  }
-  imOpen(payload: ImOpenPayload): void {
-    /* implement me! */
-  }
-  manualPresenceChange(payload: ManualPresenceChangePayload): void {
-    /* implement me! */
-  }
-  memberJoinedChannel(payload: MemberJoinedChannelPayload): void {
-    /* implement me! */
-  }
-  message(payload: MessagePayload): void {
+export abstract class SlackApiServerListenerStub implements SlackApiServerListener {
+  outgoingMessage(payload: OutgoingMessagePayload): void {
     /* implement me! */
   }
 }
-export class SlackApiReceiver {
-  private readonly __listener: SlackApiListener
-  constructor(listener: SlackApiListener) {
+export class SlackApiServerMessageReceiver {
+  private readonly __listener: SlackApiServerListener
+  constructor(listener: SlackApiServerListener) {
     this.__listener = listener
   }
   receive(input: any): void {
-    if (isHelloPayload(input)) {
-      this.__listener.hello(input)
-    } else if (isConnectionErrorPayload(input)) {
-      this.__listener.connectionError(input)
-    } else if (isAccountsChangedPayload(input)) {
-      this.__listener.accountsChanged(input)
-    } else if (isBotAddedPayload(input)) {
-      this.__listener.botAdded(input)
-    } else if (isBotChangedPayload(input)) {
-      this.__listener.botChanged(input)
-    } else if (isChannelArchivePayload(input)) {
-      this.__listener.channelArchive(input)
-    } else if (isChannelCreatedPayload(input)) {
-      this.__listener.channelCreated(input)
-    } else if (isChannelDeletedPayload(input)) {
-      this.__listener.channelDeleted(input)
-    } else if (isChannelHistoryChangedPayload(input)) {
-      this.__listener.channelHistoryChanged(input)
-    } else if (isChannelJoinedPayload(input)) {
-      this.__listener.channelJoined(input)
-    } else if (isChannelLeftPayload(input)) {
-      this.__listener.channelLeft(input)
-    } else if (isChannelMarkedPayload(input)) {
-      this.__listener.channelMarked(input)
-    } else if (isChannelRenamePayload(input)) {
-      this.__listener.channelRename(input)
-    } else if (isChannelUnarchivePayload(input)) {
-      this.__listener.channelUnarchive(input)
-    } else if (isCommandsChangedPayload(input)) {
-      this.__listener.commandsChanged(input)
-    } else if (isDndUpdatedPayload(input)) {
-      this.__listener.dndUpdated(input)
-    } else if (isDndUpdatedUserPayload(input)) {
-      this.__listener.dndUpdatedUser(input)
-    } else if (isEmailDomainChangedPayload(input)) {
-      this.__listener.emailDomainChanged(input)
-    } else if (isEmojiRemovedPayload(input)) {
-      this.__listener.emojiRemoved(input)
-    } else if (isEmojiAddedPayload(input)) {
-      this.__listener.emojiAdded(input)
-    } else if (isFileChangePayload(input)) {
-      this.__listener.fileChange(input)
-    } else if (isFileCommentAddedPayload(input)) {
-      this.__listener.fileCommentAdded(input)
-    } else if (isFileCommentDeletedPayload(input)) {
-      this.__listener.fileCommentDeleted(input)
-    } else if (isFileCommentEditedPayload(input)) {
-      this.__listener.fileCommentEdited(input)
-    } else if (isFileCreatedPayload(input)) {
-      this.__listener.fileCreated(input)
-    } else if (isFileDeletedPayload(input)) {
-      this.__listener.fileDeleted(input)
-    } else if (isFilePublicPayload(input)) {
-      this.__listener.filePublic(input)
-    } else if (isFileSharedPayload(input)) {
-      this.__listener.fileShared(input)
-    } else if (isFileUnsharedPayload(input)) {
-      this.__listener.fileUnshared(input)
-    } else if (isGoodbyePayload(input)) {
-      this.__listener.goodbye(input)
-    } else if (isGroupArchivePayload(input)) {
-      this.__listener.groupArchive(input)
-    } else if (isGroupClosePayload(input)) {
-      this.__listener.groupClose(input)
-    } else if (isGroupHistoryChangedPayload(input)) {
-      this.__listener.groupHistoryChanged(input)
-    } else if (isGroupJoinedPayload(input)) {
-      this.__listener.groupJoined(input)
-    } else if (isGroupLeftPayload(input)) {
-      this.__listener.groupLeft(input)
-    } else if (isGroupMarkedPayload(input)) {
-      this.__listener.groupMarked(input)
-    } else if (isGroupOpenPayload(input)) {
-      this.__listener.groupOpen(input)
-    } else if (isGroupRenamePayload(input)) {
-      this.__listener.groupRename(input)
-    } else if (isGroupUnarchivePayload(input)) {
-      this.__listener.groupUnarchive(input)
-    } else if (isImClosePayload(input)) {
-      this.__listener.imClose(input)
-    } else if (isImCreatedPayload(input)) {
-      this.__listener.imCreated(input)
-    } else if (isImMarkedPayload(input)) {
-      this.__listener.imMarked(input)
-    } else if (isImOpenPayload(input)) {
-      this.__listener.imOpen(input)
-    } else if (isManualPresenceChangePayload(input)) {
-      this.__listener.manualPresenceChange(input)
-    } else if (isMemberJoinedChannelPayload(input)) {
-      this.__listener.memberJoinedChannel(input)
-    } else if (isMessagePayload(input)) {
-      this.__listener.message(input)
+    if (isOutgoingMessagePayload(input)) {
+      this.__listener.outgoingMessage(input)
     }
     throw new TypeError('Unrecognized payload value!')
   }
 }
-export class SlackApiSender {
-  private readonly __adapter: { send: (any) => void }
-  constructor(adapter: { send: (any) => void }) {
+export class SlackApiServerMessageSender {
+  private readonly __adapter: __SendMessageAdapter
+  constructor(adapter: __SendMessageAdapter) {
     this.__adapter = adapter
   }
-  outgoingMessage(payload: OutgoingMessagePayload): void {
-    if (!isOutgoingMessagePayload(payload)) {
-      throw new TypeError('Parameter payload should be of type OutgoingMessagePayload!')
+  hello(payload: HelloPayload): void {
+    if (!isHelloPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type HelloPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  connectionError(payload: ConnectionErrorPayload): void {
+    if (!isConnectionErrorPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ConnectionErrorPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  accountsChanged(payload: AccountsChangedPayload): void {
+    if (!isAccountsChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type AccountsChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  botAdded(payload: BotAddedPayload): void {
+    if (!isBotAddedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type BotAddedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  botChanged(payload: BotChangedPayload): void {
+    if (!isBotChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type BotChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelArchive(payload: ChannelArchivePayload): void {
+    if (!isChannelArchivePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelArchivePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelCreated(payload: ChannelCreatedPayload): void {
+    if (!isChannelCreatedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelCreatedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelDeleted(payload: ChannelDeletedPayload): void {
+    if (!isChannelDeletedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelDeletedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelHistoryChanged(payload: ChannelHistoryChangedPayload): void {
+    if (!isChannelHistoryChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelHistoryChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelJoined(payload: ChannelJoinedPayload): void {
+    if (!isChannelJoinedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelJoinedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelLeft(payload: ChannelLeftPayload): void {
+    if (!isChannelLeftPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelLeftPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelMarked(payload: ChannelMarkedPayload): void {
+    if (!isChannelMarkedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelMarkedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelRename(payload: ChannelRenamePayload): void {
+    if (!isChannelRenamePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelRenamePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  channelUnarchive(payload: ChannelUnarchivePayload): void {
+    if (!isChannelUnarchivePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ChannelUnarchivePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  commandsChanged(payload: CommandsChangedPayload): void {
+    if (!isCommandsChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type CommandsChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  dndUpdated(payload: DndUpdatedPayload): void {
+    if (!isDndUpdatedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type DndUpdatedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  dndUpdatedUser(payload: DndUpdatedUserPayload): void {
+    if (!isDndUpdatedUserPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type DndUpdatedUserPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  emailDomainChanged(payload: EmailDomainChangedPayload): void {
+    if (!isEmailDomainChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type EmailDomainChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  emojiRemoved(payload: EmojiRemovedPayload): void {
+    if (!isEmojiRemovedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type EmojiRemovedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  emojiAdded(payload: EmojiAddedPayload): void {
+    if (!isEmojiAddedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type EmojiAddedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileChange(payload: FileChangePayload): void {
+    if (!isFileChangePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileChangePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileCommentAdded(payload: FileCommentAddedPayload): void {
+    if (!isFileCommentAddedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileCommentAddedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileCommentDeleted(payload: FileCommentDeletedPayload): void {
+    if (!isFileCommentDeletedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileCommentDeletedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileCommentEdited(payload: FileCommentEditedPayload): void {
+    if (!isFileCommentEditedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileCommentEditedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileCreated(payload: FileCreatedPayload): void {
+    if (!isFileCreatedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileCreatedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileDeleted(payload: FileDeletedPayload): void {
+    if (!isFileDeletedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileDeletedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  filePublic(payload: FilePublicPayload): void {
+    if (!isFilePublicPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FilePublicPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileShared(payload: FileSharedPayload): void {
+    if (!isFileSharedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileSharedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  fileUnshared(payload: FileUnsharedPayload): void {
+    if (!isFileUnsharedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type FileUnsharedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  goodbye(payload: GoodbyePayload): void {
+    if (!isGoodbyePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GoodbyePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupArchive(payload: GroupArchivePayload): void {
+    if (!isGroupArchivePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupArchivePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupClose(payload: GroupClosePayload): void {
+    if (!isGroupClosePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupClosePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupHistoryChanged(payload: GroupHistoryChangedPayload): void {
+    if (!isGroupHistoryChangedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupHistoryChangedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupJoined(payload: GroupJoinedPayload): void {
+    if (!isGroupJoinedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupJoinedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupLeft(payload: GroupLeftPayload): void {
+    if (!isGroupLeftPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupLeftPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupMarked(payload: GroupMarkedPayload): void {
+    if (!isGroupMarkedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupMarkedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupOpen(payload: GroupOpenPayload): void {
+    if (!isGroupOpenPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupOpenPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupRename(payload: GroupRenamePayload): void {
+    if (!isGroupRenamePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupRenamePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  groupUnarchive(payload: GroupUnarchivePayload): void {
+    if (!isGroupUnarchivePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type GroupUnarchivePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  imClose(payload: ImClosePayload): void {
+    if (!isImClosePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ImClosePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  imCreated(payload: ImCreatedPayload): void {
+    if (!isImCreatedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ImCreatedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  imMarked(payload: ImMarkedPayload): void {
+    if (!isImMarkedPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ImMarkedPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  imOpen(payload: ImOpenPayload): void {
+    if (!isImOpenPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ImOpenPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  manualPresenceChange(payload: ManualPresenceChangePayload): void {
+    if (!isManualPresenceChangePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type ManualPresenceChangePayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  memberJoinedChannel(payload: MemberJoinedChannelPayload): void {
+    if (!isMemberJoinedChannelPayload(payload)) {
+      throw new TypeError('Parameter payload should be of type MemberJoinedChannelPayload!')
+    }
+    this.__adapter.send(payload)
+  }
+  message(payload: MessagePayload): void {
+    if (!isMessagePayload(payload)) {
+      throw new TypeError('Parameter payload should be of type MessagePayload!')
     }
     this.__adapter.send(payload)
   }

@@ -6,11 +6,7 @@ import { RootGenerator } from './RootGenerator'
 import YAML from 'yamljs'
 import { NameProvider } from './NameProvider'
 import { AsyncApiSpec } from './AyncApiTypings'
-
-type Args = {
-  file: string
-  apiTypeName: string
-}
+import { Options, GeneratorTarget } from './typings'
 
 const parser = new ArgumentParser({
   description: 'OpenAPI 3.0 -> TypeScript generator',
@@ -29,11 +25,18 @@ parser.addArgument(['--name', '-n'], {
   defaultValue: 'Api',
 })
 
+parser.addArgument(['--target', '-t'], {
+  required: true,
+  dest: 'target',
+  help: 'Generated output target',
+  choices: [GeneratorTarget.CLIENT, GeneratorTarget.SERVER],
+})
+
 export class CliGenerator {
-  private readonly args: Args = parser.parseArgs()
+  private readonly options: Options = parser.parseArgs()
 
   readSchema(): AsyncApiSpec {
-    const file = resolve(this.args.file)
+    const file = resolve(this.options.file)
     const content = readFileSync(file, 'UTF8')
     const schema: AsyncApiSpec = this.parseSchema(extname(file), content)
     return schema
@@ -55,7 +58,7 @@ export class CliGenerator {
 
   execute(): void {
     const schema = this.readSchema()
-    const registry = new TypeRegistry(schema, new NameProvider(this.args.apiTypeName))
+    const registry = new TypeRegistry(schema, this.options, new NameProvider(this.options.apiTypeName))
     const generator = new RootGenerator(registry)
     const source = generator.generate()
     this.writeOutput(source)

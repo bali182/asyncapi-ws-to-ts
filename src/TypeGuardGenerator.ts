@@ -1,15 +1,6 @@
 import entries from 'lodash/entries'
 import isVarName from 'is-var-name'
-import {
-  isEnumType,
-  isObjectType,
-  isArrayType,
-  isOneOfType,
-  isAllOfType,
-  isAnyOfType,
-  isRefType,
-  isSchemaType,
-} from './utils'
+import { isEnumType, isObjectType, isRefType, isSchemaType } from './utils'
 import { BaseGenerator } from './BaseGenerator'
 import { TypeRegistry } from './TypeRegistry'
 import { TypeRefGenerator } from './TypeRefGenerator'

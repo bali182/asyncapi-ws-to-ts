@@ -1,4 +1,9 @@
-import { SlackApiSender, SlackApiListenerStub, MessagePayload, SlackApiReceiver } from './slackApi'
+import {
+  SlackApiClientMessageSender,
+  SlackApiClientMessageReceiver,
+  SlackApiClientListenerStub,
+  MessagePayload,
+} from './slackApiClient'
 
 const ws = new WebSocket('...slack api url...')
 const sendAdapter = {
@@ -7,9 +12,9 @@ const sendAdapter = {
     ws.send(JSON.stringify(payload))
   },
 }
-const messageSender = new SlackApiSender(sendAdapter)
+const messageSender = new SlackApiClientMessageSender(sendAdapter)
 
-class MySlackApiListener extends SlackApiListenerStub {
+class MySlackApiListener extends SlackApiClientListenerStub {
   message(payload: MessagePayload) {
     console.log('message', payload.text)
     messageSender.outgoingMessage({
@@ -21,6 +26,6 @@ class MySlackApiListener extends SlackApiListenerStub {
   }
 }
 
-const receiver = new SlackApiReceiver(new MySlackApiListener())
+const receiver = new SlackApiClientMessageReceiver(new MySlackApiListener())
 
 ws.addEventListener('message', ({ data }) => receiver.receive(JSON.parse(data)))

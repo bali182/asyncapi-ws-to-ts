@@ -1,11 +1,12 @@
 import { BaseGenerator } from './BaseGenerator'
 import { ReferenceObject } from './AyncApiTypings'
 import last from 'lodash/last'
+import { MessageWrapper } from './MessageWrapper'
 
 export class SenderTypeGenerator extends BaseGenerator<void> {
-  generateMethod(ref: ReferenceObject): string {
+  generateMethod(msg: MessageWrapper): string {
     const np = this.registry.getNameProvider()
-    const name = last(ref.$ref.split('/'))
+    const name = msg.getOperationId()
     const payloadType = np.getPayloadTypeName(name)
     return `${np.getSendMethodName(name)}(payload: ${payloadType}): void {
       if(!${np.getTypeGuardName(payloadType)}(payload)) {
@@ -17,12 +18,12 @@ export class SenderTypeGenerator extends BaseGenerator<void> {
   generate(): string {
     const np = this.registry.getNameProvider()
     const methods = this.registry
-      .getSendRefs()
-      .map((ref) => this.generateMethod(ref))
+      .getSendMessages()
+      .map((msg) => this.generateMethod(msg))
       .join('\n')
     return `export class ${np.getSenderTypeName()} {
-      private readonly __adapter: { send: (any) => void }
-      constructor(adapter: { send: (any) => void }) {
+      private readonly __adapter: __SendMessageAdapter
+      constructor(adapter: __SendMessageAdapter) {
         this.__adapter = adapter
       }
       ${methods}

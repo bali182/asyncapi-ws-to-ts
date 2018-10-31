@@ -13,15 +13,21 @@ import {
 import { TypeWrapper } from './TypeWrapper'
 import { NameProvider } from './NameProvider'
 import { AsyncApiSpec, SchemaObject, ReferenceObject } from './AyncApiTypings'
+import { MessageWrapper, MessageType } from './MessageWrapper'
+import { Options, GeneratorTarget } from './typings'
 
 export class TypeRegistry {
   private readonly types: TypeWrapper[] = []
+  private readonly messages: MessageWrapper[] = []
   private readonly spec: AsyncApiSpec
   private readonly nameProvider: NameProvider
-  constructor(spec: AsyncApiSpec, nameProvider: NameProvider) {
+  public readonly options: Options
+  constructor(spec: AsyncApiSpec, options: Options, nameProvider: NameProvider) {
     this.spec = spec
     this.nameProvider = nameProvider
+    this.options = options
     this.registerTypes()
+    this.registerMessages()
   }
   getNameProvider(): NameProvider {
     return this.nameProvider
@@ -41,6 +47,9 @@ export class TypeRegistry {
   hasSchema(schema: SchemaObject): boolean {
     return this.types.find(({ schema: s }) => s === schema) !== undefined
   }
+  getSchemaWrapperForSchema(schema: SchemaObject): TypeWrapper {
+    return this.types.find(({ schema: s }) => s === schema)
+  }
   getSchemaByName(name: string): SchemaObject {
     const wrapper = this.types.find(({ name: n }) => n === name)
     if (wrapper === undefined) {
@@ -55,17 +64,18 @@ export class TypeRegistry {
     }
     return wrapper.name
   }
-  getMessageTypes(): TypeWrapper[] {
-    const names = new Set(
-      entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)),
-    )
-    return this.getTypes().filter(({ name }) => names.has(name))
+  getReceiveMessages(): MessageWrapper[] {
+    return this.options.target === GeneratorTarget.CLIENT
+      ? this.messages.filter(({ type }) => type === MessageType.RECEIVE)
+      : this.messages.filter(({ type }) => type === MessageType.SEND)
   }
-  getReceiveRefs(): ReferenceObject[] {
-    return this.spec.events.receive.filter(isRefType) as ReferenceObject[]
+  getSendMessages(): MessageWrapper[] {
+    return this.options.target === GeneratorTarget.CLIENT
+      ? this.messages.filter(({ type }) => type === MessageType.SEND)
+      : this.messages.filter(({ type }) => type === MessageType.RECEIVE)
   }
-  getSendRefs(): ReferenceObject[] {
-    return this.spec.events.send.filter(isRefType) as ReferenceObject[]
+  getMessages(): MessageWrapper[] {
+    return this.messages
   }
   protected registerType(name: string, schema: SchemaObject): void {
     const byName = this.types.find(({ name: n }) => n === name)
@@ -115,9 +125,15 @@ export class TypeRegistry {
       this.registerTypeRecursively(name, schema, true)
     }
     for (const [name, message] of entries(this.spec.components.messages)) {
-      if (!isRefType(message)) {
-        this.registerTypeRecursively(this.nameProvider.getPayloadTypeName(name), message.payload, true)
-      }
+      this.registerTypeRecursively(this.nameProvider.getPayloadTypeName(name), message.payload, true)
     }
+  }
+  protected registerMessages() {
+    this.spec.events.receive.forEach((message) =>
+      this.messages.push(new MessageWrapper(this.spec, MessageType.RECEIVE, message)),
+    )
+    this.spec.events.send.forEach((message) =>
+      this.messages.push(new MessageWrapper(this.spec, MessageType.SEND, message)),
+    )
   }
 }

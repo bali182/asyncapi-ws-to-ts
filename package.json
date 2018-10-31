@@ -15,7 +15,9 @@
     "build": "npm run build-main && npm run build-cli",
     "test": "mocha -r ts-node/register test/*.spec.ts",
     "tslint": "tslint -c tslint.json 'src/**/*.ts'",
-    "on-sample": "npm run build && node dist/cli.js -f slack-rtm.yml -n SlackApi > slackApi.ts"
+    "on-sample": "npm run build && npm run generate-sample-client && npm run generate-sample-server",
+    "generate-sample-client": "node dist/cli.js -f slack-rtm.yml -t client -n SlackApiClient > examples/slackApiClient.ts",
+    "generate-sample-server": "node dist/cli.js -f slack-rtm.yml -t server -n SlackApiServer > examples/slackApiServer.ts"
   },
   "repository": {
     "type": "git",

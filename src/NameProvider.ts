@@ -59,10 +59,10 @@ export class NameProvider {
     return `${pascalCase(this.apiTypeName)}ListenerStub`
   }
   getReceiverTypeName() {
-    return `${pascalCase(this.apiTypeName)}Receiver`
+    return `${pascalCase(this.apiTypeName)}MessageReceiver`
   }
   getSenderTypeName() {
-    return `${pascalCase(this.apiTypeName)}Sender`
+    return `${pascalCase(this.apiTypeName)}MessageSender`
   }
   getTypeGuardName(name: string) {
     return `is${pascalCase(name)}`

@@ -5,16 +5,16 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var keys = _interopDefault(require('lodash/keys'));
 var isNil = _interopDefault(require('lodash/isNil'));
+var last = _interopDefault(require('lodash/last'));
 var entries = _interopDefault(require('lodash/entries'));
 var prettier = _interopDefault(require('prettier'));
-var last = _interopDefault(require('lodash/last'));
 var isVarName = _interopDefault(require('is-var-name'));
 var pascalCase = _interopDefault(require('pascalcase'));
+var fs = require('fs');
+var path = require('path');
 var camelCase = _interopDefault(require('camel-case'));
 var constantCase = _interopDefault(require('constant-case'));
 var argparse = require('argparse');
-var fs = require('fs');
-var path = require('path');
 var YAML = _interopDefault(require('yamljs'));
 
 function isObjectType(input) {
@@ -62,12 +62,59 @@ function isSchemaType(input) {
     return input instanceof Object && !Boolean(input.$ref);
 }
 
+class MessageWrapper {
+    constructor(spec, type, message) {
+        this.spec = spec;
+        this.type = type;
+        this.message = this.resolveMessageObject(message);
+    }
+    resolveMessageObject(message) {
+        if (isRefType(message)) {
+            const parts = message.$ref.split('/');
+            if (parts.length !== 4 || parts[0] !== '#' || parts[1] !== 'components' || parts[2] !== 'messages') {
+                throw new TypeError(`Can't resolve ref ${message.$ref}!`);
+            }
+            const name = last(parts);
+            const msg = this.spec.components.messages[last(parts)];
+            const enhancedMsg = Object.assign({}, msg, { operationId: msg.operationId ? msg.operationId : name });
+            return enhancedMsg;
+        }
+        return message;
+    }
+    getOperationId() {
+        const { operationId, payload } = this.message;
+        if (operationId) {
+            return operationId;
+        }
+        if (isRefType(payload)) {
+            return last(payload.$ref.split('/'));
+        }
+        throw new TypeError(`Cannot infer operation id!`);
+    }
+    getPayloadSchema() {
+        const { payload } = this.message;
+        if (isSchemaType(payload)) {
+            return payload;
+        }
+        else {
+            const parts = payload.$ref.split('/');
+            if (parts.length !== 4 || parts[0] !== '#' || parts[1] !== 'components' || parts[2] !== 'schemas') {
+                throw new TypeError(`Can't resolve ref ${payload.$ref}!`);
+            }
+            return this.spec.components.schemas[last(parts)];
+        }
+    }
+}
+
 class TypeRegistry {
-    constructor(spec, nameProvider) {
+    constructor(spec, options, nameProvider) {
         this.types = [];
+        this.messages = [];
         this.spec = spec;
         this.nameProvider = nameProvider;
+        this.options = options;
         this.registerTypes();
+        this.registerMessages();
     }
     getNameProvider() {
         return this.nameProvider;
@@ -87,6 +134,9 @@ class TypeRegistry {
     hasSchema(schema) {
         return this.types.find(({ schema: s }) => s === schema) !== undefined;
     }
+    getSchemaWrapperForSchema(schema) {
+        return this.types.find(({ schema: s }) => s === schema);
+    }
     getSchemaByName(name) {
         const wrapper = this.types.find(({ name: n }) => n === name);
         if (wrapper === undefined) {
@@ -101,15 +151,18 @@ class TypeRegistry {
         }
         return wrapper.name;
     }
-    getMessageTypes() {
-        const names = new Set(entries(this.spec.components.messages).map(([name]) => this.nameProvider.getPayloadTypeName(name)));
-        return this.getTypes().filter(({ name }) => names.has(name));
+    getReceiveMessages() {
+        return this.options.target === "client" /* CLIENT */
+            ? this.messages.filter(({ type }) => type === "RECEIVE" /* RECEIVE */)
+            : this.messages.filter(({ type }) => type === "SEND" /* SEND */);
     }
-    getReceiveRefs() {
-        return this.spec.events.receive.filter(isRefType);
+    getSendMessages() {
+        return this.options.target === "client" /* CLIENT */
+            ? this.messages.filter(({ type }) => type === "SEND" /* SEND */)
+            : this.messages.filter(({ type }) => type === "RECEIVE" /* RECEIVE */);
     }
-    getSendRefs() {
-        return this.spec.events.send.filter(isRefType);
+    getMessages() {
+        return this.messages;
     }
     registerType(name, schema) {
         const byName = this.types.find(({ name: n }) => n === name);
@@ -152,10 +205,12 @@ class TypeRegistry {
             this.registerTypeRecursively(name, schema, true);
         }
         for (const [name, message] of entries(this.spec.components.messages)) {
-            if (!isRefType(message)) {
-                this.registerTypeRecursively(this.nameProvider.getPayloadTypeName(name), message.payload, true);
-            }
+            this.registerTypeRecursively(this.nameProvider.getPayloadTypeName(name), message.payload, true);
         }
+    }
+    registerMessages() {
+        this.spec.events.receive.forEach((message) => this.messages.push(new MessageWrapper(this.spec, "RECEIVE" /* RECEIVE */, message)));
+        this.spec.events.send.forEach((message) => this.messages.push(new MessageWrapper(this.spec, "SEND" /* SEND */, message)));
     }
 }
 
@@ -436,21 +491,23 @@ class TypeGuardsGenerator extends BaseGenerator {
     generate() {
         const generator = new TypeGuardGenerator(this.registry);
         return this.registry
-            .getMessageTypes()
+            .getMessages()
+            .map((message) => message.getPayloadSchema())
+            .map((payloadType) => this.registry.getSchemaWrapperForSchema(payloadType))
             .map((type) => generator.generate(type))
             .join('\n');
     }
 }
 
 class ListenerTypeGenerator extends BaseGenerator {
-    generateListenerMethodSignature(ref) {
+    generateListenerMethodSignature(msg) {
         const np = this.registry.getNameProvider();
-        const name = last(ref.$ref.split('/'));
+        const name = msg.getOperationId();
         return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void`;
     }
     generateListenerMethodSignatures() {
         return this.registry
-            .getReceiveRefs()
+            .getReceiveMessages()
             .map((ref) => this.generateListenerMethodSignature(ref))
             .join('\n');
     }
@@ -463,35 +520,35 @@ class ListenerTypeGenerator extends BaseGenerator {
 }
 
 class ReceiverTypeGenerator extends BaseGenerator {
-    generateListenerMethodSignature(ref) {
+    generateListenerMethodSignature(msg) {
         const np = this.registry.getNameProvider();
-        const name = last(ref.$ref.split('/'));
+        const name = msg.getOperationId();
         return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void`;
     }
     generateListenerMethodSignatures() {
         return this.registry
-            .getReceiveRefs()
+            .getReceiveMessages()
             .map((ref) => this.generateListenerMethodSignature(ref))
             .join('\n');
     }
     getRawName(ref) {
         return last(ref.$ref.split('/'));
     }
-    generateCondition(ref) {
+    generateCondition(msg) {
         const np = this.registry.getNameProvider();
-        return `${np.getTypeGuardName(np.getPayloadTypeName(this.getRawName(ref)))}(input)`;
+        return `${np.getTypeGuardName(np.getPayloadTypeName(msg.getOperationId()))}(input)`;
     }
-    generateDispatch(ref) {
+    generateDispatch(msg) {
         const np = this.registry.getNameProvider();
-        return `this.__listener.${np.getListenerMethodName(this.getRawName(ref))}(input)`;
+        return `this.__listener.${np.getListenerMethodName(msg.getOperationId())}(input)`;
     }
     generateConditions() {
-        const refs = this.registry.getReceiveRefs();
-        return refs
-            .map((ref, i) => {
+        const msgs = this.registry.getReceiveMessages();
+        return msgs
+            .map((msg, i) => {
             const keyword = i === 0 ? 'if' : 'else if';
-            return `${keyword}(${this.generateCondition(ref)}) {
-        ${this.generateDispatch(ref)}
+            return `${keyword}(${this.generateCondition(msg)}) {
+        ${this.generateDispatch(msg)}
       }`;
         })
             .join('\n');
@@ -513,31 +570,31 @@ class ReceiverTypeGenerator extends BaseGenerator {
 }
 
 class ListenerStubGenerator extends BaseGenerator {
-    generateListenerMethodSignature(ref) {
+    generateListenerMethodSignature(msg) {
         const np = this.registry.getNameProvider();
-        const name = last(ref.$ref.split('/'));
+        const name = msg.getOperationId();
         return `${np.getListenerMethodName(name)}(payload: ${np.getPayloadTypeName(name)}): void {
       /* implement me! */
     }`;
     }
-    generateListenerMethodSignatures() {
+    generateListenerMethods() {
         return this.registry
-            .getReceiveRefs()
+            .getReceiveMessages()
             .map((ref) => this.generateListenerMethodSignature(ref))
             .join('\n');
     }
     generate() {
         const np = this.registry.getNameProvider();
         return `export abstract class ${np.getListenerStubTypeName()} implements ${np.getListenerTypeName()} {
-      ${this.generateListenerMethodSignatures()}
+      ${this.generateListenerMethods()}
     }`;
     }
 }
 
 class SenderTypeGenerator extends BaseGenerator {
-    generateMethod(ref) {
+    generateMethod(msg) {
         const np = this.registry.getNameProvider();
-        const name = last(ref.$ref.split('/'));
+        const name = msg.getOperationId();
         const payloadType = np.getPayloadTypeName(name);
         return `${np.getSendMethodName(name)}(payload: ${payloadType}): void {
       if(!${np.getTypeGuardName(payloadType)}(payload)) {
@@ -549,12 +606,12 @@ class SenderTypeGenerator extends BaseGenerator {
     generate() {
         const np = this.registry.getNameProvider();
         const methods = this.registry
-            .getSendRefs()
-            .map((ref) => this.generateMethod(ref))
+            .getSendMessages()
+            .map((msg) => this.generateMethod(msg))
             .join('\n');
         return `export class ${np.getSenderTypeName()} {
-      private readonly __adapter: { send: (any) => void }
-      constructor(adapter: { send: (any) => void }) {
+      private readonly __adapter: __SendMessageAdapter
+      constructor(adapter: __SendMessageAdapter) {
         this.__adapter = adapter
       }
       ${methods}
@@ -562,9 +619,17 @@ class SenderTypeGenerator extends BaseGenerator {
     }
 }
 
+const content = fs.readFileSync(path.join(__dirname, '../', 'StaticTypes.ts'), 'utf-8');
+class StaticTypesGenerator {
+    generate() {
+        return content.trim();
+    }
+}
+
 class RootGenerator extends BaseGenerator {
     generate() {
         const generators = [
+            new StaticTypesGenerator(),
             new TypesGenerator(this.registry),
             new TypeGuardsGenerator(this.registry),
             new ListenerTypeGenerator(this.registry),
@@ -632,10 +697,10 @@ class NameProvider {
         return `${pascalCase(this.apiTypeName)}ListenerStub`;
     }
     getReceiverTypeName() {
-        return `${pascalCase(this.apiTypeName)}Receiver`;
+        return `${pascalCase(this.apiTypeName)}MessageReceiver`;
     }
     getSenderTypeName() {
-        return `${pascalCase(this.apiTypeName)}Sender`;
+        return `${pascalCase(this.apiTypeName)}MessageSender`;
     }
     getTypeGuardName(name) {
         return `is${pascalCase(name)}`;
@@ -662,12 +727,18 @@ parser.addArgument(['--name', '-n'], {
     help: 'Name of the generated type.',
     defaultValue: 'Api',
 });
+parser.addArgument(['--target', '-t'], {
+    required: true,
+    dest: 'target',
+    help: 'Generated output target',
+    choices: ["client" /* CLIENT */, "server" /* SERVER */],
+});
 class CliGenerator {
     constructor() {
-        this.args = parser.parseArgs();
+        this.options = parser.parseArgs();
     }
     readSchema() {
-        const file = path.resolve(this.args.file);
+        const file = path.resolve(this.options.file);
         const content = fs.readFileSync(file, 'UTF8');
         const schema = this.parseSchema(path.extname(file), content);
         return schema;
@@ -686,7 +757,7 @@ class CliGenerator {
     }
     execute() {
         const schema = this.readSchema();
-        const registry = new TypeRegistry(schema, new NameProvider(this.args.apiTypeName));
+        const registry = new TypeRegistry(schema, this.options, new NameProvider(this.options.apiTypeName));
         const generator = new RootGenerator(registry);
         const source = generator.generate();
         this.writeOutput(source);

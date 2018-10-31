@@ -540,7 +540,7 @@ class ReceiverTypeGenerator extends BaseGenerator {
     }
     generateDispatch(msg) {
         const np = this.registry.getNameProvider();
-        return `this.__listener.${np.getListenerMethodName(msg.getOperationId())}(input)`;
+        return `return this.__listener.${np.getListenerMethodName(msg.getOperationId())}(input)`;
     }
     generateConditions() {
         const msgs = this.registry.getReceiveMessages();

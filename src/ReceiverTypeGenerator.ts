@@ -24,7 +24,7 @@ export class ReceiverTypeGenerator extends BaseGenerator<void> {
   }
   generateDispatch(msg: MessageWrapper): string {
     const np = this.registry.getNameProvider()
-    return `this.__listener.${np.getListenerMethodName(msg.getOperationId())}(input)`
+    return `return this.__listener.${np.getListenerMethodName(msg.getOperationId())}(input)`
   }
   generateConditions(): string {
     const msgs = this.registry.getReceiveMessages()

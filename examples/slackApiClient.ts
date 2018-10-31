@@ -673,97 +673,97 @@ export class SlackApiClientMessageReceiver {
   }
   receive(input: any): void {
     if (isHelloPayload(input)) {
-      this.__listener.hello(input)
+      return this.__listener.hello(input)
     } else if (isConnectionErrorPayload(input)) {
-      this.__listener.connectionError(input)
+      return this.__listener.connectionError(input)
     } else if (isAccountsChangedPayload(input)) {
-      this.__listener.accountsChanged(input)
+      return this.__listener.accountsChanged(input)
     } else if (isBotAddedPayload(input)) {
-      this.__listener.botAdded(input)
+      return this.__listener.botAdded(input)
     } else if (isBotChangedPayload(input)) {
-      this.__listener.botChanged(input)
+      return this.__listener.botChanged(input)
     } else if (isChannelArchivePayload(input)) {
-      this.__listener.channelArchive(input)
+      return this.__listener.channelArchive(input)
     } else if (isChannelCreatedPayload(input)) {
-      this.__listener.channelCreated(input)
+      return this.__listener.channelCreated(input)
     } else if (isChannelDeletedPayload(input)) {
-      this.__listener.channelDeleted(input)
+      return this.__listener.channelDeleted(input)
     } else if (isChannelHistoryChangedPayload(input)) {
-      this.__listener.channelHistoryChanged(input)
+      return this.__listener.channelHistoryChanged(input)
     } else if (isChannelJoinedPayload(input)) {
-      this.__listener.channelJoined(input)
+      return this.__listener.channelJoined(input)
     } else if (isChannelLeftPayload(input)) {
-      this.__listener.channelLeft(input)
+      return this.__listener.channelLeft(input)
     } else if (isChannelMarkedPayload(input)) {
-      this.__listener.channelMarked(input)
+      return this.__listener.channelMarked(input)
     } else if (isChannelRenamePayload(input)) {
-      this.__listener.channelRename(input)
+      return this.__listener.channelRename(input)
     } else if (isChannelUnarchivePayload(input)) {
-      this.__listener.channelUnarchive(input)
+      return this.__listener.channelUnarchive(input)
     } else if (isCommandsChangedPayload(input)) {
-      this.__listener.commandsChanged(input)
+      return this.__listener.commandsChanged(input)
     } else if (isDndUpdatedPayload(input)) {
-      this.__listener.dndUpdated(input)
+      return this.__listener.dndUpdated(input)
     } else if (isDndUpdatedUserPayload(input)) {
-      this.__listener.dndUpdatedUser(input)
+      return this.__listener.dndUpdatedUser(input)
     } else if (isEmailDomainChangedPayload(input)) {
-      this.__listener.emailDomainChanged(input)
+      return this.__listener.emailDomainChanged(input)
     } else if (isEmojiRemovedPayload(input)) {
-      this.__listener.emojiRemoved(input)
+      return this.__listener.emojiRemoved(input)
     } else if (isEmojiAddedPayload(input)) {
-      this.__listener.emojiAdded(input)
+      return this.__listener.emojiAdded(input)
     } else if (isFileChangePayload(input)) {
-      this.__listener.fileChange(input)
+      return this.__listener.fileChange(input)
     } else if (isFileCommentAddedPayload(input)) {
-      this.__listener.fileCommentAdded(input)
+      return this.__listener.fileCommentAdded(input)
     } else if (isFileCommentDeletedPayload(input)) {
-      this.__listener.fileCommentDeleted(input)
+      return this.__listener.fileCommentDeleted(input)
     } else if (isFileCommentEditedPayload(input)) {
-      this.__listener.fileCommentEdited(input)
+      return this.__listener.fileCommentEdited(input)
     } else if (isFileCreatedPayload(input)) {
-      this.__listener.fileCreated(input)
+      return this.__listener.fileCreated(input)
     } else if (isFileDeletedPayload(input)) {
-      this.__listener.fileDeleted(input)
+      return this.__listener.fileDeleted(input)
     } else if (isFilePublicPayload(input)) {
-      this.__listener.filePublic(input)
+      return this.__listener.filePublic(input)
     } else if (isFileSharedPayload(input)) {
-      this.__listener.fileShared(input)
+      return this.__listener.fileShared(input)
     } else if (isFileUnsharedPayload(input)) {
-      this.__listener.fileUnshared(input)
+      return this.__listener.fileUnshared(input)
     } else if (isGoodbyePayload(input)) {
-      this.__listener.goodbye(input)
+      return this.__listener.goodbye(input)
     } else if (isGroupArchivePayload(input)) {
-      this.__listener.groupArchive(input)
+      return this.__listener.groupArchive(input)
     } else if (isGroupClosePayload(input)) {
-      this.__listener.groupClose(input)
+      return this.__listener.groupClose(input)
     } else if (isGroupHistoryChangedPayload(input)) {
-      this.__listener.groupHistoryChanged(input)
+      return this.__listener.groupHistoryChanged(input)
     } else if (isGroupJoinedPayload(input)) {
-      this.__listener.groupJoined(input)
+      return this.__listener.groupJoined(input)
     } else if (isGroupLeftPayload(input)) {
-      this.__listener.groupLeft(input)
+      return this.__listener.groupLeft(input)
     } else if (isGroupMarkedPayload(input)) {
-      this.__listener.groupMarked(input)
+      return this.__listener.groupMarked(input)
     } else if (isGroupOpenPayload(input)) {
-      this.__listener.groupOpen(input)
+      return this.__listener.groupOpen(input)
     } else if (isGroupRenamePayload(input)) {
-      this.__listener.groupRename(input)
+      return this.__listener.groupRename(input)
     } else if (isGroupUnarchivePayload(input)) {
-      this.__listener.groupUnarchive(input)
+      return this.__listener.groupUnarchive(input)
     } else if (isImClosePayload(input)) {
-      this.__listener.imClose(input)
+      return this.__listener.imClose(input)
     } else if (isImCreatedPayload(input)) {
-      this.__listener.imCreated(input)
+      return this.__listener.imCreated(input)
     } else if (isImMarkedPayload(input)) {
-      this.__listener.imMarked(input)
+      return this.__listener.imMarked(input)
     } else if (isImOpenPayload(input)) {
-      this.__listener.imOpen(input)
+      return this.__listener.imOpen(input)
     } else if (isManualPresenceChangePayload(input)) {
-      this.__listener.manualPresenceChange(input)
+      return this.__listener.manualPresenceChange(input)
     } else if (isMemberJoinedChannelPayload(input)) {
-      this.__listener.memberJoinedChannel(input)
+      return this.__listener.memberJoinedChannel(input)
     } else if (isMessagePayload(input)) {
-      this.__listener.message(input)
+      return this.__listener.message(input)
     }
     throw new TypeError('Unrecognized payload value!')
   }

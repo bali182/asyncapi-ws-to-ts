@@ -493,7 +493,7 @@ export class SlackApiServerMessageReceiver {
   }
   receive(input: any): void {
     if (isOutgoingMessagePayload(input)) {
-      this.__listener.outgoingMessage(input)
+      return this.__listener.outgoingMessage(input)
     }
     throw new TypeError('Unrecognized payload value!')
   }

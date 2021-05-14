@@ -1,3 +1,5 @@
+import { ReferenceObject, SchemaObject } from './schema'
+
 export function isNil(input: any): input is null | undefined {
   return input === null || input === undefined
 }
@@ -26,6 +28,18 @@ export function values(input: object): any[] {
   return keys(input).map((key) => input[key])
 }
 
+export function entries<T = any>(input: object): [string, T][] {
+  return keys(input).map((key) => [key, input[key]])
+}
+
 export function dropHead<T>(input: ReadonlyArray<T>): T[] {
   return input.slice(1)
+}
+
+export function isRefType(input: any): input is ReferenceObject {
+  return isObject(input) && Boolean(input.$ref)
+}
+
+export function isSchemaType(input: any): input is SchemaObject {
+  return isObject(input) && !Boolean(input.$ref)
 }

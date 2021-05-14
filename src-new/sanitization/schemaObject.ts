@@ -14,17 +14,17 @@ import {
 } from '../validation/Validators'
 import { StringFormat } from '../types'
 
-export const ref = object(fields({ $ref: string() }))
+export const refValidator = object(fields({ $ref: string() }))
 
 const schemaType = string(enumeration(['number', 'int', 'integer', 'float', 'boolean', 'string', 'object', 'array']))
 
 const refOrSchema = () =>
   union({
-    ref,
+    ref: refValidator,
     schema: object(fields({ type: schemaType })),
   })
 
-export const schema = object(
+export const schemaValidator = object(
   fields({
     type: schemaType,
     format: optional(string(enumeration(Object.values(StringFormat) as string[]))),

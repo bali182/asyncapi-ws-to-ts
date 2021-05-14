@@ -1,9 +1,11 @@
+import { URIPathAccessor } from '../pathAccessors'
 import { isNil } from '../utils'
-import { PathItem, Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } from './typings'
+import { Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } from './typings'
 
 const DefaultConfig: ValidatorConfig = {
   depth: Infinity,
-  path: [],
+  path: null,
+  pathAccessor: URIPathAccessor,
 }
 
 const TypeChecks = {
@@ -59,7 +61,7 @@ export const enumeration = <T>(values: T[]): Validator<any> =>
   })
 
 export const items = (...validators: Validator<any>[]): Validator<any> =>
-  depthStop((input: any[], { path, depth }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
     if (input.length !== validators.length) {
       return [
         {
@@ -74,7 +76,8 @@ export const items = (...validators: Validator<any>[]): Validator<any> =>
       issues.push(
         ...validators[i](input[i], {
           depth: depth - 1,
-          path: path.concat([i]),
+          path: pathAccessor.append(i.toString()),
+          pathAccessor,
         }),
       )
     }
@@ -82,13 +85,14 @@ export const items = (...validators: Validator<any>[]): Validator<any> =>
   })
 
 export const itemsOf = (validate: Validator<any>): Validator<any[]> =>
-  depthStop((input: any[], { path, depth }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
     const issues: Issue[] = []
     for (let i = 0; i < input.length; i += 1) {
       issues.push(
         ...validate(input[i], {
           depth: depth - 1,
-          path: path.concat([i]),
+          path: pathAccessor.append(path, i.toString()),
+          pathAccessor,
         }),
       )
     }
@@ -99,7 +103,7 @@ export const fields = (
   validators: { [key: string]: Validator<any> },
   extraKeySeverity: Severity = null,
 ): Validator<object> =>
-  depthStop((input: object, { path, depth }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
     const keys = Object.keys(input)
     const expectedKeys = Object.keys(validators)
     const extraKeys: string[] = keys.filter((key) => expectedKeys.indexOf(key) < 0)
@@ -112,7 +116,8 @@ export const fields = (
       issues.push(
         ...validator(value, {
           depth: depth - 1,
-          path: path.concat([key]),
+          path: pathAccessor.append(path, key),
+          pathAccessor,
         }),
       )
     }
@@ -124,7 +129,7 @@ export const fields = (
             type: IssueType.EXTRA_KEY,
             severity: extraKeySeverity,
             message: `should not have key "${key}"`,
-            path: path.concat([key]),
+            path: pathAccessor.append(path, key),
           }),
         ),
       )
@@ -134,7 +139,7 @@ export const fields = (
   })
 
 export const dictionaryOf = (validate: Validator<any>): Validator<object> =>
-  depthStop((input: object, { path, depth }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
     const issues: Issue[] = []
     const keys = Object.keys(input)
     for (let i = 0; i < keys.length; i += 1) {
@@ -142,7 +147,8 @@ export const dictionaryOf = (validate: Validator<any>): Validator<object> =>
       issues.push(
         ...validate(input[key], {
           depth: depth - 1,
-          path: path.concat([key]),
+          path: pathAccessor.append(path, key),
+          pathAccessor,
         }),
       )
     }

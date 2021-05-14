@@ -1,4 +1,4 @@
-export type PathItem = string | number
+import { PathAccessor } from '../pathAccessors'
 
 export enum ValueType {
   STRING = 'string',
@@ -26,13 +26,14 @@ export enum IssueType {
 export type Issue = {
   severity?: Severity | string
   type: IssueType | string
-  path: ReadonlyArray<PathItem>
+  path: string
   message: string
 }
 
 export type ValidatorConfig = {
-  path: PathItem[]
+  path: string
   depth: number
+  pathAccessor: PathAccessor
 }
 
 export type Validator<T> = (input: T, path?: ValidatorConfig) => Issue[]

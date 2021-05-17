@@ -66,7 +66,6 @@ export type HeadersObject = {
 
 export type MediaTypeObject = {
   schema?: SchemaObject | ReferenceObject
-  example?: any
   encoding?: EncodingObject
 }
 
@@ -260,7 +259,7 @@ export type SchemaObject = {
   maxProperties?: number
   minProperties?: number
   required?: string[]
-  enum?: string | number | boolean[]
+  enum?: (string | number | boolean)[]
 
   [extensionName: string]: any
 }

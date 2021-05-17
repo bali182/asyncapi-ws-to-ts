@@ -1,0 +1,115 @@
+import {
+  Node,
+  factory as f,
+  SyntaxKind,
+  TypeNode,
+  PropertySignature,
+  EnumMember,
+  TypeLiteralNode,
+  Statement,
+  EnumDeclaration,
+} from 'typescript'
+import { $RefType, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType } from '../types'
+import { isNil } from '../utils'
+
+export function makeType(input: Type): Statement {
+  if (ModelType.EnumType === input.__type) {
+    return makeEnumType(input)
+  }
+  return f.createTypeAliasDeclaration([], [], input.name, [], makeTypeRighthandSide(input))
+}
+
+export function makeTypeRighthandSide(input: Type): TypeNode {
+  switch (input.__type) {
+    case ModelType.StringType:
+      return f.createKeywordTypeNode(SyntaxKind.StringKeyword)
+    case ModelType.NumberType:
+      return f.createKeywordTypeNode(SyntaxKind.NumberKeyword)
+    case ModelType.BooleanType:
+      return f.createKeywordTypeNode(SyntaxKind.BooleanKeyword)
+    case ModelType.DictionaryType:
+      return makeDictionaryTypeRef(input)
+    case ModelType.TypedObjectType:
+      return makeTypedObjectTypeRef(input)
+    case ModelType.ArrayType:
+      return makeArrayTypeRef(input)
+    case ModelType.EnumType:
+      return makePrimitiveUnionType(input)
+  }
+  return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
+}
+
+export function makeTypeReference(input: Type | $RefType): TypeNode {
+  if (input.__type === ModelType.$RefType) {
+    return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
+  }
+  if (isNil(input.name)) {
+    return makeTypeRighthandSide(input)
+  }
+  return f.createTypeReferenceNode(input.name)
+}
+
+export function makeTypedObjectTypeRef(input: TypedObjectType): TypeNode {
+  return f.createTypeLiteralNode(
+    input.fields.map(
+      (field): PropertySignature =>
+        f.createPropertySignature(
+          [],
+          field.name,
+          field.isRequired ? undefined : f.createToken(SyntaxKind.QuestionToken),
+          makeTypeReference(field.type),
+        ),
+    ),
+  )
+}
+
+export function makeDictionaryTypeRef(input: DictionaryType): TypeNode {
+  return f.createTypeLiteralNode([
+    f.createIndexSignature(
+      [],
+      [],
+      [
+        f.createParameterDeclaration(
+          [],
+          [],
+          undefined,
+          'key',
+          undefined,
+          f.createKeywordTypeNode(SyntaxKind.StringKeyword),
+        ),
+      ],
+      makeTypeReference(input.valueType),
+    ),
+  ])
+}
+
+export function makeArrayTypeRef(input: ArrayType): TypeNode {
+  return f.createArrayTypeNode(makeTypeReference(input.itemType))
+}
+
+function createEnumValueNode(value: string | number | boolean) {
+  if (typeof value === 'string') {
+    return f.createStringLiteral(value)
+  } else if (typeof value === 'number') {
+    return f.createNumericLiteral(value)
+  } else if (typeof value === 'boolean') {
+    return value ? f.createTrue() : f.createFalse()
+  }
+}
+
+export function makeEnumType(input: EnumType): EnumDeclaration {
+  return f.createEnumDeclaration(
+    [],
+    [],
+    input.name,
+    input.values.map(
+      (value): EnumMember => {
+        return f.createEnumMember(value.name, createEnumValueNode(value.value))
+      },
+    ),
+  )
+}
+
+export function makePrimitiveUnionType(input: EnumType): TypeNode {
+  return f.createUnionTypeNode(input.values.map((value) => f.createLiteralTypeNode(createEnumValueNode(value.value))))
+}

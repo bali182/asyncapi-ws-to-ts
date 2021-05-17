@@ -1,6 +1,7 @@
 import { refValidator, schemaValidator } from '../../sanitization/schemaObject'
 import { ReferenceObject, SchemaObject } from '../../schema'
 import {
+  $RefType,
   ArrayType,
   BooleanType,
   DictionaryType,
@@ -15,16 +16,17 @@ import {
   TypedObjectTypeField,
 } from '../../types'
 import { entries, isNil, isRefType } from '../../utils'
-import { SchemaFactoryContext, SchemaOrRefFactoryContext } from './FactoryContext'
+import { createQualifiedRef } from './createQualifiedRef'
+import { FactoryContext } from './FactoryContext'
 import { withValidaton } from './utils'
 
-export function createStringType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri } = context
-  const { deprecated, description, format, maxLength, minLength, pattern } = schema
+export function createStringType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri } = context
+  const { deprecated, description, format, maxLength, minLength, pattern } = data
 
   const stringType: StringType = {
     __type: ModelType.StringType,
-    name: schemaName,
+    name,
     uri,
     deprecated,
     description,
@@ -35,18 +37,22 @@ export function createStringType(context: SchemaFactoryContext): string {
   }
   context.types.push(stringType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-export function createNumberType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri } = context
-  const { deprecated, description, multipleOf, minimum, maximum, exclusiveMinimum, exclusiveMaximum } = schema
-  const format = schema.type === 'integer' || schema.type === 'int' ? NumberFormat.Integer : NumberFormat.Float
+export function createNumberType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri } = context
+  const { deprecated, description, multipleOf, minimum, maximum, exclusiveMinimum, exclusiveMaximum } = data
+  const format = data.type === 'integer' || data.type === 'int' ? NumberFormat.Integer : NumberFormat.Float
 
   const numerType: NumberType = {
     __type: ModelType.NumberType,
     uri,
-    name: schemaName,
+    name,
     deprecated,
     description,
     multipleOf,
@@ -59,83 +65,93 @@ export function createNumberType(context: SchemaFactoryContext): string {
 
   context.types.push(numerType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-export function createBooleanType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri } = context
-  const { deprecated, description } = schema
+export function createBooleanType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri } = context
+  const { deprecated, description } = data
 
   const booleanType: BooleanType = {
     __type: ModelType.BooleanType,
     uri,
-    name: schemaName,
+    name,
     deprecated,
     description,
   }
 
   context.types.push(booleanType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-export function createArrayType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri, pathAccessor: a } = context
-  const { deprecated, description, maxItems, minItems, uniqueItems } = schema
+export function createArrayType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri, pathAccessor: a } = context
+  const { deprecated, description, maxItems, minItems, uniqueItems } = data
 
   const arrayType: ArrayType = {
     __type: ModelType.ArrayType,
-    name: schemaName,
+    name,
     uri,
     deprecated,
     description,
     maxItems,
     minItems,
     uniqueItems,
-    itemType: null,
-    __itemTypeRef: createType({
+    itemType: createType({
       ...context,
-      schema: schema.items,
+      data: data.items,
       uri: a.append(uri, 'items'),
-      schemaName: null,
+      name: null,
     }),
   }
 
   context.types.push(arrayType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-function createTypedObjectTypeFields(context: SchemaFactoryContext): TypedObjectTypeField[] {
-  const { schema, uri, pathAccessor: a } = context
-  const { properties } = schema
+function createTypedObjectTypeFields(context: FactoryContext<SchemaObject>): TypedObjectTypeField[] {
+  const { data, uri, pathAccessor: a } = context
+  const { properties } = data
   return entries<SchemaObject | ReferenceObject>(properties).map(
     ([propName, propSchema]): TypedObjectTypeField => {
       const propUri = a.append(uri, 'properties', propName)
       return {
         __type: ModelType.TypedObjectTypeField,
-        isRequired: (schema.required || []).indexOf(propName) >= 0,
+        isRequired: (data.required || []).indexOf(propName) >= 0,
         name: propName,
-        type: null,
-        uri: propUri,
-        __typeRef: createType({
+        type: createType({
           ...context,
           uri: propUri,
-          schemaName: null,
-          schema: propSchema,
+          name: null,
+          data: propSchema,
         }),
+        uri: propUri,
       }
     },
   )
 }
 
-export function createTypedObjectType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri } = context
-  const { deprecated, description } = schema
+export function createTypedObjectType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri } = context
+  const { deprecated, description } = data
 
   const objectType: TypedObjectType = {
     __type: ModelType.TypedObjectType,
-    name: schemaName,
+    name,
     uri,
     deprecated,
     description,
@@ -144,46 +160,51 @@ export function createTypedObjectType(context: SchemaFactoryContext): string {
 
   context.types.push(objectType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-export function createDictionaryType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri, pathAccessor: a } = context
-  const { deprecated, description } = schema
+export function createDictionaryType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri, pathAccessor: a } = context
+  const { deprecated, description } = data
 
   const dictionaryType: DictionaryType = {
     __type: ModelType.DictionaryType,
-    name: schemaName,
+    name,
     uri,
     deprecated,
     description,
-    valueType: null,
-    __valueTypeRef: createType({
+    valueType: createType({
       ...context,
-      schema: schema.additionalProperties,
+      data: data.additionalProperties,
       uri: a.append(uri, 'additionalProperties'),
-      schemaName: null,
+      name: null,
     }),
   }
 
   context.types.push(dictionaryType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-function createEnumValues(context: SchemaFactoryContext): EnumValue[] {
-  const { schema } = context
-  const varNames = isNil(schema['x-enum-varnames']) ? Array.from(schema.enum) : schema['x-enum-varnames']
-  const descriptions = isNil(schema['x-enum-descriptions'])
-    ? schema.enum.map(() => null)
-    : schema['x-enum-descriptions']
+function createEnumValues(context: FactoryContext<SchemaObject>): EnumValue[] {
+  const { data, uri, pathAccessor: a } = context
+  const varNames = isNil(data['x-enum-varnames']) ? Array.from(data.enum) : data['x-enum-varnames']
+  const descriptions = isNil(data['x-enum-descriptions']) ? data.enum.map(() => null) : data['x-enum-descriptions']
 
-  return schema.enum.map((value, index) => {
+  return data.enum.map((value, index) => {
     const name = varNames[index]
     const description = descriptions[index]
     return {
       __type: ModelType.EnumValue,
-      uri: 'TODO',
+      uri: a.append(uri, index.toString()),
       name,
       value,
       description,
@@ -191,14 +212,14 @@ function createEnumValues(context: SchemaFactoryContext): EnumValue[] {
   })
 }
 
-export function createEnumType(context: SchemaFactoryContext): string {
-  const { schemaName, schema, uri } = context
-  const { description, deprecated } = schema
+export function createEnumType(context: FactoryContext<SchemaObject>): $RefType {
+  const { name, data, uri } = context
+  const { description, deprecated } = data
 
   const enumType: EnumType = {
     __type: ModelType.EnumType,
     uri,
-    name: schemaName,
+    name,
     description,
     deprecated,
     values: createEnumValues(context),
@@ -206,28 +227,27 @@ export function createEnumType(context: SchemaFactoryContext): string {
 
   context.types.push(enumType)
 
-  return uri
+  return {
+    __type: ModelType.$RefType,
+    uri,
+    name,
+  }
 }
 
-export function createType(context: SchemaOrRefFactoryContext): string {
-  const { schema, pathAccessor: a } = context
+export function createType(context: FactoryContext<SchemaObject | ReferenceObject>): $RefType {
+  const { name, data, pathAccessor: a } = context
 
   // If it's a ref, in we can simply build a full URI and worry about it later
-  if (isRefType(schema)) {
-    return withValidaton<string>(context, refValidator, () => {
-      // Check if it has the document in the URI, meaning it referrs to a different document
-      const ownDocument = a.document(schema.$ref)
-      // If not take the current document and add the segments to it
-      if (isNil(ownDocument)) {
-        return a.create(a.document(context.uri), a.segments(schema.$ref))
-      }
-      // Otherwise we have the whole URI
-      return schema.$ref
-    })
+  if (isRefType(data)) {
+    return {
+      __type: ModelType.$RefType,
+      uri: withValidaton<string>(context, refValidator, () => createQualifiedRef(data, context)),
+      name,
+    }
   }
-  return withValidaton<string>(context, schemaValidator, () => {
+  return withValidaton<$RefType>(context, schemaValidator, () => {
     // If it's a schema we can switch on the type and go from there:
-    switch (schema.type) {
+    switch (data.type) {
       case 'string': {
         return createStringType(context)
       }
@@ -241,7 +261,7 @@ export function createType(context: SchemaOrRefFactoryContext): string {
         return createBooleanType(context)
       }
       case 'object': {
-        if (!isNil(schema.additionalProperties)) {
+        if (!isNil(data.additionalProperties)) {
           return createDictionaryType(context)
         } else {
           return createTypedObjectType(context)

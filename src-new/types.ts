@@ -14,6 +14,15 @@ export enum ModelType {
   EnumValue = 'EnumValue',
 
   $RefType = '$RefType',
+
+  OperationType = 'OperationType',
+  ResponseType = 'ResponseType',
+  ParameterType = 'ParameterType',
+
+  QueryParameterType = 'QueryParameterType',
+  HeaderParameterType = 'HeaderParameterType',
+  PathParameterType = 'PathParameterType',
+  CookieParameterType = 'PathParameterType',
 }
 
 export enum NumberFormat {
@@ -41,55 +50,87 @@ export enum StringFormat {
   Regex = 'regex',
 }
 
-export type Type = ObjectType | ArrayType | PrimitiveType | CompositeType | $RefType
+export enum HttpMethod {
+  Get = 'get',
+  Put = 'put',
+  Post = 'post',
+  Delete = 'delete',
+  Options = 'options',
+  Head = 'head',
+  Patch = 'patch',
+  Trace = 'trace',
+}
+
+export enum ParameterStyle {
+  // Path
+  Simple = 'simple',
+  DotPrefixed = 'label',
+  SemicolonPrefixed = 'matrix',
+
+  // Query
+  Form = 'form',
+  SpaceDelimited = 'spaceDelimited',
+  PipeDelimited = 'pipeDelimited',
+  DeepObject = 'deepObject',
+}
+
+export type Type = AnyType | ObjectType | ArrayType | PrimitiveType | CompositeType
 export type ObjectType = TypedObjectType | DictionaryType
 export type CompositeType = UnionType | IntersectionType
 export type PrimitiveType = NumberType | StringType | BooleanType | EnumType
 
-type BaseModel = {
-  __type: ModelType
-  uri: string
-  name: string
+type HasUri = {
+  uri?: string
+}
+
+type HasName = {
+  name?: string
+}
+
+type HasDescription = {
   description?: string
+}
+
+type HasDeprecation = {
   deprecated?: boolean
 }
 
-export type AnyType = BaseModel & {
+type CommonType = HasUri & HasName & HasDescription & HasDeprecation
+
+export type AnyType = CommonType & {
   __type: ModelType.AnyType
 }
-export type $RefType = BaseModel & {
-  __type: ModelType.$RefType
-  ref: string
-}
+export type $RefType = HasName &
+  HasUri & {
+    __type: ModelType.$RefType
+  }
 
-export type TypedObjectTypeField = BaseModel & {
-  __type: ModelType.TypedObjectTypeField
-  type: Type
-  isRequired: boolean
-  __typeRef?: string
-}
+export type TypedObjectTypeField = HasName &
+  HasUri & {
+    __type: ModelType.TypedObjectTypeField
+    type: Type | $RefType
+    isRequired?: boolean
+  }
 
-export type TypedObjectType = BaseModel & {
+export type TypedObjectType = CommonType & {
   __type: ModelType.TypedObjectType
   fields: TypedObjectTypeField[]
 }
 
-export type ArrayType = BaseModel & {
+export type ArrayType = CommonType & {
   __type: ModelType.ArrayType
-  itemType: Type
+  itemType: Type | $RefType
   maxItems?: number
   minItems?: number
   uniqueItems?: boolean
-  __itemTypeRef?: string
 }
 
-export type DictionaryType = BaseModel & {
+export type DictionaryType = CommonType & {
   __type: ModelType.DictionaryType
-  valueType: Type
-  __valueTypeRef?: string
+  valueType: Type | $RefType
 }
 
-export type StringType = BaseModel & {
+export type StringType = CommonType & {
   __type: ModelType.StringType
   format?: StringFormat
   pattern?: string
@@ -97,7 +138,7 @@ export type StringType = BaseModel & {
   minLength?: number
 }
 
-export type NumberType = BaseModel & {
+export type NumberType = CommonType & {
   __type: ModelType.NumberType
   format?: NumberFormat
   multipleOf?: number
@@ -107,28 +148,75 @@ export type NumberType = BaseModel & {
   exclusiveMinimum?: boolean
 }
 
-export type BooleanType = BaseModel & {
+export type BooleanType = CommonType & {
   __type: ModelType.BooleanType
 }
 
-export type EnumType = BaseModel & {
+export type EnumType = CommonType & {
   __type: ModelType.EnumType
   values: EnumValue[]
 }
 
-export type EnumValue = BaseModel & {
+export type EnumValue = CommonType & {
   __type: ModelType.EnumValue
   value: string | number | boolean
 }
 
-export type UnionType = BaseModel & {
+export type UnionType = CommonType & {
   __type: ModelType.UnionType
-  types: TypedObjectType[]
-  __typesRefs?: string[]
+  types: (Type | $RefType)[]
 }
 
-export type IntersectionType = BaseModel & {
+export type IntersectionType = CommonType & {
   __type: ModelType.IntersectionType
-  types: TypedObjectType[]
-  __typesRefs?: string[]
+  types: (Type | $RefType)[]
 }
+
+export type OperationType = HasUri &
+  HasDescription &
+  HasDeprecation & {
+    __type: ModelType.OperationType
+    operationId: string
+    method: HttpMethod
+    parameters: (ParameterType | $RefType)[]
+    url: string
+    requestBody?: any[]
+    responses: any[]
+  }
+
+export type ResponseType = {
+  __type: ModelType.ResponseType
+  statusCode: number
+  contentType: string
+  headers: HeaderParameterType[]
+  type: Type
+}
+
+export type _ParameterType<T extends ModelType, S extends ParameterStyle> = HasDescription &
+  HasDeprecation & {
+    __type: T
+    name: string
+    urlEncode: boolean // allowReserved
+    style: S
+    explode: boolean
+    allowEmptyValue: boolean
+    type: Type | $RefType
+  }
+
+export type QueryParameterStyle =
+  | ParameterStyle.Form
+  | ParameterStyle.SpaceDelimited
+  | ParameterStyle.PipeDelimited
+  | ParameterStyle.DeepObject
+export type QueryParameterType = _ParameterType<ModelType.QueryParameterType, QueryParameterStyle>
+
+export type HeaderParameterStyle = ParameterStyle.Simple
+export type HeaderParameterType = _ParameterType<ModelType.HeaderParameterType, HeaderParameterStyle>
+
+export type PathParameterStyle = ParameterStyle.Simple | ParameterStyle.DotPrefixed | ParameterStyle.SemicolonPrefixed
+export type PathParameterType = _ParameterType<ModelType.PathParameterType, PathParameterStyle>
+
+export type CookieParameterStyle = ParameterStyle.Form
+export type CookieParameterType = _ParameterType<ModelType.CookieParameterType, CookieParameterStyle>
+
+export type ParameterType = HeaderParameterType | CookieParameterType | PathParameterType | QueryParameterType

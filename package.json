@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "TODO",
-    "test": "jest"
+    "test": "jest",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",

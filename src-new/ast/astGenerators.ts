@@ -1,22 +1,38 @@
 import {
-  Node,
   factory as f,
   SyntaxKind,
   TypeNode,
   PropertySignature,
   EnumMember,
-  TypeLiteralNode,
   Statement,
   EnumDeclaration,
+  JSDoc,
+  ExportKeyword,
 } from 'typescript'
 import { $RefType, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType } from '../types'
 import { isNil } from '../utils'
+
+export function makeDocs(type: Type): JSDoc {
+  if (isNil(type.description)) {
+    return undefined
+  }
+  return f.createJSDocComment(
+    type.description,
+    type.deprecated ? [f.createJSDocUnknownTag(f.createIdentifier('deprecated'))] : [],
+  )
+}
 
 export function makeType(input: Type): Statement {
   if (ModelType.EnumType === input.__type) {
     return makeEnumType(input)
   }
-  return f.createTypeAliasDeclaration([], [], input.name, [], makeTypeRighthandSide(input))
+  return f.createTypeAliasDeclaration(
+    [],
+    [f.createModifier(SyntaxKind.ExportKeyword)],
+    input.name,
+    [],
+    makeTypeRighthandSide(input),
+  )
 }
 
 export function makeTypeRighthandSide(input: Type): TypeNode {
@@ -100,7 +116,7 @@ function createEnumValueNode(value: string | number | boolean) {
 export function makeEnumType(input: EnumType): EnumDeclaration {
   return f.createEnumDeclaration(
     [],
-    [],
+    [f.createModifier(SyntaxKind.ExportKeyword)],
     input.name,
     input.values.map(
       (value): EnumMember => {

@@ -1,7 +1,7 @@
 export type OpenAPIObject = {
   openapi: string
   servers?: ServerObject[]
-  paths: PathsObject
+  paths?: PathsObject
   components?: ComponentsObject
   security?: SecurityRequirementObject[]
 }

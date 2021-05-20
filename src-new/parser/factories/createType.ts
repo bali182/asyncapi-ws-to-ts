@@ -16,12 +16,12 @@ import {
   TypedObjectTypeField,
 } from '../../types'
 import { entries, isNil, isRefType } from '../../utils'
-import { createQualifiedRef } from './createQualifiedRef'
-import { FactoryContext } from './FactoryContext'
+import { resolveUri } from './resolveUri'
+import { FactoryContext, FactoryInput } from './FactoryContext'
 import { withValidaton } from './utils'
 
-export function createStringType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri } = context
+export function createStringType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri } = input
   const { deprecated, description, format, maxLength, minLength, pattern } = data
 
   const stringType: StringType = {
@@ -44,8 +44,8 @@ export function createStringType(context: FactoryContext<SchemaObject>): $RefTyp
   }
 }
 
-export function createNumberType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri } = context
+export function createNumberType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri } = input
   const { deprecated, description, multipleOf, minimum, maximum, exclusiveMinimum, exclusiveMaximum } = data
   const format = data.type === 'integer' || data.type === 'int' ? NumberFormat.Integer : NumberFormat.Float
 
@@ -72,8 +72,8 @@ export function createNumberType(context: FactoryContext<SchemaObject>): $RefTyp
   }
 }
 
-export function createBooleanType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri } = context
+export function createBooleanType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri } = input
   const { deprecated, description } = data
 
   const booleanType: BooleanType = {
@@ -93,8 +93,8 @@ export function createBooleanType(context: FactoryContext<SchemaObject>): $RefTy
   }
 }
 
-export function createArrayType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri, pathAccessor: a } = context
+export function createArrayType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri, pathAccessor: a } = input
   const { deprecated, description, maxItems, minItems, uniqueItems } = data
 
   const arrayType: ArrayType = {
@@ -106,12 +106,15 @@ export function createArrayType(context: FactoryContext<SchemaObject>): $RefType
     maxItems,
     minItems,
     uniqueItems,
-    itemType: createType({
-      ...context,
-      data: data.items,
-      uri: a.append(uri, 'items'),
-      name: null,
-    }),
+    itemType: createType(
+      {
+        ...input,
+        data: data.items,
+        uri: a.append(uri, 'items'),
+        name: null,
+      },
+      context,
+    ),
   }
 
   context.types.push(arrayType)
@@ -123,8 +126,11 @@ export function createArrayType(context: FactoryContext<SchemaObject>): $RefType
   }
 }
 
-function createTypedObjectTypeFields(context: FactoryContext<SchemaObject>): TypedObjectTypeField[] {
-  const { data, uri, pathAccessor: a } = context
+function createTypedObjectTypeFields(
+  input: FactoryInput<SchemaObject>,
+  context: FactoryContext,
+): TypedObjectTypeField[] {
+  const { data, uri, pathAccessor: a } = input
   const { properties } = data
   return entries<SchemaObject | ReferenceObject>(properties).map(
     ([propName, propSchema]): TypedObjectTypeField => {
@@ -133,20 +139,23 @@ function createTypedObjectTypeFields(context: FactoryContext<SchemaObject>): Typ
         __type: ModelType.TypedObjectTypeField,
         isRequired: (data.required || []).indexOf(propName) >= 0,
         name: propName,
-        type: createType({
-          ...context,
-          uri: propUri,
-          name: null,
-          data: propSchema,
-        }),
+        type: createType(
+          {
+            ...input,
+            uri: propUri,
+            name: null,
+            data: propSchema,
+          },
+          context,
+        ),
         uri: propUri,
       }
     },
   )
 }
 
-export function createTypedObjectType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri } = context
+export function createTypedObjectType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri } = input
   const { deprecated, description } = data
 
   const objectType: TypedObjectType = {
@@ -155,7 +164,7 @@ export function createTypedObjectType(context: FactoryContext<SchemaObject>): $R
     uri,
     deprecated,
     description,
-    fields: createTypedObjectTypeFields(context),
+    fields: createTypedObjectTypeFields(input, context),
   }
 
   context.types.push(objectType)
@@ -167,8 +176,8 @@ export function createTypedObjectType(context: FactoryContext<SchemaObject>): $R
   }
 }
 
-export function createDictionaryType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri, pathAccessor: a } = context
+export function createDictionaryType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri, pathAccessor: a } = input
   const { deprecated, description } = data
 
   const dictionaryType: DictionaryType = {
@@ -177,12 +186,15 @@ export function createDictionaryType(context: FactoryContext<SchemaObject>): $Re
     uri,
     deprecated,
     description,
-    valueType: createType({
-      ...context,
-      data: data.additionalProperties,
-      uri: a.append(uri, 'additionalProperties'),
-      name: null,
-    }),
+    valueType: createType(
+      {
+        ...input,
+        data: data.additionalProperties,
+        uri: a.append(uri, 'additionalProperties'),
+        name: null,
+      },
+      context,
+    ),
   }
 
   context.types.push(dictionaryType)
@@ -194,8 +206,8 @@ export function createDictionaryType(context: FactoryContext<SchemaObject>): $Re
   }
 }
 
-function createEnumValues(context: FactoryContext<SchemaObject>): EnumValue[] {
-  const { data, uri, pathAccessor: a } = context
+function createEnumValues(input: FactoryInput<SchemaObject>): EnumValue[] {
+  const { data, uri, pathAccessor: a } = input
   const varNames = isNil(data['x-enum-varnames']) ? Array.from(data.enum) : data['x-enum-varnames']
   const descriptions = isNil(data['x-enum-descriptions']) ? data.enum.map(() => null) : data['x-enum-descriptions']
 
@@ -212,8 +224,8 @@ function createEnumValues(context: FactoryContext<SchemaObject>): EnumValue[] {
   })
 }
 
-export function createEnumType(context: FactoryContext<SchemaObject>): $RefType {
-  const { name, data, uri } = context
+export function createEnumType(input: FactoryInput<SchemaObject>, context: FactoryContext): $RefType {
+  const { name, data, uri } = input
   const { description, deprecated } = data
 
   const enumType: EnumType = {
@@ -222,7 +234,7 @@ export function createEnumType(context: FactoryContext<SchemaObject>): $RefType 
     name,
     description,
     deprecated,
-    values: createEnumValues(context),
+    values: createEnumValues(input),
   }
 
   context.types.push(enumType)
@@ -234,41 +246,44 @@ export function createEnumType(context: FactoryContext<SchemaObject>): $RefType 
   }
 }
 
-export function createType(context: FactoryContext<SchemaObject | ReferenceObject>): $RefType {
-  const { name, data, pathAccessor: a } = context
+export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, context: FactoryContext): $RefType {
+  const { name, data } = input
 
   // If it's a ref, in we can simply build a full URI and worry about it later
   if (isRefType(data)) {
     return {
       __type: ModelType.$RefType,
-      uri: withValidaton<string>(context, refValidator, () => createQualifiedRef(data, context)),
+      uri: withValidaton<string>(input, context, refValidator, () => resolveUri(data.$ref, input.uri)),
       name,
     }
   }
-  return withValidaton<$RefType>(context, schemaValidator, () => {
+  return withValidaton<$RefType>(input, context, schemaValidator, () => {
     // If it's a schema we can switch on the type and go from there:
     switch (data.type) {
       case 'string': {
-        return createStringType(context)
+        if (!isNil(data.enum)) {
+          return createEnumType(input, context)
+        }
+        return createStringType(input, context)
       }
       case 'number':
       case 'int':
       case 'integer':
       case 'float': {
-        return createNumberType(context)
+        return createNumberType(input, context)
       }
       case 'boolean': {
-        return createBooleanType(context)
+        return createBooleanType(input, context)
       }
       case 'object': {
         if (!isNil(data.additionalProperties)) {
-          return createDictionaryType(context)
+          return createDictionaryType(input, context)
         } else {
-          return createTypedObjectType(context)
+          return createTypedObjectType(input, context)
         }
       }
       case 'array': {
-        return createArrayType(context)
+        return createArrayType(input, context)
       }
       default: {
         // TODO

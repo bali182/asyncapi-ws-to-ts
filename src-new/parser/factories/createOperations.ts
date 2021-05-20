@@ -12,7 +12,7 @@ import { $RefType, HttpMethod, ModelType, OperationType, ParameterType } from '.
 import { entries, isNil, isRefType, values } from '../../utils'
 import { createQualifiedRef } from './createQualifiedRef'
 import { createType } from './createType'
-import { FactoryContext } from './FactoryContext'
+import { FactoryContext, FactoryInput } from './FactoryContext'
 
 const InMap = {
   ['query']: ModelType.QueryParameterType,
@@ -21,12 +21,15 @@ const InMap = {
   ['cookie']: ModelType.CookieParameterType,
 }
 
-export function createParameter(context: FactoryContext<ParameterObject | ReferenceObject>): $RefType {
-  const { data } = context
+export function createParameter(
+  input: FactoryInput<ParameterObject | ReferenceObject>,
+  context: FactoryContext,
+): $RefType {
+  const { data } = input
   if (isRefType(data)) {
     return {
       __type: ModelType.$RefType,
-      uri: createQualifiedRef(data, context),
+      uri: createQualifiedRef(data, input),
     }
   }
   const { allowEmptyValue, explode, name, deprecated, description, style, allowReserved, schema } = data
@@ -39,15 +42,18 @@ export function createParameter(context: FactoryContext<ParameterObject | Refere
     urlEncode: !allowReserved,
     deprecated,
     description,
-    type: createType({
-      ...context,
-      data: data.schema,
-    }),
+    type: createType(
+      {
+        ...input,
+        data: data.schema,
+      },
+      context,
+    ),
   }
   return null
 }
 
-export function createResponse(context: FactoryContext<ResponseObject | ReferenceObject>): $RefType {
+export function createResponse(context: FactoryInput<ResponseObject | ReferenceObject>): $RefType {
   const { data } = context
   if (isRefType(data)) {
     return {
@@ -60,8 +66,13 @@ export function createResponse(context: FactoryContext<ResponseObject | Referenc
   return null
 }
 
-export function createOperation(url: string, method: HttpMethod, context: FactoryContext<OperationObject>): void {
-  const { data, uri, pathAccessor: a } = context
+export function createOperation(
+  url: string,
+  method: HttpMethod,
+  input: FactoryInput<OperationObject>,
+  context: FactoryContext,
+): void {
+  const { data, uri, pathAccessor: a } = input
   const { operationId, deprecated, description, parameters = [] } = data
   const operation: OperationType = {
     __type: ModelType.OperationType,
@@ -72,11 +83,14 @@ export function createOperation(url: string, method: HttpMethod, context: Factor
     description,
     uri,
     parameters: (parameters || []).map((parameter, i) =>
-      createParameter({
-        ...context,
-        uri: a.append(uri, 'parameters', i.toString()),
-        data: parameter,
-      }),
+      createParameter(
+        {
+          ...input,
+          uri: a.append(uri, 'parameters', i.toString()),
+          data: parameter,
+        },
+        context,
+      ),
     ),
     responses: [
       /* TODO */
@@ -85,18 +99,23 @@ export function createOperation(url: string, method: HttpMethod, context: Factor
   context.operations.push(operation)
 }
 
-export function createOperations(context: FactoryContext<PathsObject>): void {
-  const { pathAccessor: a } = context
-  for (const [url, path] of entries<PathItemObject>(context)) {
+export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {
+  const { pathAccessor: a } = input
+  for (const [url, path] of entries<PathItemObject>(input)) {
     const methods: HttpMethod[] = values(HttpMethod)
     for (const method of methods) {
       const operation = path[method]
       if (!isNil(operation)) {
-        createOperation(url, method, {
-          ...context,
-          data: operation,
-          uri: a.append(context.uri, url, method),
-        })
+        createOperation(
+          url,
+          method,
+          {
+            ...input,
+            data: operation,
+            uri: a.append(input.uri, url, method),
+          },
+          context,
+        )
       }
     }
   }

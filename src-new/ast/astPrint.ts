@@ -1,11 +1,11 @@
-import { createPrinter, factory as f, NewLineKind, Node, NodeFlags, Statement, SyntaxKind } from 'typescript'
+import { createPrinter, NewLineKind, Node, factory as f, SyntaxKind, NodeFlags, Statement } from 'typescript'
 
-export function astToString(...nodes: Statement[]): string {
+export function astToString(...nodes: Node[]): string {
   const printer = createPrinter({
     newLine: NewLineKind.LineFeed,
     removeComments: false,
     omitTrailingSemicolon: false,
   })
-  const sourceFile = f.createSourceFile(nodes, f.createToken(SyntaxKind.EndOfFileToken), NodeFlags.None)
-  return printer.printFile(sourceFile)
+  const sf = f.createSourceFile(nodes as Statement[], f.createToken(SyntaxKind.EndOfFileToken), NodeFlags.None)
+  return printer.printFile(sf)
 }

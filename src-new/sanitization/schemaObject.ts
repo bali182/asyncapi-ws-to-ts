@@ -42,7 +42,7 @@ export const schemaValidator = object(
     uniqueItems: optional(boolean()),
     description: optional(string()),
     required: optional(array(itemsOf(string()))),
-    enum: optional(primitive()),
+    enum: optional(array(itemsOf(primitive()))),
     discriminator: optional(
       object(
         fields({

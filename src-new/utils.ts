@@ -1,7 +1,19 @@
 import { ReferenceObject, SchemaObject } from './schema'
 
+export function isRefType(input: any): input is ReferenceObject {
+  return isObject(input) && Boolean(input.$ref)
+}
+
+export function isSchemaType(input: any): input is SchemaObject {
+  return isObject(input) && !Boolean(input.$ref)
+}
+
 export function isNil(input: any): input is null | undefined {
   return input === null || input === undefined
+}
+
+export function isEmpty(input: { length: number }): boolean {
+  return isNil(input) || input.length === 0
 }
 
 export function isString(input: any): input is string {
@@ -36,10 +48,13 @@ export function dropHead<T>(input: ReadonlyArray<T>): T[] {
   return input.slice(1)
 }
 
-export function isRefType(input: any): input is ReferenceObject {
-  return isObject(input) && Boolean(input.$ref)
-}
-
-export function isSchemaType(input: any): input is SchemaObject {
-  return isObject(input) && !Boolean(input.$ref)
+export function flatMap<T, X>(
+  array: ReadonlyArray<T>,
+  fn: (input: T, index: number, array: ReadonlyArray<T>) => X[],
+): X[] {
+  const result: X[] = []
+  for (let i = 0; i < array.length; i += 1) {
+    result.push(...fn(array[i], i, array))
+  }
+  return result
 }

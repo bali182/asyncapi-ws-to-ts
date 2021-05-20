@@ -5,7 +5,7 @@ import { Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } fro
 const DefaultConfig: ValidatorConfig = {
   depth: Infinity,
   path: null,
-  pathAccessor: URIPathAccessor,
+  pathAccessor: new URIPathAccessor(),
 }
 
 const TypeChecks = {

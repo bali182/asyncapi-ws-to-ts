@@ -8,11 +8,11 @@ import {
   ParameterObject,
   ParameterLocation,
 } from '../../schema'
-import { $RefType, HttpMethod, ModelType, OperationType, ParameterType } from '../../types'
+import { Ref, HttpMethod, ModelType, OperationType, ParameterType } from '../../types/types'
 import { entries, isNil, isRefType, values } from '../../utils'
-import { createQualifiedRef } from './createQualifiedRef'
-import { createType } from './createType'
+import { createType } from '../../types/createType'
 import { FactoryContext, FactoryInput } from './FactoryContext'
+import { ref } from '../../types/ref'
 
 const InMap = {
   ['query']: ModelType.QueryParameterType,
@@ -24,13 +24,10 @@ const InMap = {
 export function createParameter(
   input: FactoryInput<ParameterObject | ReferenceObject>,
   context: FactoryContext,
-): $RefType {
+): Ref<ParameterType> {
   const { data } = input
   if (isRefType(data)) {
-    return {
-      __type: ModelType.$RefType,
-      uri: createQualifiedRef(data, input),
-    }
+    return ref(data.$ref, context.parameters)
   }
   const { allowEmptyValue, explode, name, deprecated, description, style, allowReserved, schema } = data
   const param: ParameterType = {
@@ -53,13 +50,13 @@ export function createParameter(
   return null
 }
 
-export function createResponse(context: FactoryInput<ResponseObject | ReferenceObject>): $RefType {
-  const { data } = context
+export function createResponse(
+  input: FactoryInput<ResponseObject | ReferenceObject>,
+  context: FactoryContext,
+): Ref<ResponseType> {
+  const { data } = input
   if (isRefType(data)) {
-    return {
-      __type: ModelType.$RefType,
-      uri: createQualifiedRef(data, context), // TODO
-    }
+    return ref(data.$ref, context.responses)
   }
 
   data.headers
@@ -96,7 +93,7 @@ export function createOperation(
       /* TODO */
     ],
   }
-  context.operations.push(operation)
+  context.operations.set(uri, operation)
 }
 
 export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {

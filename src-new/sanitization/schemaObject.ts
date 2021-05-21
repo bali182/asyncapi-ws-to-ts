@@ -12,7 +12,7 @@ import {
   primitive,
   union,
 } from '../validation/Validators'
-import { StringFormat } from '../types'
+import { StringFormat } from '../types/types'
 
 export const refValidator = object(fields({ $ref: string() }))
 

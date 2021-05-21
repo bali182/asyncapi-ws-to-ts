@@ -8,12 +8,13 @@ export enum ModelType {
   BooleanType = 'BooleanType',
   EnumType = 'EnumType',
   UnionType = 'UnionType',
+  DiscriminatedUnionType = 'DiscriminatedUnionType',
   IntersectionType = 'IntersectionType',
 
   TypedObjectTypeField = 'TypedObjectTypeField',
   EnumValue = 'EnumValue',
 
-  $RefType = '$RefType',
+  Ref = 'Ref',
 
   OperationType = 'OperationType',
   ResponseType = 'ResponseType',
@@ -76,7 +77,7 @@ export enum ParameterStyle {
 
 export type Type = AnyType | ObjectType | ArrayType | PrimitiveType | CompositeType
 export type ObjectType = TypedObjectType | DictionaryType
-export type CompositeType = UnionType | IntersectionType
+export type CompositeType = UnionType | IntersectionType | DiscriminatedUnionType
 export type PrimitiveType = NumberType | StringType | BooleanType | EnumType
 
 type HasUri = {
@@ -100,15 +101,15 @@ type CommonType = HasUri & HasName & HasDescription & HasDeprecation
 export type AnyType = CommonType & {
   __type: ModelType.AnyType
 }
-export type $RefType = HasName &
-  HasUri & {
-    __type: ModelType.$RefType
-  }
+export type Ref<T> = HasUri & {
+  __type: ModelType.Ref
+  value(): T
+}
 
 export type TypedObjectTypeField = HasName &
   HasUri & {
     __type: ModelType.TypedObjectTypeField
-    type: Type | $RefType
+    type: Ref<Type>
     isRequired?: boolean
   }
 
@@ -119,7 +120,7 @@ export type TypedObjectType = CommonType & {
 
 export type ArrayType = CommonType & {
   __type: ModelType.ArrayType
-  itemType: Type | $RefType
+  itemType: Ref<Type>
   maxItems?: number
   minItems?: number
   uniqueItems?: boolean
@@ -127,7 +128,7 @@ export type ArrayType = CommonType & {
 
 export type DictionaryType = CommonType & {
   __type: ModelType.DictionaryType
-  valueType: Type | $RefType
+  valueType: Ref<Type>
 }
 
 export type StringType = CommonType & {
@@ -164,12 +165,18 @@ export type EnumValue = CommonType & {
 
 export type UnionType = CommonType & {
   __type: ModelType.UnionType
-  types: (Type | $RefType)[]
+  types: Ref<Type>[]
+}
+
+export type DiscriminatedUnionType = CommonType & {
+  __type: ModelType.DiscriminatedUnionType
+  propertyName: string
+  types: { [value: string]: Ref<Type> }
 }
 
 export type IntersectionType = CommonType & {
   __type: ModelType.IntersectionType
-  types: (Type | $RefType)[]
+  types: Ref<Type>[]
 }
 
 export type OperationType = HasUri &
@@ -178,7 +185,7 @@ export type OperationType = HasUri &
     __type: ModelType.OperationType
     operationId: string
     method: HttpMethod
-    parameters: (ParameterType | $RefType)[]
+    parameters: Ref<ParameterType>[]
     url: string
     requestBody?: any[]
     responses: any[]
@@ -200,7 +207,7 @@ export type _ParameterType<T extends ModelType, S extends ParameterStyle> = HasD
     style: S
     explode: boolean
     allowEmptyValue: boolean
-    type: Type | $RefType
+    type: Ref<Type>
   }
 
 export type QueryParameterStyle =

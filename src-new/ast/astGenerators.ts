@@ -7,9 +7,8 @@ import {
   Statement,
   EnumDeclaration,
   JSDoc,
-  ExportKeyword,
 } from 'typescript'
-import { $RefType, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType } from '../types'
+import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType } from '../types/types'
 import { isNil } from '../utils'
 
 export function makeDocs(type: Type): JSDoc {
@@ -55,14 +54,16 @@ export function makeTypeRighthandSide(input: Type): TypeNode {
   return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
 }
 
-export function makeTypeReference(input: Type | $RefType): TypeNode {
-  if (input.__type === ModelType.$RefType) {
+export function makeTypeReference(ref: Ref<Type>): TypeNode {
+  const type = ref.value()
+  if (isNil(type)) {
+    // Shouldnt happen
     return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
   }
-  if (isNil(input.name)) {
-    return makeTypeRighthandSide(input)
+  if (isNil(type.name)) {
+    return makeTypeRighthandSide(type)
   }
-  return f.createTypeReferenceNode(input.name)
+  return f.createTypeReferenceNode(type.name)
 }
 
 export function makeTypedObjectTypeRef(input: TypedObjectType): TypeNode {

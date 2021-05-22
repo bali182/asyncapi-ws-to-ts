@@ -10,7 +10,7 @@ export const withValidaton = <T>(
   const issues = validator(input.data, {
     depth: Infinity,
     path: input.uri,
-    pathAccessor: input.pathAccessor,
+    pathAccessor: context.path,
   })
   context.issues.push(...issues)
   if (issues.some((issue) => issue.severity === Severity.ERROR)) {

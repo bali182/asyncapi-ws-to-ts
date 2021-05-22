@@ -6,7 +6,7 @@ import { createType } from './createType'
 import { isNil } from '../utils'
 
 export function createDictionaryType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
-  const { name, data, uri, pathAccessor: a } = input
+  const { name, data, uri } = input
   const { deprecated, description } = data
 
   const dictionaryType: DictionaryType = {
@@ -21,14 +21,14 @@ export function createDictionaryType(input: FactoryInput<SchemaObject>, context:
           {
             ...input,
             data: data.additionalProperties,
-            uri: a.append(uri, 'additionalProperties'),
+            uri: context.path.append(uri, 'additionalProperties'),
             name: null,
           },
           context,
         ),
   }
 
-  context.types.set(uri, dictionaryType)
+  context.model.types.set(uri, dictionaryType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

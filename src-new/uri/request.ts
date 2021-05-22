@@ -19,19 +19,19 @@ type HttpResponse = {
 }
 
 type HttpRequest = {
-  uri: string
+  url: string
   method?: HttpMethod
   data?: any
   headers?: OutgoingHttpHeaders
 }
 
 export async function request({
-  uri,
+  url,
   method = HttpMethod.GET,
   data = null,
   headers = {},
 }: HttpRequest): Promise<HttpResponse> {
-  const { protocol, host, port = protocol === 'https:' ? 443 : 80, pathname: path = '/' } = new URL(uri)
+  const { protocol, host, port = protocol === 'https:' ? 443 : 80, pathname: path = '/' } = new URL(url)
   const lib = protocol == 'https:' ? https : http
   const options: RequestOptions = {
     method,

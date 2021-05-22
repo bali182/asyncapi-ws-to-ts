@@ -9,11 +9,11 @@ function createTypedObjectTypeFields(
   input: FactoryInput<SchemaObject>,
   context: FactoryContext,
 ): TypedObjectTypeField[] {
-  const { data, uri, pathAccessor: a } = input
+  const { data, uri } = input
   const { properties } = data
   return entries<SchemaObject | ReferenceObject>(properties || {}).map(
     ([propName, propSchema]): TypedObjectTypeField => {
-      const propUri = a.append(uri, 'properties', propName)
+      const propUri = context.path.append(uri, 'properties', propName)
       return {
         __type: ModelType.TypedObjectTypeField,
         isRequired: (data.required || []).indexOf(propName) >= 0,
@@ -48,7 +48,7 @@ export function createTypedObjectType(input: FactoryInput<SchemaObject>, context
     fields: createTypedObjectTypeFields(input, context),
   }
 
-  context.types.set(uri, objectType)
+  context.model.types.set(uri, objectType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

@@ -6,7 +6,7 @@ import { createType } from './createType'
 import { isNil } from '../utils'
 
 export function createArrayType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
-  const { name, data, uri, pathAccessor: a } = input
+  const { name, data, uri } = input
   const { deprecated, description, maxItems, minItems, uniqueItems } = data
 
   const arrayType: ArrayType = {
@@ -24,14 +24,14 @@ export function createArrayType(input: FactoryInput<SchemaObject>, context: Fact
           {
             ...input,
             data: data.items,
-            uri: a.append(uri, 'items'),
+            uri: context.path.append(uri, 'items'),
             name: null,
           },
           context,
         ),
   }
 
-  context.types.set(uri, arrayType)
+  context.model.types.set(uri, arrayType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

@@ -8,7 +8,7 @@ import {
   EnumDeclaration,
   JSDoc,
 } from 'typescript'
-import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType } from '../types/types'
+import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType, UnionType } from '../types/types'
 import { isNil } from '../utils'
 
 export function makeDocs(type: Type): JSDoc {
@@ -49,7 +49,9 @@ export function makeTypeRighthandSide(input: Type): TypeNode {
     case ModelType.ArrayType:
       return makeArrayTypeRef(input)
     case ModelType.EnumType:
-      return makePrimitiveUnionType(input)
+      return makeLiteralUnionType(input)
+    case ModelType.UnionType:
+      return makeUnionType(input)
   }
   return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
 }
@@ -127,6 +129,10 @@ export function makeEnumType(input: EnumType): EnumDeclaration {
   )
 }
 
-export function makePrimitiveUnionType(input: EnumType): TypeNode {
+export function makeLiteralUnionType(input: EnumType): TypeNode {
   return f.createUnionTypeNode(input.values.map((value) => f.createLiteralTypeNode(createEnumValueNode(value.value))))
+}
+
+export function makeUnionType(input: UnionType): TypeNode {
+  return f.createUnionTypeNode(Array.from(input.types.keys()).map((ref): TypeNode => makeTypeReference(ref)))
 }

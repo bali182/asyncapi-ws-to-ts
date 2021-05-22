@@ -40,6 +40,9 @@ export const schema: OpenAPIObject = {
           enumRefField: { $ref: '#/components/schemas/EnumType' },
         },
       },
+      UnionOfPrimitives: {
+        oneOf: [{ type: 'number' }, { type: 'string' }, { type: 'boolean' }],
+      },
     },
   },
 }

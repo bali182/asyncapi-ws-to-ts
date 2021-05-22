@@ -18,7 +18,7 @@ export function createStringType(input: FactoryInput<SchemaObject>, context: Fac
     pattern,
     format: format as StringFormat,
   }
-  context.types.set(uri, stringType)
+  context.model.types.set(uri, stringType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

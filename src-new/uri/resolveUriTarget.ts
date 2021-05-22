@@ -6,7 +6,7 @@ import { request } from './request'
 async function getAsString(uri: string): Promise<any> {
   const _uri = new URI(uri)
   if (_uri.scheme() === 'http' || _uri.scheme() === 'https') {
-    const { data } = await request({ uri })
+    const { data } = await request({ url: uri })
     return data
   } else if (_uri.scheme() === 'file') {
     return loadFile(uri)
@@ -14,7 +14,7 @@ async function getAsString(uri: string): Promise<any> {
   throw new TypeError(`Unexpeced URI scheme: ${_uri.scheme()} in ${uri}`)
 }
 
-export async function resolveUri<T>(uri: string): Promise<T> {
+export async function resolveUriTarget<T>(uri: string): Promise<T> {
   const data = await getAsString(uri)
   try {
     return JSON.parse(data)

@@ -22,7 +22,7 @@ export function createNumberType(input: FactoryInput<SchemaObject>, context: Fac
     format,
   }
 
-  context.types.set(uri, numerType)
+  context.model.types.set(uri, numerType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

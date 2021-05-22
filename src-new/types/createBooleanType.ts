@@ -15,7 +15,7 @@ export function createBooleanType(input: FactoryInput<SchemaObject>, context: Fa
     description,
   }
 
-  context.types.set(uri, booleanType)
+  context.model.types.set(uri, booleanType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

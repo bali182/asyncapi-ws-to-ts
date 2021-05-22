@@ -8,7 +8,6 @@ export enum ModelType {
   BooleanType = 'BooleanType',
   EnumType = 'EnumType',
   UnionType = 'UnionType',
-  DiscriminatedUnionType = 'DiscriminatedUnionType',
   IntersectionType = 'IntersectionType',
 
   TypedObjectTypeField = 'TypedObjectTypeField',
@@ -77,7 +76,7 @@ export enum ParameterStyle {
 
 export type Type = AnyType | ObjectType | ArrayType | PrimitiveType | CompositeType
 export type ObjectType = TypedObjectType | DictionaryType
-export type CompositeType = UnionType | IntersectionType | DiscriminatedUnionType
+export type CompositeType = UnionType | IntersectionType
 export type PrimitiveType = NumberType | StringType | BooleanType | EnumType
 
 type HasUri = {
@@ -165,13 +164,8 @@ export type EnumValue = CommonType & {
 
 export type UnionType = CommonType & {
   __type: ModelType.UnionType
-  types: Ref<Type>[]
-}
-
-export type DiscriminatedUnionType = CommonType & {
-  __type: ModelType.DiscriminatedUnionType
-  propertyName: string
-  types: { [value: string]: Ref<Type> }
+  property?: string
+  types: Map<Ref<Type>, string>
 }
 
 export type IntersectionType = CommonType & {

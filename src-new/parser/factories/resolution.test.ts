@@ -16,13 +16,12 @@ describe('parsing schema', () => {
       const input: FactoryInput<SchemaObject | ReferenceObject> = {
         name,
         data,
-        pathAccessor,
-        uri: pathAccessor.append('test.json#/components/schemas', name),
+        uri: context.path.append('test.json#/components/schemas', name),
       }
       createType(input, context)
     })
 
-    const asts = Array.from(context.types.values())
+    const asts = Array.from(context.model.types.values())
       .filter((t) => !isNil(t.name))
       .map((type) => makeType(type))
 

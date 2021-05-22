@@ -3,12 +3,10 @@ import {
   PathItemObject,
   OperationObject,
   ReferenceObject,
-  BaseParameterObject,
   ResponseObject,
   ParameterObject,
-  ParameterLocation,
 } from '../../schema'
-import { Ref, HttpMethod, ModelType, OperationType, ParameterType } from '../../types/types'
+import { Ref, HttpMethod, ModelType, OperationType, ParameterType, ResponseType } from '../../types/types'
 import { entries, isNil, isRefType, values } from '../../utils'
 import { createType } from '../../types/createType'
 import { FactoryContext, FactoryInput } from './FactoryContext'
@@ -27,7 +25,7 @@ export function createParameter(
 ): Ref<ParameterType> {
   const { data } = input
   if (isRefType(data)) {
-    return ref(data.$ref, context.parameters)
+    return ref(data.$ref, context.model.parameters)
   }
   const { allowEmptyValue, explode, name, deprecated, description, style, allowReserved, schema } = data
   const param: ParameterType = {
@@ -56,7 +54,7 @@ export function createResponse(
 ): Ref<ResponseType> {
   const { data } = input
   if (isRefType(data)) {
-    return ref(data.$ref, context.responses)
+    return ref(data.$ref, context.model.responses)
   }
 
   data.headers
@@ -69,7 +67,8 @@ export function createOperation(
   input: FactoryInput<OperationObject>,
   context: FactoryContext,
 ): void {
-  const { data, uri, pathAccessor: a } = input
+  const { path } = context
+  const { data, uri } = input
   const { operationId, deprecated, description, parameters = [] } = data
   const operation: OperationType = {
     __type: ModelType.OperationType,
@@ -83,7 +82,7 @@ export function createOperation(
       createParameter(
         {
           ...input,
-          uri: a.append(uri, 'parameters', i.toString()),
+          uri: path.append(uri, 'parameters', i.toString()),
           data: parameter,
         },
         context,
@@ -93,15 +92,15 @@ export function createOperation(
       /* TODO */
     ],
   }
-  context.operations.set(uri, operation)
+  context.model.operations.set(uri, operation)
 }
 
 export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {
-  const { pathAccessor: a } = input
-  for (const [url, path] of entries<PathItemObject>(input)) {
+  const { path } = context
+  for (const [url, urlPath] of entries<PathItemObject>(input)) {
     const methods: HttpMethod[] = values(HttpMethod)
     for (const method of methods) {
-      const operation = path[method]
+      const operation = urlPath[method]
       if (!isNil(operation)) {
         createOperation(
           url,
@@ -109,7 +108,7 @@ export function createOperations(input: FactoryInput<PathsObject>, context: Fact
           {
             ...input,
             data: operation,
-            uri: a.append(input.uri, url, method),
+            uri: path.append(input.uri, url, method),
           },
           context,
         )

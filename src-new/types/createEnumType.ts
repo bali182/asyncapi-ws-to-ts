@@ -4,8 +4,8 @@ import { isNil } from '../utils'
 import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
 import { ref } from './ref'
 
-function createEnumValues(input: FactoryInput<SchemaObject>): EnumValue[] {
-  const { data, uri, pathAccessor: a } = input
+function createEnumValues(input: FactoryInput<SchemaObject>, context: FactoryContext): EnumValue[] {
+  const { data, uri } = input
   const varNames = isNil(data['x-enum-varnames']) ? Array.from(data.enum) : data['x-enum-varnames']
   const descriptions = isNil(data['x-enum-descriptions']) ? data.enum.map(() => null) : data['x-enum-descriptions']
 
@@ -14,7 +14,7 @@ function createEnumValues(input: FactoryInput<SchemaObject>): EnumValue[] {
     const description = descriptions[index]
     return {
       __type: ModelType.EnumValue,
-      uri: a.append(uri, index.toString()),
+      uri: context.path.append(uri, index.toString()),
       name,
       value,
       description,
@@ -32,10 +32,10 @@ export function createEnumType(input: FactoryInput<SchemaObject>, context: Facto
     name,
     description,
     deprecated,
-    values: createEnumValues(input),
+    values: createEnumValues(input, context),
   }
 
-  context.types.set(uri, enumType)
+  context.model.types.set(uri, enumType)
 
-  return ref(uri, context.types)
+  return ref(uri, context.model.types)
 }

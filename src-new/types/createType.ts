@@ -14,13 +14,15 @@ import { createBooleanType } from './createBooleanType'
 import { createDictionaryType } from './createDictionaryType'
 import { createTypedObjectType } from './createTypedObjectType'
 import { createArrayType } from './createArrayType'
+import { createUnionType } from './createUnionType'
 
 export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, context: FactoryContext): Ref<Type> {
   const { data } = input
 
   // If it's a ref, in we can simply build a full URI and worry about it later
   if (isRefType(data)) {
-    return ref(resolveUri(data.$ref, input.uri), context.types)
+    const preparedUri = resolveUri(data.$ref, input.uri, context.transformRef)
+    return ref(preparedUri, context.model.types)
   }
   return withValidaton<Ref<Type>>(input, context, schemaValidator, () => {
     // If it's a schema we can switch on the type and go from there:
@@ -43,7 +45,6 @@ export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, 
       case 'object': {
         if (!isNil(data.additionalProperties)) {
           return createDictionaryType(input, context)
-        } else if (Array.isArray(data.oneOf)) {
         } else {
           return createTypedObjectType(input, context)
         }
@@ -52,7 +53,9 @@ export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, 
         return createArrayType(input, context)
       }
       default: {
-        // TODO
+        if (Array.isArray(data.oneOf)) {
+          return createUnionType(input, context)
+        }
       }
     }
     return null

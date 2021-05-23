@@ -45,6 +45,7 @@ export function createObjectType(input: FactoryInput<SchemaObject>, context: Fac
     uri,
     deprecated,
     description,
+    discriminators: [],
     fields: createObjectField(input, context),
   }
 

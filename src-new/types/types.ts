@@ -11,6 +11,7 @@ export enum ModelType {
   IntersectionType = 'IntersectionType',
 
   ObjectField = 'ObjectField',
+  DiscriminatorField = 'DiscriminatorField',
   EnumValue = 'EnumValue',
 
   Ref = 'Ref',
@@ -117,13 +118,17 @@ export type ObjectField = HasName &
     __type: ModelType.ObjectField
     type?: Ref<Type>
     isRequired: boolean
-    // In case it's a discriminator
-    value?: string
   }
+
+export type DiscriminatorField = HasName & {
+  __type: ModelType.DiscriminatorField
+  value: string
+}
 
 export type ObjectType = CommonType & {
   __type: ModelType.ObjectType
   fields: ObjectField[]
+  discriminators: DiscriminatorField[]
 }
 
 export type ArrayType = CommonType & {

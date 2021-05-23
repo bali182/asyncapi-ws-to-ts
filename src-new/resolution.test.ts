@@ -1,14 +1,14 @@
 import { makeType } from './ast/astGenerators'
 import { astToString } from './ast/astPrint'
 import { isNil } from './utils'
-import { schema } from './sample/sampleSchema'
+import { sampleSchema } from './sample/sampleSchema'
 import { createOpenAPIModel } from './types/createOpenAPIModel'
 import { sanitizeUri } from './uri/sanitizeUri'
 
 describe('parsing schema', () => {
   it('should parse schema', () => {
     const uri = sanitizeUri('test.json')
-    const context = createOpenAPIModel(sanitizeUri('test.json'), schema, undefined)
+    const context = createOpenAPIModel(sanitizeUri('test.json'), sampleSchema, undefined)
 
     console.log(context.model.types)
 

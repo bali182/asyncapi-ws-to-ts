@@ -1,29 +1,69 @@
 import { isNil } from '../utils'
-import { noRef } from './ref'
-import { ModelType, ObjectType, Ref, UnionType } from './types'
+import { ModelType, ObjectType, Ref, Type, UnionType } from './types'
 
-export function createDiscriminatorFields(unionType: UnionType): void {
-  const { property, types } = unionType
+function allObjectTypesFor(ref: Ref<Type>, objectRefs: Ref<ObjectType>[]): Ref<ObjectType>[] {
+  // Nothing to do if it's not resolved yet
+  if (isNil(ref.value())) {
+    return
+  }
+
+  // If we got an object, we just add it to the refs, nothing else to do.
+  if (ref.value().__type === ModelType.ObjectType) {
+    objectRefs.push(ref as Ref<ObjectType>)
+  }
+
+  // If we got a union, we are dealing with nested inheritance, need to collect the bottom level objects.
+  if (ref.value().__type === ModelType.UnionType) {
+    const unionType = ref.value() as UnionType
+    for (const refType of Array.from(unionType.types.keys())) {
+      allObjectTypesFor(refType, objectRefs)
+    }
+  }
+  return objectRefs
+}
+
+export function createDiscriminatorFields(rootType: UnionType): void {
+  const { property, types } = rootType
 
   if (isNil(property)) {
     return
   }
 
-  const objectTypeRefs = Array.from(types.keys())
-    .filter((ref) => ref.value()?.__type === ModelType.ObjectType)
-    .filter((ref) => !isNil(types.get(ref))) as Ref<ObjectType>[]
+  const discMap: Map<string, Ref<ObjectType>[]> = new Map()
 
-  for (const ref of objectTypeRefs) {
-    const objType = ref.value()
-    const value = types.get(ref)
+  // First find all the object types we need to augment with discriminators
+  for (const [ref, value] of Array.from(types.entries())) {
+    if (isNil(value)) {
+      continue
+    }
+    discMap.set(value, [])
+    allObjectTypesFor(ref, discMap.get(value))
+  }
 
-    objType.fields.unshift({
-      __type: ModelType.ObjectField,
-      isRequired: true,
-      name: property,
-      type: noRef,
-      uri: null, // TODO synthetic field, is this ok?
-      value,
-    })
+  // Augment each type with the given discriminator field
+  for (const value of Array.from(discMap.keys())) {
+    for (const objTypeRef of discMap.get(value)) {
+      const objType = objTypeRef.value()
+      const existingField = objType.discriminators.find((field) => field.name === property)
+
+      if (!isNil(existingField)) {
+        // The discriminator has already been added, nothing to do
+        if (existingField.value === value) {
+          continue
+        } else {
+          // Otherwise we have a conflict: discriminators with the same name
+          const valuesStr = [existingField.value, value].join(', ')
+          throw new TypeError(
+            `Discriminator with name "${property}" appears twice with values ${valuesStr} in type ${objType.uri}`,
+          )
+        }
+      }
+
+      objType.discriminators.unshift({
+        __type: ModelType.DiscriminatorField,
+        name: property,
+        value,
+      })
+    }
   }
 }

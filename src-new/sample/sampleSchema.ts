@@ -1,6 +1,6 @@
 import { OpenAPIObject } from '../schema'
 
-export const schema: OpenAPIObject = {
+export const sampleSchema: OpenAPIObject = {
   openapi: '3.1',
   components: {
     schemas: {
@@ -41,24 +41,63 @@ export const schema: OpenAPIObject = {
         },
       },
       UnionOfPrimitives: {
-        oneOf: [{ type: 'number' }, { type: 'string' }, { type: 'boolean' }],
+        oneOf: [
+          {
+            type: 'number',
+          },
+          {
+            type: 'string',
+          },
+          {
+            type: 'boolean',
+          },
+        ],
+      },
+      Mammal: {
+        type: 'object',
+        discriminator: {
+          propertyName: 'mammalType',
+          mapping: {
+            Human: '#/components/schemas/Human',
+            Animal: '#/components/schemas/Animal',
+          },
+        },
+        oneOf: [
+          {
+            $ref: '#/components/schemas/Animal',
+          },
+          {
+            $ref: '#/components/schemas/Human',
+          },
+        ],
       },
       Animal: {
         type: 'object',
         discriminator: {
-          propertyName: 'type',
+          propertyName: 'animalType',
           mapping: {
             Dog: '#/components/schemas/Dog',
             Cat: '#/components/schemas/Cat',
           },
         },
-        oneOf: [{ $ref: '#/components/schemas/Cat' }, { $ref: '#/components/schemas/Dog' }],
+        oneOf: [
+          {
+            $ref: '#/components/schemas/Cat',
+          },
+          {
+            $ref: '#/components/schemas/Dog',
+          },
+        ],
       },
       Cat: {
         type: 'object',
         properties: {},
       },
       Dog: {
+        type: 'object',
+        properties: {},
+      },
+      Human: {
         type: 'object',
         properties: {},
       },

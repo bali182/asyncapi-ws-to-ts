@@ -69,19 +69,26 @@ export function makeTypeReference(ref: Ref<Type>): TypeNode {
 }
 
 export function makeObjectTypeRef(input: ObjectType): TypeNode {
-  return f.createTypeLiteralNode(
-    input.fields.map(
-      (field): PropertySignature =>
-        f.createPropertySignature(
-          [],
-          field.name,
-          field.isRequired ? undefined : f.createToken(SyntaxKind.QuestionToken),
-          !isNil(field.value)
-            ? f.createLiteralTypeNode(f.createStringLiteral(field.value))
-            : makeTypeReference(field.type),
-        ),
-    ),
+  const discriminatorFields = input.discriminators.map(
+    (field): PropertySignature => {
+      return f.createPropertySignature(
+        [],
+        field.name,
+        undefined,
+        f.createLiteralTypeNode(f.createStringLiteral(field.value)),
+      )
+    },
   )
+  const fields = input.fields.map(
+    (field): PropertySignature =>
+      f.createPropertySignature(
+        [],
+        field.name,
+        field.isRequired ? undefined : f.createToken(SyntaxKind.QuestionToken),
+        makeTypeReference(field.type),
+      ),
+  )
+  return f.createTypeLiteralNode(discriminatorFields.concat(fields))
 }
 
 export function makeDictionaryTypeRef(input: DictionaryType): TypeNode {

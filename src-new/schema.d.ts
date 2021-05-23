@@ -31,7 +31,7 @@ export type ContentObject = {
   [mediatype: string]: MediaTypeObject
 }
 
-export type ResponsesObject = {
+export type OperationResponsesObject = {
   default?: ResponseObject | ReferenceObject
   [statuscode: string]: ResponseObject | ReferenceObject | any
 }
@@ -115,7 +115,7 @@ export type OperationObject = {
   operationId?: string
   parameters?: (ParameterObject | ReferenceObject)[]
   requestBody?: RequestBodyObject | ReferenceObject
-  responses: ResponsesObject
+  responses: OperationResponsesObject
   callbacks?: CallbacksObject
   deprecated?: boolean
   security?: SecurityRequirementObject[]
@@ -138,18 +138,21 @@ export type ParametersObject = {
   [parameter: string]: ParameterObject | ReferenceObject
 }
 
+export type RequestBodiesObject = {
+  [request: string]: RequestBodyObject | ReferenceObject
+}
+
+export type ResponsesObject = {
+  [request: string]: ResponseObject | ReferenceObject
+}
+
 export type ComponentsObject = {
   schemas?: SchemasObject
   parameters?: ParametersObject
-  responses?: {
-    [response: string]: ResponseObject | ReferenceObject
-  }
-  requestBodies?: {
-    [request: string]: RequestBodyObject | ReferenceObject
-  }
-  headers?: {
-    [header: string]: HeaderObject | ReferenceObject
-  }
+  headers?: HeadersObject
+  responses?: ResponsesObject
+  requestBodies?: RequestBodiesObject
+
   securitySchemes?: {
     [securityScheme: string]: SecuritySchemeObject | ReferenceObject
   }

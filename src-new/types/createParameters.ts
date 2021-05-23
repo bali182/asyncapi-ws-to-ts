@@ -1,5 +1,5 @@
 import { FactoryContext, FactoryInput } from '../FactoryContext'
-import { ParameterObject, ParametersObject, ReferenceObject, SchemaObject } from '../schema'
+import { ParameterObject, ParametersObject, ReferenceObject } from '../schema'
 import { entries } from '../utils'
 import { createParameter } from './createParameter'
 

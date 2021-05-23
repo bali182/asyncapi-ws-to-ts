@@ -8,7 +8,7 @@ export type URITransform = (uri: string) => string
 export type FactoryInput<S> = {
   readonly uri: string
   readonly data: S
-  readonly name: string
+  readonly name?: string
 }
 
 export type FactoryContext = {

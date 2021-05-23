@@ -82,7 +82,7 @@ export function createOperation(
       createParameter(
         {
           ...input,
-          uri: config.path.append(uri, 'parameters', i.toString()),
+          uri: config.uri.append(uri, 'parameters', i.toString()),
           data: parameter,
         },
         context,
@@ -108,7 +108,7 @@ export function createOperations(input: FactoryInput<PathsObject>, context: Fact
           {
             ...input,
             data: operation,
-            uri: config.path.append(input.uri, url, method),
+            uri: config.uri.append(input.uri, url, method),
           },
           context,
         )

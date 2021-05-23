@@ -15,7 +15,7 @@ function createEnumValues(input: FactoryInput<SchemaObject>, context: FactoryCon
     const description = descriptions[index]
     return {
       __type: ModelType.EnumValue,
-      uri: config.path.append(uri, index.toString()),
+      uri: config.uri.append(uri, index.toString()),
       name,
       value,
       description,

@@ -5,7 +5,6 @@ import { isNil, isRefType } from '../utils'
 import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { withValidaton } from './utils'
 import { ref } from './ref'
-import { resolveUri } from '../uri/resolveUri'
 
 import { createEnumType } from './createEnumType'
 import { createStringType } from './createStringType'
@@ -22,8 +21,8 @@ export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, 
 
   // If it's a ref, in we can simply build a full URI and worry about it later
   if (isRefType(data)) {
-    const preparedUri = resolveUri(data.$ref, input.uri, config.transformRef)
-    return ref(preparedUri, context.model.types)
+    const uri = config.uri.resolve(data.$ref, input.uri)
+    return ref(uri, context.model.types)
   }
   return withValidaton<Ref<Type>>(input, context, schemaValidator, () => {
     // If it's a schema we can switch on the type and go from there:

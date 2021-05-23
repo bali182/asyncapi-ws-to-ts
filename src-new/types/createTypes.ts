@@ -12,7 +12,7 @@ export function createTypes(input: FactoryInput<SchemasObject>, context: Factory
     const input: FactoryInput<SchemaObject | ReferenceObject> = {
       name,
       data: schema,
-      uri: context.config.path.append(uri, name),
+      uri: context.config.uri.append(uri, name),
     }
     createType(input, context)
   }

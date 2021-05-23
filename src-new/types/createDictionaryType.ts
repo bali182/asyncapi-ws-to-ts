@@ -22,7 +22,7 @@ export function createDictionaryType(input: FactoryInput<SchemaObject>, context:
           {
             ...input,
             data: data.additionalProperties,
-            uri: config.path.append(uri, 'additionalProperties'),
+            uri: config.uri.append(uri, 'additionalProperties'),
             name: null,
           },
           context,

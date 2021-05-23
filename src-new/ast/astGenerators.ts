@@ -57,7 +57,7 @@ export function makeTypeRighthandSide(input: Type): TypeNode {
 }
 
 export function makeTypeReference(ref: Ref<Type>): TypeNode {
-  const type = ref.value()
+  const type = ref.get()
   if (isNil(type)) {
     // Shouldnt happen
     return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)

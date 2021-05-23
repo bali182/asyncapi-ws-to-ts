@@ -1,11 +1,11 @@
-import { URIPathAccessor } from '../pathAccessors'
+import { createURIManipulator } from '../FactoryContext'
 import { isNil } from '../utils'
 import { Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } from './typings'
 
 const DefaultConfig: ValidatorConfig = {
   depth: Infinity,
   path: null,
-  pathAccessor: new URIPathAccessor(),
+  pathAccessor: createURIManipulator(),
 }
 
 const TypeChecks = {

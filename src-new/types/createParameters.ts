@@ -10,7 +10,7 @@ export function createParameters(input: FactoryInput<ParametersObject>, context:
     const input: FactoryInput<ParameterObject | ReferenceObject> = {
       name,
       data: schema,
-      uri: context.config.path.append(uri, name),
+      uri: context.config.uri.append(uri, name),
     }
     createParameter(input, context)
   }

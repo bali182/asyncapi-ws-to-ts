@@ -1,4 +1,4 @@
-import { PathAccessor } from '../pathAccessors'
+import { URIManipulator } from '../FactoryContext'
 
 export enum ValueType {
   STRING = 'string',
@@ -33,7 +33,7 @@ export type Issue = {
 export type ValidatorConfig = {
   path: string
   depth: number
-  pathAccessor: PathAccessor
+  pathAccessor: URIManipulator
 }
 
 export type Validator<T> = (input: T, path?: ValidatorConfig) => Issue[]

@@ -3,18 +3,18 @@ import { ModelType, ObjectType, Ref, Type, UnionType } from './types'
 
 function allObjectTypesFor(ref: Ref<Type>, objectRefs: Ref<ObjectType>[]): Ref<ObjectType>[] {
   // Nothing to do if it's not resolved yet
-  if (isNil(ref.value())) {
+  if (isNil(ref.get())) {
     return
   }
 
   // If we got an object, we just add it to the refs, nothing else to do.
-  if (ref.value().__type === ModelType.ObjectType) {
+  if (ref.get().__type === ModelType.ObjectType) {
     objectRefs.push(ref as Ref<ObjectType>)
   }
 
   // If we got a union, we are dealing with nested inheritance, need to collect the bottom level objects.
-  if (ref.value().__type === ModelType.UnionType) {
-    const unionType = ref.value() as UnionType
+  if (ref.get().__type === ModelType.UnionType) {
+    const unionType = ref.get() as UnionType
     for (const refType of Array.from(unionType.types.keys())) {
       allObjectTypesFor(refType, objectRefs)
     }
@@ -44,7 +44,7 @@ export function createDiscriminatorFields(rootType: UnionType): void {
   // Augment each type with the given discriminator field
   for (const value of Array.from(discriminatorMap.keys())) {
     for (const objTypeRef of discriminatorMap.get(value)) {
-      const objType = objTypeRef.value()
+      const objType = objTypeRef.get()
       const existingField = objType.discriminators.find((field) => field.name === property)
 
       if (!isNil(existingField)) {

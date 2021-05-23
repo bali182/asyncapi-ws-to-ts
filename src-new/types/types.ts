@@ -110,7 +110,8 @@ export type AnyType = CommonType & {
 }
 export type Ref<T> = HasUri & {
   __type: ModelType.Ref
-  value(): T
+  get(): T
+  isResolved(): boolean
 }
 
 export type ObjectField = HasName &

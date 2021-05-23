@@ -3,15 +3,10 @@ import { astToString } from './ast/astPrint'
 import { isNil } from './utils'
 import { sampleSchema } from './sample/sampleSchema'
 import { createOpenAPIModel } from './types/createOpenAPIModel'
-import { sanitizeUri } from './uri/sanitizeUri'
 
 describe('parsing schema', () => {
   it('should parse schema', () => {
-    const uri = sanitizeUri('test.json')
-    const context = createOpenAPIModel(sanitizeUri('test.json'), sampleSchema, undefined)
-
-    console.log(context.model.types)
-
+    const context = createOpenAPIModel('test.json', sampleSchema, undefined)
     const asts = Array.from(context.model.types.values())
       .filter((t) => !isNil(t.name))
       .map((type) => makeType(type))

@@ -12,7 +12,7 @@ function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryCo
 
   return entries<SchemaObject | ReferenceObject>(properties || {}).map(
     ([propName, propSchema]): ObjectField => {
-      const propUri = config.path.append(uri, 'properties', propName)
+      const propUri = config.uri.append(uri, 'properties', propName)
       return {
         __type: ModelType.ObjectField,
         isRequired: (data.required || []).indexOf(propName) >= 0,

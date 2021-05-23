@@ -4,15 +4,16 @@ import { createParameters } from './createParameters'
 import { createTypes } from './createTypes'
 
 export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, config: OpenAPIConfig): FactoryContext {
+  const context = createContext({ config })
+  const _uri = context.config.uri.sanitize(uri)
   const { components, paths } = openAPIModel
   const { schemas, parameters, headers, requestBodies, responses } = components
-  const context = createContext({ config })
 
   createTypes(
     {
       data: schemas || {},
       name: null,
-      uri: config.path.append(uri, 'components', 'schemas'),
+      uri: context.config.uri.append(_uri, 'components', 'schemas'),
     },
     context,
   )
@@ -21,7 +22,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
     {
       data: parameters || {},
       name: null,
-      uri: config.path.append(uri, 'components', 'parameters'),
+      uri: context.config.uri.append(_uri, 'components', 'parameters'),
     },
     context,
   )

@@ -1,4 +1,4 @@
-import { PathAccessor, URIPathAccessor } from './pathAccessors'
+import { append, fragments, sanitize, resolve } from './uri/defaultFns'
 import { OperationType, ParameterType, Type } from './types/types'
 import { isNil } from './utils'
 import { Issue } from './validation/typings'
@@ -17,6 +17,13 @@ export type FactoryContext = {
   readonly config: OpenAPIConfig
 }
 
+export type URIManipulator = {
+  fragments(path: string): string[]
+  append(path: string, ...segments: string[]): string
+  resolve(ref: string, parent: string): string
+  sanitize(path: string): string
+}
+
 export type OpenAPIModel = {
   readonly types: Map<string, Type>
   readonly operations: Map<string, OperationType>
@@ -26,15 +33,22 @@ export type OpenAPIModel = {
 }
 
 export type OpenAPIConfig = {
-  readonly path: PathAccessor
-  readonly transformRef: URITransform
+  readonly uri: URIManipulator
+}
+
+export function createURIManipulator(base: Partial<URIManipulator> = {}): URIManipulator {
+  const { append: _append, fragments: _fragments, resolve: _resolve, sanitize: _sanitize } = base
+  return {
+    append: isNil(_append) ? append : _append,
+    fragments: isNil(_fragments) ? fragments : _fragments,
+    resolve: isNil(_resolve) ? resolve : _resolve,
+    sanitize: isNil(_sanitize) ? sanitize : _sanitize,
+  }
 }
 
 export function createConfig(base: Partial<OpenAPIConfig> = {}): OpenAPIConfig {
-  const { path, transformRef } = base
   return {
-    path: isNil(path) ? new URIPathAccessor() : path,
-    transformRef: isNil(transformRef) ? (input: string) => input : transformRef,
+    uri: createURIManipulator(base.uri),
   }
 }
 

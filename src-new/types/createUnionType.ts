@@ -1,5 +1,4 @@
 import { FactoryContext, FactoryInput } from '../FactoryContext'
-import { resolveUri } from '../uri/resolveUri'
 import { SchemaObject } from '../schema'
 import { entries } from '../utils'
 import { createType } from './createType'
@@ -14,7 +13,7 @@ export function createUnionType(input: FactoryInput<SchemaObject>, context: Fact
 
   // Reverse mapping from ref -> property value where the ref is resolved properly
   const mapping = entries(_mapping || {}).reduce(
-    (map, [propertyValue, ref]) => map.set(resolveUri(ref, uri, config.transformRef), propertyValue),
+    (map, [propertyValue, ref]) => map.set(config.uri.resolve(ref, uri), propertyValue),
     new Map<string, string>(),
   )
 
@@ -23,7 +22,7 @@ export function createUnionType(input: FactoryInput<SchemaObject>, context: Fact
     .map((type, i) =>
       createType(
         {
-          uri: config.path.append(uri, 'oneOf', i.toString()),
+          uri: config.uri.append(uri, 'oneOf', i.toString()),
           name: null,
           data: type,
         },

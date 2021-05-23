@@ -12,7 +12,7 @@ export const withValidaton = <T>(
   const issues = validator(input.data, {
     depth: Infinity,
     path: input.uri,
-    pathAccessor: config.path,
+    pathAccessor: config.uri,
   })
 
   context.issues.push(...issues)

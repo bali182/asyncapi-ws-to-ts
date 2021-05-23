@@ -25,7 +25,7 @@ export function createArrayType(input: FactoryInput<SchemaObject>, context: Fact
           {
             ...input,
             data: data.items,
-            uri: config.path.append(uri, 'items'),
+            uri: config.uri.append(uri, 'items'),
             name: null,
           },
           context,

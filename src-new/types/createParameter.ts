@@ -20,7 +20,7 @@ export function createParameter(
   const { model, config } = context
 
   if (isRefType(data)) {
-    return ref(data.$ref, model.parameters)
+    return ref(config.uri.resolve(data.$ref, input.uri), model.parameters)
   }
 
   const { allowEmptyValue, explode, name, deprecated, description, style, allowReserved, schema } = data
@@ -38,7 +38,7 @@ export function createParameter(
     type: createType(
       {
         name: null,
-        uri: config.path.append(uri, 'schema'),
+        uri: config.uri.append(uri, 'schema'),
         data: schema,
       },
       context,

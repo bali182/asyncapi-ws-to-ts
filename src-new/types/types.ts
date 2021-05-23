@@ -1,7 +1,7 @@
 export enum ModelType {
   AnyType = 'AnyType',
   ArrayType = 'ArrayType',
-  TypedObjectType = 'TypedObjectType',
+  ObjectType = 'ObjectType',
   DictionaryType = 'DictionaryType',
   StringType = 'StringType',
   NumberType = 'NumberType',
@@ -10,7 +10,7 @@ export enum ModelType {
   UnionType = 'UnionType',
   IntersectionType = 'IntersectionType',
 
-  TypedObjectTypeField = 'TypedObjectTypeField',
+  ObjectField = 'ObjectField',
   EnumValue = 'EnumValue',
 
   Ref = 'Ref',
@@ -74,10 +74,17 @@ export enum ParameterStyle {
   DeepObject = 'deepObject',
 }
 
-export type Type = AnyType | ObjectType | ArrayType | PrimitiveType | CompositeType
-export type ObjectType = TypedObjectType | DictionaryType
-export type CompositeType = UnionType | IntersectionType
-export type PrimitiveType = NumberType | StringType | BooleanType | EnumType
+export type Type =
+  | AnyType
+  | ObjectType
+  | DictionaryType
+  | ArrayType
+  | NumberType
+  | StringType
+  | BooleanType
+  | EnumType
+  | UnionType
+  | IntersectionType
 
 type HasUri = {
   uri?: string
@@ -105,16 +112,18 @@ export type Ref<T> = HasUri & {
   value(): T
 }
 
-export type TypedObjectTypeField = HasName &
+export type ObjectField = HasName &
   HasUri & {
-    __type: ModelType.TypedObjectTypeField
-    type: Ref<Type>
-    isRequired?: boolean
+    __type: ModelType.ObjectField
+    type?: Ref<Type>
+    isRequired: boolean
+    // In case it's a discriminator
+    value?: string
   }
 
-export type TypedObjectType = CommonType & {
-  __type: ModelType.TypedObjectType
-  fields: TypedObjectTypeField[]
+export type ObjectType = CommonType & {
+  __type: ModelType.ObjectType
+  fields: ObjectField[]
 }
 
 export type ArrayType = CommonType & {

@@ -1,4 +1,4 @@
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { SchemaObject } from '../schema'
 import { ref } from './ref'
 import { ModelType, NumberFormat, NumberType, Ref, Type } from './types'

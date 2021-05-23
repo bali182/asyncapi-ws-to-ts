@@ -1,5 +1,5 @@
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
-import { resolveUri } from '../parser/factories/resolveUri'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { resolveUri } from '../uri/resolveUri'
 import { SchemaObject } from '../schema'
 import { entries } from '../utils'
 import { createType } from './createType'
@@ -8,12 +8,13 @@ import { UnionType, ModelType, Ref, Type } from './types'
 
 export function createUnionType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
   const { data, name, uri } = input
+  const { model, config } = context
   const { oneOf, discriminator, deprecated, description } = data
   const { propertyName: property, mapping: _mapping } = discriminator || {}
 
   // Reverse mapping from ref -> property value where the ref is resolved properly
   const mapping = entries(_mapping || {}).reduce(
-    (map, [propertyValue, ref]) => map.set(resolveUri(ref, uri, context.transformRef), propertyValue),
+    (map, [propertyValue, ref]) => map.set(resolveUri(ref, uri, config.transformRef), propertyValue),
     new Map<string, string>(),
   )
 
@@ -22,7 +23,7 @@ export function createUnionType(input: FactoryInput<SchemaObject>, context: Fact
     .map((type, i) =>
       createType(
         {
-          uri: context.path.append(uri, 'oneOf', i.toString()),
+          uri: config.path.append(uri, 'oneOf', i.toString()),
           name: null,
           data: type,
         },
@@ -40,6 +41,6 @@ export function createUnionType(input: FactoryInput<SchemaObject>, context: Fact
     uri,
     types,
   }
-  context.model.types.set(uri, unionType)
-  return ref(input.uri, context.model.types)
+  model.types.set(uri, unionType)
+  return ref(input.uri, model.types)
 }

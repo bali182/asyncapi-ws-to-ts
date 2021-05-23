@@ -1,5 +1,5 @@
 import URI from 'urijs'
-import { isNil, dropHead } from './utils'
+import { dropHead, isEmpty } from './utils'
 
 export type PathAccessor = {
   segments(path: string): string[]
@@ -14,7 +14,7 @@ export class URIPathAccessor implements PathAccessor {
 
   segments(path: string): string[] {
     const fragment = new URI(path).fragment()
-    if (isNil(fragment)) {
+    if (isEmpty(fragment)) {
       return []
     }
     if (fragment[0] !== '/') {

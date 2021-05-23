@@ -43,6 +43,25 @@ export const schema: OpenAPIObject = {
       UnionOfPrimitives: {
         oneOf: [{ type: 'number' }, { type: 'string' }, { type: 'boolean' }],
       },
+      Animal: {
+        type: 'object',
+        discriminator: {
+          propertyName: 'type',
+          mapping: {
+            Dog: '#/components/schemas/Dog',
+            Cat: '#/components/schemas/Cat',
+          },
+        },
+        oneOf: [{ $ref: '#/components/schemas/Cat' }, { $ref: '#/components/schemas/Dog' }],
+      },
+      Cat: {
+        type: 'object',
+        properties: {},
+      },
+      Dog: {
+        type: 'object',
+        properties: {},
+      },
     },
   },
 }

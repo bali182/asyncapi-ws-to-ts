@@ -1,6 +1,6 @@
 import { SchemaObject } from '../schema'
 import { Ref, ModelType, Type, DictionaryType } from './types'
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { noRef, ref } from './ref'
 import { createType } from './createType'
 import { isNil } from '../utils'
@@ -8,6 +8,7 @@ import { isNil } from '../utils'
 export function createDictionaryType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description } = data
+  const { model, config } = context
 
   const dictionaryType: DictionaryType = {
     __type: ModelType.DictionaryType,
@@ -21,14 +22,14 @@ export function createDictionaryType(input: FactoryInput<SchemaObject>, context:
           {
             ...input,
             data: data.additionalProperties,
-            uri: context.path.append(uri, 'additionalProperties'),
+            uri: config.path.append(uri, 'additionalProperties'),
             name: null,
           },
           context,
         ),
   }
 
-  context.model.types.set(uri, dictionaryType)
+  model.types.set(uri, dictionaryType)
 
-  return ref(uri, context.model.types)
+  return ref(uri, model.types)
 }

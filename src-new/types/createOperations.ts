@@ -5,12 +5,12 @@ import {
   ReferenceObject,
   ResponseObject,
   ParameterObject,
-} from '../../schema'
-import { Ref, HttpMethod, ModelType, OperationType, ParameterType, ResponseType } from '../../types/types'
-import { entries, isNil, isRefType, values } from '../../utils'
-import { createType } from '../../types/createType'
-import { FactoryContext, FactoryInput } from './FactoryContext'
-import { ref } from '../../types/ref'
+} from '../schema'
+import { Ref, HttpMethod, ModelType, OperationType, ParameterType, ResponseType } from './types'
+import { entries, isNil, isRefType, values } from '../utils'
+import { createType } from './createType'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { ref } from './ref'
 
 const InMap = {
   ['query']: ModelType.QueryParameterType,
@@ -67,7 +67,7 @@ export function createOperation(
   input: FactoryInput<OperationObject>,
   context: FactoryContext,
 ): void {
-  const { path } = context
+  const { config, model } = context
   const { data, uri } = input
   const { operationId, deprecated, description, parameters = [] } = data
   const operation: OperationType = {
@@ -82,7 +82,7 @@ export function createOperation(
       createParameter(
         {
           ...input,
-          uri: path.append(uri, 'parameters', i.toString()),
+          uri: config.path.append(uri, 'parameters', i.toString()),
           data: parameter,
         },
         context,
@@ -92,11 +92,11 @@ export function createOperation(
       /* TODO */
     ],
   }
-  context.model.operations.set(uri, operation)
+  model.operations.set(uri, operation)
 }
 
 export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {
-  const { path } = context
+  const { config } = context
   for (const [url, urlPath] of entries<PathItemObject>(input)) {
     const methods: HttpMethod[] = values(HttpMethod)
     for (const method of methods) {
@@ -108,7 +108,7 @@ export function createOperations(input: FactoryInput<PathsObject>, context: Fact
           {
             ...input,
             data: operation,
-            uri: path.append(input.uri, url, method),
+            uri: config.path.append(input.uri, url, method),
           },
           context,
         )

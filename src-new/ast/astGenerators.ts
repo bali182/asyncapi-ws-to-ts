@@ -8,7 +8,7 @@ import {
   EnumDeclaration,
   JSDoc,
 } from 'typescript'
-import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, TypedObjectType, UnionType } from '../types/types'
+import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, ObjectType, UnionType } from '../types/types'
 import { isNil } from '../utils'
 
 export function makeDocs(type: Type): JSDoc {
@@ -44,8 +44,8 @@ export function makeTypeRighthandSide(input: Type): TypeNode {
       return f.createKeywordTypeNode(SyntaxKind.BooleanKeyword)
     case ModelType.DictionaryType:
       return makeDictionaryTypeRef(input)
-    case ModelType.TypedObjectType:
-      return makeTypedObjectTypeRef(input)
+    case ModelType.ObjectType:
+      return makeObjectTypeRef(input)
     case ModelType.ArrayType:
       return makeArrayTypeRef(input)
     case ModelType.EnumType:
@@ -68,7 +68,7 @@ export function makeTypeReference(ref: Ref<Type>): TypeNode {
   return f.createTypeReferenceNode(type.name)
 }
 
-export function makeTypedObjectTypeRef(input: TypedObjectType): TypeNode {
+export function makeObjectTypeRef(input: ObjectType): TypeNode {
   return f.createTypeLiteralNode(
     input.fields.map(
       (field): PropertySignature =>
@@ -76,7 +76,9 @@ export function makeTypedObjectTypeRef(input: TypedObjectType): TypeNode {
           [],
           field.name,
           field.isRequired ? undefined : f.createToken(SyntaxKind.QuestionToken),
-          makeTypeReference(field.type),
+          !isNil(field.value)
+            ? f.createLiteralTypeNode(f.createStringLiteral(field.value))
+            : makeTypeReference(field.type),
         ),
     ),
   )

@@ -1,6 +1,6 @@
 import URI from 'urijs'
-import { isEmpty } from '../../utils'
-import { URITransform } from './FactoryContext'
+import { isEmpty } from '../utils'
+import { URITransform } from '../FactoryContext'
 
 export function resolveUri(refUri: string, parentUri: string = null, transform: URITransform): string {
   const fromUri = new URI(parentUri)

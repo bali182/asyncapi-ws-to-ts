@@ -1,21 +1,20 @@
 import { ReferenceObject, SchemaObject } from '../schema'
-import { Ref, ModelType, TypedObjectType, TypedObjectTypeField, Type } from './types'
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
+import { Ref, ModelType, ObjectType, ObjectField, Type } from './types'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { noRef, ref } from './ref'
 import { createType } from './createType'
 import { entries, isNil } from '../utils'
 
-function createTypedObjectTypeFields(
-  input: FactoryInput<SchemaObject>,
-  context: FactoryContext,
-): TypedObjectTypeField[] {
+function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryContext): ObjectField[] {
   const { data, uri } = input
   const { properties } = data
+  const { config } = context
+
   return entries<SchemaObject | ReferenceObject>(properties || {}).map(
-    ([propName, propSchema]): TypedObjectTypeField => {
-      const propUri = context.path.append(uri, 'properties', propName)
+    ([propName, propSchema]): ObjectField => {
+      const propUri = config.path.append(uri, 'properties', propName)
       return {
-        __type: ModelType.TypedObjectTypeField,
+        __type: ModelType.ObjectField,
         isRequired: (data.required || []).indexOf(propName) >= 0,
         name: propName,
         type: isNil(propSchema)
@@ -35,20 +34,21 @@ function createTypedObjectTypeFields(
   )
 }
 
-export function createTypedObjectType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createObjectType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description } = data
+  const { model } = context
 
-  const objectType: TypedObjectType = {
-    __type: ModelType.TypedObjectType,
+  const objectType: ObjectType = {
+    __type: ModelType.ObjectType,
     name,
     uri,
     deprecated,
     description,
-    fields: createTypedObjectTypeFields(input, context),
+    fields: createObjectField(input, context),
   }
 
-  context.model.types.set(uri, objectType)
+  model.types.set(uri, objectType)
 
-  return ref(uri, context.model.types)
+  return ref(uri, model.types)
 }

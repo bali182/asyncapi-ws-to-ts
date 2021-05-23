@@ -2,26 +2,27 @@ import { schemaValidator } from '../sanitization/schemaObject'
 import { ReferenceObject, SchemaObject } from '../schema'
 import { Ref, Type } from './types'
 import { isNil, isRefType } from '../utils'
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
-import { withValidaton } from '../parser/factories/utils'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { withValidaton } from './utils'
 import { ref } from './ref'
-import { resolveUri } from '../parser/factories/resolveUri'
+import { resolveUri } from '../uri/resolveUri'
 
 import { createEnumType } from './createEnumType'
 import { createStringType } from './createStringType'
 import { createNumberType } from './createNumberType'
 import { createBooleanType } from './createBooleanType'
 import { createDictionaryType } from './createDictionaryType'
-import { createTypedObjectType } from './createTypedObjectType'
+import { createObjectType } from './createTypedObjectType'
 import { createArrayType } from './createArrayType'
 import { createUnionType } from './createUnionType'
 
 export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, context: FactoryContext): Ref<Type> {
   const { data } = input
+  const { config } = context
 
   // If it's a ref, in we can simply build a full URI and worry about it later
   if (isRefType(data)) {
-    const preparedUri = resolveUri(data.$ref, input.uri, context.transformRef)
+    const preparedUri = resolveUri(data.$ref, input.uri, config.transformRef)
     return ref(preparedUri, context.model.types)
   }
   return withValidaton<Ref<Type>>(input, context, schemaValidator, () => {
@@ -45,8 +46,10 @@ export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, 
       case 'object': {
         if (!isNil(data.additionalProperties)) {
           return createDictionaryType(input, context)
-        } else {
-          return createTypedObjectType(input, context)
+        } else if (!isNil(data.properties)) {
+          return createObjectType(input, context)
+        } else if (Array.isArray(data.oneOf) && !isNil(data.discriminator)) {
+          return createUnionType(input, context)
         }
       }
       case 'array': {
@@ -56,8 +59,9 @@ export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, 
         if (Array.isArray(data.oneOf)) {
           return createUnionType(input, context)
         }
+        break
       }
     }
-    return null
+    throw new TypeError('No bueno')
   })
 }

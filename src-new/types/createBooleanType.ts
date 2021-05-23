@@ -1,6 +1,6 @@
 import { SchemaObject } from '../schema'
 import { Ref, ModelType, BooleanType, Type } from './types'
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { ref } from './ref'
 
 export function createBooleanType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {

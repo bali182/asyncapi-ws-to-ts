@@ -1,5 +1,5 @@
-import { Severity, Validator } from '../../validation/typings'
-import { FactoryContext, FactoryInput } from './FactoryContext'
+import { Severity, Validator } from '../validation/typings'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 
 export const withValidaton = <T>(
   input: FactoryInput<any>,
@@ -7,15 +7,20 @@ export const withValidaton = <T>(
   validator: Validator<any>,
   fn: () => T,
 ): T => {
+  const { config } = context
+
   const issues = validator(input.data, {
     depth: Infinity,
     path: input.uri,
-    pathAccessor: context.path,
+    pathAccessor: config.path,
   })
+
   context.issues.push(...issues)
+
   if (issues.some((issue) => issue.severity === Severity.ERROR)) {
     return
   }
+
   try {
     return fn()
   } catch (error) {

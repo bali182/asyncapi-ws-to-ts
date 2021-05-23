@@ -1,6 +1,6 @@
 import { SchemaObject } from '../schema'
 import { Ref, ModelType, ArrayType, Type } from './types'
-import { FactoryContext, FactoryInput } from '../parser/factories/FactoryContext'
+import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { ref, noRef } from './ref'
 import { createType } from './createType'
 import { isNil } from '../utils'
@@ -8,6 +8,7 @@ import { isNil } from '../utils'
 export function createArrayType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description, maxItems, minItems, uniqueItems } = data
+  const { model, config } = context
 
   const arrayType: ArrayType = {
     __type: ModelType.ArrayType,
@@ -24,14 +25,14 @@ export function createArrayType(input: FactoryInput<SchemaObject>, context: Fact
           {
             ...input,
             data: data.items,
-            uri: context.path.append(uri, 'items'),
+            uri: config.path.append(uri, 'items'),
             name: null,
           },
           context,
         ),
   }
 
-  context.model.types.set(uri, arrayType)
+  model.types.set(uri, arrayType)
 
-  return ref(uri, context.model.types)
+  return ref(uri, model.types)
 }

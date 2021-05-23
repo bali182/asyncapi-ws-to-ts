@@ -23,7 +23,6 @@ export type OpenAPIModel = {
   readonly parameters: Map<string, ParameterType>
   readonly responses: Map<string, any>
   readonly requestBodies: Map<string, any>
-  readonly headers: Map<string, any>
 }
 
 export type OpenAPIConfig = {
@@ -40,9 +39,8 @@ export function createConfig(base: Partial<OpenAPIConfig> = {}): OpenAPIConfig {
 }
 
 export function createModel(base: Partial<OpenAPIModel> = {}): OpenAPIModel {
-  const { headers, operations, responses, requestBodies, parameters, types } = base
+  const { operations, responses, requestBodies, parameters, types } = base
   return {
-    headers: isNil(headers) ? new Map() : headers,
     operations: isNil(operations) ? new Map() : operations,
     responses: isNil(responses) ? new Map() : responses,
     requestBodies: isNil(requestBodies) ? new Map() : requestBodies,

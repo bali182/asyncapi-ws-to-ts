@@ -72,7 +72,6 @@ export const sampleSchema: OpenAPIObject = {
         ],
       },
       Animal: {
-        type: 'object',
         discriminator: {
           propertyName: 'animalType',
           mapping: {
@@ -86,6 +85,14 @@ export const sampleSchema: OpenAPIObject = {
           },
           {
             $ref: '#/components/schemas/Dog',
+          },
+          {
+            type: 'object',
+            properties: {
+              str: {
+                type: 'string',
+              },
+            },
           },
         ],
       },

@@ -12,7 +12,7 @@ import { createStringType } from './createStringType'
 import { createNumberType } from './createNumberType'
 import { createBooleanType } from './createBooleanType'
 import { createDictionaryType } from './createDictionaryType'
-import { createObjectType } from './createTypedObjectType'
+import { createObjectType } from './createObjectType'
 import { createArrayType } from './createArrayType'
 import { createUnionType } from './createUnionType'
 

@@ -1,0 +1,51 @@
+import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { ParameterObject, ReferenceObject } from '../schema'
+import { isRefType } from '../utils'
+import { createType } from './createType'
+import { ref } from './ref'
+import { ModelType, ParameterType, Ref } from './types'
+
+const InMap = {
+  ['query']: ModelType.QueryParameterType,
+  ['header']: ModelType.HeaderParameterType,
+  ['path']: ModelType.PathParameterType,
+  ['cookie']: ModelType.CookieParameterType,
+}
+
+export function createParameter(
+  input: FactoryInput<ParameterObject | ReferenceObject>,
+  context: FactoryContext,
+): Ref<ParameterType> {
+  const { data, uri } = input
+  const { model, config } = context
+
+  if (isRefType(data)) {
+    return ref(data.$ref, model.parameters)
+  }
+
+  const { allowEmptyValue, explode, name, deprecated, description, style, allowReserved, schema } = data
+
+  // TODO validate in and style
+  const parameter: ParameterType = {
+    __type: InMap[data.in] as any,
+    allowEmptyValue,
+    explode,
+    name,
+    style: style as any,
+    urlEncode: !allowReserved,
+    deprecated,
+    description,
+    type: createType(
+      {
+        name: null,
+        uri: config.path.append(uri, 'schema'),
+        data: schema,
+      },
+      context,
+    ),
+  }
+
+  model.parameters.set(uri, parameter)
+
+  return ref(uri, model.parameters)
+}

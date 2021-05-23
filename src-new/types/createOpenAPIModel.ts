@@ -1,32 +1,30 @@
-import { createContext, FactoryContext, FactoryInput, OpenAPIConfig, OpenAPIModel } from '../FactoryContext'
-import { OpenAPIObject, ReferenceObject, SchemaObject } from '../schema'
-import { entries } from '../utils'
-import { createDiscriminatorFields } from './createDiscriminatorFields'
-import { createType } from './createType'
-import { ModelType, UnionType } from './types'
+import { createContext, FactoryContext, OpenAPIConfig } from '../FactoryContext'
+import { OpenAPIObject } from '../schema'
+import { createParameters } from './createParameters'
+import { createTypes } from './createTypes'
 
 export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, config: OpenAPIConfig): FactoryContext {
   const { components, paths } = openAPIModel
-  const { headers, parameters, requestBodies, responses, schemas } = components
+  const { schemas, parameters, headers, requestBodies, responses } = components
   const context = createContext({ config })
 
-  // Build schemas
-  for (const [name, data] of entries<SchemaObject | ReferenceObject>(schemas)) {
-    const input: FactoryInput<SchemaObject | ReferenceObject> = {
-      name,
-      data,
-      uri: context.config.path.append(uri, 'components', 'schemas', name),
-    }
-    createType(input, context)
-  }
+  createTypes(
+    {
+      data: schemas || {},
+      name: null,
+      uri: config.path.append(uri, 'components', 'schemas'),
+    },
+    context,
+  )
 
-  const unionTypes = Array.from(context.model.types.values()).filter(
-    (type) => type.__type === ModelType.UnionType,
-  ) as UnionType[]
-
-  for (const unionType of unionTypes) {
-    createDiscriminatorFields(unionType)
-  }
+  createParameters(
+    {
+      data: parameters || {},
+      name: null,
+      uri: config.path.append(uri, 'components', 'parameters'),
+    },
+    context,
+  )
 
   return context
 }

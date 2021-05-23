@@ -130,15 +130,19 @@ export type PathsObject = {
   [path: string]: PathItemObject | any
 }
 
+export type SchemasObject = {
+  [schema: string]: SchemaObject | ReferenceObject
+}
+
+export type ParametersObject = {
+  [parameter: string]: ParameterObject | ReferenceObject
+}
+
 export type ComponentsObject = {
-  schemas?: {
-    [schema: string]: SchemaObject | ReferenceObject
-  }
+  schemas?: SchemasObject
+  parameters?: ParametersObject
   responses?: {
     [response: string]: ResponseObject | ReferenceObject
-  }
-  parameters?: {
-    [parameter: string]: ParameterObject | ReferenceObject
   }
   requestBodies?: {
     [request: string]: RequestBodyObject | ReferenceObject
@@ -213,6 +217,8 @@ export type ServerObject = {
 type StringKeyedMap<T> = {
   [key: string]: T
 }
+
+export type SchemaOrReferenceObject = SchemasObject | ReferenceObject
 
 export type ReferenceObject = {
   $ref: string

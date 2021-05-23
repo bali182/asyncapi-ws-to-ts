@@ -19,6 +19,7 @@ function allObjectTypesFor(ref: Ref<Type>, objectRefs: Ref<ObjectType>[]): Ref<O
       allObjectTypesFor(refType, objectRefs)
     }
   }
+
   return objectRefs
 }
 
@@ -29,20 +30,20 @@ export function createDiscriminatorFields(rootType: UnionType): void {
     return
   }
 
-  const discMap: Map<string, Ref<ObjectType>[]> = new Map()
+  const discriminatorMap: Map<string, Ref<ObjectType>[]> = new Map()
 
   // First find all the object types we need to augment with discriminators
   for (const [ref, value] of Array.from(types.entries())) {
     if (isNil(value)) {
       continue
     }
-    discMap.set(value, [])
-    allObjectTypesFor(ref, discMap.get(value))
+    discriminatorMap.set(value, [])
+    allObjectTypesFor(ref, discriminatorMap.get(value))
   }
 
   // Augment each type with the given discriminator field
-  for (const value of Array.from(discMap.keys())) {
-    for (const objTypeRef of discMap.get(value)) {
+  for (const value of Array.from(discriminatorMap.keys())) {
+    for (const objTypeRef of discriminatorMap.get(value)) {
       const objType = objTypeRef.value()
       const existingField = objType.discriminators.find((field) => field.name === property)
 

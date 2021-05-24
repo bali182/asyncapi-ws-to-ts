@@ -13,7 +13,6 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "./src/**/*",
-    "./src-new/**/*",
+    "src/**/*"
   ]
 }

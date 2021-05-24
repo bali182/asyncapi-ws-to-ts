@@ -23,10 +23,8 @@ export function createArrayType(input: FactoryInput<SchemaObject>, context: Fact
       ? noRef
       : createType(
           {
-            ...input,
             data: data.items,
             uri: config.uri.append(uri, 'items'),
-            name: null,
           },
           context,
         ),

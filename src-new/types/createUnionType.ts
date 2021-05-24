@@ -23,7 +23,6 @@ export function createUnionType(input: FactoryInput<SchemaObject>, context: Fact
       createType(
         {
           uri: config.uri.append(uri, 'oneOf', i.toString()),
-          name: null,
           data: type,
         },
         context,

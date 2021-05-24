@@ -30,7 +30,6 @@ export function createHeader(
     description,
     type: createType(
       {
-        name: null,
         uri: config.uri.append(uri, 'schema'),
         data: schema,
       },

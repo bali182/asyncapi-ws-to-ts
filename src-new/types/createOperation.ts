@@ -1,9 +1,10 @@
 import { FactoryContext, FactoryInput } from '../FactoryContext'
-import { OperationObject, ReferenceObject, ResponseObject } from '../schema'
+import { OperationObject } from '../schema'
 import { entries } from '../utils'
 import { createParameter } from './createParameter'
+import { createRequestBody } from './createRequestBody'
 import { createResponse } from './createResponse'
-import { noRef, ref } from './ref'
+import { ref } from './ref'
 import { HttpMethod, ModelType, OperationType, Ref } from './types'
 
 export function createOperation(
@@ -14,12 +15,18 @@ export function createOperation(
 ): Ref<OperationType> {
   const { config, model } = context
   const { data, uri } = input
-  const { operationId, deprecated, description, parameters: _parameters, responses: _responses, requestBody } = data
+  const {
+    operationId,
+    deprecated,
+    description,
+    parameters: _parameters,
+    responses: _responses,
+    requestBody: _requestBody,
+  } = data
 
   const parameters = (_parameters || []).map((parameter, i) =>
     createParameter(
       {
-        ...input,
         uri: config.uri.append(uri, 'parameters', i.toString()),
         data: parameter,
       },
@@ -33,10 +40,17 @@ export function createOperation(
       {
         data: response,
         uri: config.uri.append(uri, 'responses', status),
-        name: null,
       },
       context,
     ),
+  )
+
+  const requestBody = createRequestBody(
+    {
+      data: _requestBody,
+      uri: config.uri.append(uri, 'requestBody'),
+    },
+    context,
   )
 
   const operation: OperationType = {
@@ -49,7 +63,7 @@ export function createOperation(
     uri,
     parameters,
     responses,
-    requestBody: noRef,
+    requestBody,
   }
 
   model.operations.set(uri, operation)

@@ -1,8 +1,9 @@
 import { FactoryContext, FactoryInput } from '../FactoryContext'
-import { ContentObject, HeaderObject, HeadersObject, MediaTypeObject, ReferenceObject, ResponseObject } from '../schema'
-import { entries, isNil, isRefType, keys } from '../utils'
+import { HeadersObject, ReferenceObject, ResponseObject } from '../schema'
+import { entries, isNil, isRefType } from '../utils'
 import { createHeader } from './createHeader'
 import { createType } from './createType'
+import { getContentType } from './getContentType'
 import { noRef, ref } from './ref'
 import { HeaderParameterType, ModelType, Ref, ResponseType, Type } from './types'
 
@@ -19,32 +20,12 @@ function createResponseHeaders(input: FactoryInput<HeadersObject>, context: Fact
   )
 }
 
-function getContentType(input: FactoryInput<ContentObject>, context: FactoryContext): string {
-  const { data, uri } = input
-  // No response
-  if (isNil(data)) {
-    return null
-  }
-  const mediaTypes = keys(data)
-  switch (mediaTypes.length) {
-    // No media type meaning no response
-    case 0:
-      return null
-    // 1 media type, we are in business
-    case 1:
-      return mediaTypes[0]
-    // Any more media types, we can't handle that for now.
-    default:
-      throw new TypeError(`Expected single content type at ${uri}, got ${mediaTypes.join(', ')}.`)
-  }
-}
-
 export function createResponse(
   statusCode: number,
   input: FactoryInput<ResponseObject | ReferenceObject>,
   context: FactoryContext,
 ): Ref<ResponseType> {
-  const { data, uri } = input
+  const { data, uri, name } = input
   const { config, model } = context
 
   if (isRefType(data)) {
@@ -53,9 +34,8 @@ export function createResponse(
 
   const contentType: string = getContentType(
     {
-      data: data.content,
       uri: config.uri.append(uri, 'content'),
-      name: null,
+      data: data.content,
     },
     context,
   )
@@ -64,7 +44,6 @@ export function createResponse(
     !isNil(contentType) && !isNil(data?.content[contentType]?.schema)
       ? createType(
           {
-            name: null,
             uri: config.uri.append(uri, 'content', contentType, 'schema'),
             data: data.content[contentType].schema,
           },
@@ -74,15 +53,15 @@ export function createResponse(
 
   const headers: Ref<HeaderParameterType>[] = createResponseHeaders(
     {
-      data: data.headers,
       uri: config.uri.append(uri, 'headers'),
-      name: null,
+      data: data.headers,
     },
     context,
   )
 
   const response: ResponseType = {
     __type: ModelType.ResponseType,
+    name,
     contentType,
     statusCode,
     type,

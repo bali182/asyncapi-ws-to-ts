@@ -20,10 +20,8 @@ export function createDictionaryType(input: FactoryInput<SchemaObject>, context:
       ? noRef
       : createType(
           {
-            ...input,
             data: data.additionalProperties,
             uri: config.uri.append(uri, 'additionalProperties'),
-            name: null,
           },
           context,
         ),

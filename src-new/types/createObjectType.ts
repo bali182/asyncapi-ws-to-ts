@@ -21,9 +21,7 @@ function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryCo
           ? noRef
           : createType(
               {
-                ...input,
                 uri: propUri,
-                name: null,
                 data: propSchema,
               },
               context,

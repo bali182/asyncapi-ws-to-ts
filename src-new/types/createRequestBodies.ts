@@ -1,5 +1,5 @@
 import { FactoryContext, FactoryInput } from '../FactoryContext'
-import { ReferenceObject, RequestBodiesObject, RequestBodyObject } from '../schema'
+import { RequestBodiesObject } from '../schema'
 import { entries } from '../utils'
 import { createRequestBody } from './createRequestBody'
 
@@ -7,11 +7,13 @@ export function createRequestBodies(input: FactoryInput<RequestBodiesObject>, co
   const { uri, data } = input
 
   for (const [name, schema] of entries(data || {})) {
-    const input: FactoryInput<RequestBodyObject | ReferenceObject> = {
-      name,
-      data: schema,
-      uri: context.config.uri.append(uri, name),
-    }
-    createRequestBody(input, context)
+    createRequestBody(
+      {
+        name,
+        data: schema,
+        uri: context.config.uri.append(uri, name),
+      },
+      context,
+    )
   }
 }

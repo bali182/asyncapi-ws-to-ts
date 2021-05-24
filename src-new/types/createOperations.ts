@@ -1,4 +1,4 @@
-import { PathsObject, PathItemObject } from '../schema'
+import { PathsObject } from '../schema'
 import { HttpMethod } from './types'
 import { entries, isNil, values } from '../utils'
 import { FactoryContext, FactoryInput } from '../FactoryContext'

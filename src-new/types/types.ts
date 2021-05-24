@@ -201,17 +201,23 @@ export type OperationType = HasUri &
     responses: Ref<ResponseType>[]
   }
 
-export type RequestBodyType = HasUri & {
-  __type: ModelType.RequestBodyType
-}
+export type RequestBodyType = HasName &
+  HasUri &
+  HasDescription & {
+    __type: ModelType.RequestBodyType
+    contentType: string
+    type: Ref<Type>
+    isRequired: boolean
+  }
 
-export type ResponseType = HasUri & {
-  __type: ModelType.ResponseType
-  statusCode: number
-  contentType: string
-  headers: Ref<HeaderParameterType>[]
-  type: Ref<Type>
-}
+export type ResponseType = HasName &
+  HasUri & {
+    __type: ModelType.ResponseType
+    statusCode: number
+    contentType: string
+    headers: Ref<HeaderParameterType>[]
+    type: Ref<Type>
+  }
 
 export type _ParameterType<T extends ModelType, S extends ParameterStyle> = HasDescription &
   HasDeprecation & {

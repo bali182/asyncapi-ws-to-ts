@@ -6,7 +6,7 @@ import { createOperation } from './createOperation'
 
 export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {
   const { config } = context
-  for (const [url, urlPath] of entries<PathItemObject>(input)) {
+  for (const [url, urlPath] of entries(input.data || {})) {
     const methods: HttpMethod[] = values(HttpMethod)
     for (const method of methods) {
       const operation = urlPath[method]

@@ -33,7 +33,7 @@ export type ContentObject = {
 
 export type OperationResponsesObject = {
   default?: ResponseObject | ReferenceObject
-  [statuscode: string]: ResponseObject | ReferenceObject | any
+  [statuscode: string]: ResponseObject | ReferenceObject
 }
 
 export type ResponseObject = {
@@ -127,7 +127,7 @@ export type SecurityRequirementObject = {
 }
 
 export type PathsObject = {
-  [path: string]: PathItemObject | any
+  [path: string]: PathItemObject
 }
 
 export type SchemasObject = {

@@ -32,15 +32,15 @@ export function isObject(input: any): boolean {
   return input instanceof Object
 }
 
-export function keys(input: object): string[] {
-  return Object.keys(input)
+export function keys<K extends string>(input: Record<K, any>): K[] {
+  return Object.keys(input) as K[]
 }
 
-export function values(input: object): any[] {
+export function values<V>(input: Record<any, V>): V[] {
   return keys(input).map((key) => input[key])
 }
 
-export function entries<T = any>(input: object): [string, T][] {
+export function entries<K extends string, V>(input: Record<K, V>): [K, V][] {
   return keys(input).map((key) => [key, input[key]])
 }
 

@@ -3,7 +3,7 @@ import { ModelType, ObjectType, Ref, Type, UnionType } from './types'
 
 function allObjectTypesFor(ref: Ref<Type>, objectRefs: Ref<ObjectType>[]): Ref<ObjectType>[] {
   // Nothing to do if it's not resolved yet
-  if (isNil(ref.get())) {
+  if (ref.isResolved()) {
     return
   }
 

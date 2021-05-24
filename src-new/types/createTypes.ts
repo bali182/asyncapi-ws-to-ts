@@ -8,7 +8,7 @@ import { ModelType, UnionType } from './types'
 export function createTypes(input: FactoryInput<SchemasObject>, context: FactoryContext): void {
   const { uri, data } = input
 
-  for (const [name, schema] of entries<SchemaObject | ReferenceObject>(data)) {
+  for (const [name, schema] of entries(data)) {
     const input: FactoryInput<SchemaObject | ReferenceObject> = {
       name,
       data: schema,

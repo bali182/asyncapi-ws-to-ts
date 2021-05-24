@@ -6,12 +6,12 @@ import { createResponse } from './createResponse'
 export function createResponses(input: FactoryInput<ResponsesObject>, context: FactoryContext): void {
   const { uri, data } = input
 
-  for (const [name, schema] of entries<ResponseObject | ReferenceObject>(data)) {
+  for (const [status, schema] of entries(data)) {
     const input: FactoryInput<ResponseObject | ReferenceObject> = {
-      name,
+      name: null,
       data: schema,
-      uri: context.config.uri.append(uri, name),
+      uri: context.config.uri.append(uri, status),
     }
-    createResponse(input, context)
+    createResponse(parseInt(status), input, context)
   }
 }

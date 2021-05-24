@@ -18,6 +18,7 @@ export enum ModelType {
 
   OperationType = 'OperationType',
   ResponseType = 'ResponseType',
+  RequestBodyType = 'RequestBodyType',
   ParameterType = 'ParameterType',
 
   QueryParameterType = 'QueryParameterType',
@@ -196,16 +197,20 @@ export type OperationType = HasUri &
     method: HttpMethod
     parameters: Ref<ParameterType>[]
     url: string
-    requestBody?: any[]
-    responses: any[]
+    requestBody: Ref<RequestBodyType>
+    responses: Ref<ResponseType>[]
   }
 
-export type ResponseType = {
+export type RequestBodyType = HasUri & {
+  __type: ModelType.RequestBodyType
+}
+
+export type ResponseType = HasUri & {
   __type: ModelType.ResponseType
   statusCode: number
   contentType: string
-  headers: HeaderParameterType[]
-  type: Type
+  headers: Ref<HeaderParameterType>[]
+  type: Ref<Type>
 }
 
 export type _ParameterType<T extends ModelType, S extends ParameterStyle> = HasDescription &

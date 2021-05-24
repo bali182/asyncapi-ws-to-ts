@@ -1,4 +1,4 @@
-import { ReferenceObject, SchemaObject } from '../schema'
+import { SchemaObject } from '../schema'
 import { Ref, ModelType, ObjectType, ObjectField, Type } from './types'
 import { FactoryContext, FactoryInput } from '../FactoryContext'
 import { noRef, ref } from './ref'
@@ -10,7 +10,7 @@ function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryCo
   const { properties } = data
   const { config } = context
 
-  return entries<SchemaObject | ReferenceObject>(properties || {}).map(
+  return entries(properties || {}).map(
     ([propName, propSchema]): ObjectField => {
       const propUri = config.uri.append(uri, 'properties', propName)
       return {

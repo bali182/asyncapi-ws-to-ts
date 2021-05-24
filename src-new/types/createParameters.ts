@@ -6,7 +6,7 @@ import { createParameter } from './createParameter'
 export function createParameters(input: FactoryInput<ParametersObject>, context: FactoryContext): void {
   const { uri, data } = input
 
-  for (const [name, schema] of entries<ParameterObject | ReferenceObject>(data)) {
+  for (const [name, schema] of entries(data)) {
     const input: FactoryInput<ParameterObject | ReferenceObject> = {
       name,
       data: schema,

@@ -1,9 +1,9 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { HeadersObject } from '../schema'
 import { entries } from '../utils'
 import { createHeader } from './createHeader'
 
-export function createHeaders(input: FactoryInput<HeadersObject>, context: FactoryContext): void {
+export function createHeaders(input: Input<HeadersObject>, context: OpenAPIModel): void {
   const { uri, data } = input
 
   for (const [name, schema] of entries(data)) {

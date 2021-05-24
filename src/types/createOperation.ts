@@ -1,17 +1,17 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { OperationObject } from '../schema'
-import { entries } from '../utils'
+import { entries, isNil } from '../utils'
 import { createParameter } from './createParameter'
 import { createRequestBody } from './createRequestBody'
 import { createResponse } from './createResponse'
-import { ref } from './ref'
+import { noRef, ref } from './ref'
 import { HttpMethod, ModelType, OperationType, Ref } from './types'
 
 export function createOperation(
   url: string,
   method: HttpMethod,
-  input: FactoryInput<OperationObject>,
-  context: FactoryContext,
+  input: Input<OperationObject>,
+  context: OpenAPIModel,
 ): Ref<OperationType> {
   const { config, model } = context
   const { data, uri } = input
@@ -45,13 +45,15 @@ export function createOperation(
     ),
   )
 
-  const requestBody = createRequestBody(
-    {
-      data: _requestBody,
-      uri: config.uri.append(uri, 'requestBody'),
-    },
-    context,
-  )
+  const requestBody = isNil(_requestBody)
+    ? noRef
+    : createRequestBody(
+        {
+          data: _requestBody,
+          uri: config.uri.append(uri, 'requestBody'),
+        },
+        context,
+      )
 
   const operation: OperationType = {
     __type: ModelType.OperationType,

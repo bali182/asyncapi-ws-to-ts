@@ -1,4 +1,4 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ReferenceObject, RequestBodyObject } from '../schema'
 import { isNil, isRefType } from '../utils'
 import { createType } from './createType'
@@ -7,8 +7,8 @@ import { noRef, ref } from './ref'
 import { ModelType, Ref, RequestBodyType, Type } from './types'
 
 export function createRequestBody(
-  input: FactoryInput<RequestBodyObject | ReferenceObject>,
-  context: FactoryContext,
+  input: Input<RequestBodyObject | ReferenceObject>,
+  context: OpenAPIModel,
 ): Ref<RequestBodyType> {
   const { data, uri, name } = input
   const { model, config } = context

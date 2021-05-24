@@ -1,4 +1,4 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ParameterObject, ReferenceObject } from '../schema'
 import { isRefType } from '../utils'
 import { createType } from './createType'
@@ -13,8 +13,8 @@ const InMap = {
 }
 
 export function createParameter(
-  input: FactoryInput<ParameterObject | ReferenceObject>,
-  context: FactoryContext,
+  input: Input<ParameterObject | ReferenceObject>,
+  context: OpenAPIModel,
 ): Ref<ParameterType> {
   const { data, uri } = input
   const { model, config } = context

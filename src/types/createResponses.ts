@@ -1,9 +1,9 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ResponsesObject } from '../schema'
 import { entries } from '../utils'
 import { createResponse } from './createResponse'
 
-export function createResponses(input: FactoryInput<ResponsesObject>, context: FactoryContext): void {
+export function createResponses(input: Input<ResponsesObject>, context: OpenAPIModel): void {
   const { uri, data } = input
 
   for (const [name, schema] of entries(data)) {

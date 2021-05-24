@@ -1,15 +1,15 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ReferenceObject, SchemaObject, SchemasObject } from '../schema'
 import { entries } from '../utils'
 import { createDiscriminatorFields } from './createDiscriminatorFields'
 import { createType } from './createType'
 import { ModelType, UnionType } from './types'
 
-export function createTypes(input: FactoryInput<SchemasObject>, context: FactoryContext): void {
+export function createTypes(input: Input<SchemasObject>, context: OpenAPIModel): void {
   const { uri, data } = input
 
   for (const [name, schema] of entries(data)) {
-    const input: FactoryInput<SchemaObject | ReferenceObject> = {
+    const input: Input<SchemaObject | ReferenceObject> = {
       name,
       data: schema,
       uri: context.config.uri.append(uri, name),

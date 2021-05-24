@@ -1,11 +1,11 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { SchemaObject } from '../schema'
 import { entries } from '../utils'
 import { createType } from './createType'
 import { ref } from './ref'
 import { UnionType, ModelType, Ref, Type } from './types'
 
-export function createUnionType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createUnionType(input: Input<SchemaObject>, context: OpenAPIModel): Ref<Type> {
   const { data, name, uri } = input
   const { model, config } = context
   const { oneOf, discriminator, deprecated, description } = data

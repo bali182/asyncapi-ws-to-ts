@@ -1,8 +1,8 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ContentObject } from '../schema'
 import { isNil, keys } from '../utils'
 
-export function getContentType(input: FactoryInput<ContentObject>, context: FactoryContext): string {
+export function getContentType(input: Input<ContentObject>, context: OpenAPIModel): string {
   const { data, uri } = input
   // No response
   if (isNil(data)) {

@@ -1,9 +1,9 @@
 import { SchemaObject } from '../schema'
-import { Ref, ModelType, StringFormat, StringType, Type } from './types'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { Ref, ModelType, StringType, Type } from './types'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ref } from './ref'
 
-export function createStringType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createStringType(input: Input<SchemaObject>, context: OpenAPIModel): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description, format, maxLength, minLength, pattern } = data
 
@@ -16,7 +16,7 @@ export function createStringType(input: FactoryInput<SchemaObject>, context: Fac
     maxLength,
     minLength,
     pattern,
-    format: format as StringFormat,
+    format,
   }
   context.model.types.set(uri, stringType)
 

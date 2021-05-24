@@ -5,16 +5,16 @@ import { Issue } from './validation/typings'
 
 export type URITransform = (uri: string) => string
 
-export type FactoryInput<S> = {
+export type Input<S> = {
   readonly uri: string
   readonly data: S
   readonly name?: string
 }
 
-export type FactoryContext = {
-  readonly model: OpenAPIModel
-  readonly issues: Issue[]
+export type OpenAPIModel = {
+  readonly model: OpenAPIData
   readonly config: OpenAPIConfig
+  readonly issues: Issue[]
 }
 
 export type URIManipulator = {
@@ -24,7 +24,7 @@ export type URIManipulator = {
   sanitize(path: string): string
 }
 
-export type OpenAPIModel = {
+export type OpenAPIData = {
   readonly types: Map<string, Type>
   readonly operations: Map<string, OperationType>
   readonly parameters: Map<string, ParameterType>
@@ -52,7 +52,7 @@ export function createConfig(base: Partial<OpenAPIConfig> = {}): OpenAPIConfig {
   }
 }
 
-export function createModel(base: Partial<OpenAPIModel> = {}): OpenAPIModel {
+export function createModel(base: Partial<OpenAPIData> = {}): OpenAPIData {
   const { operations, responses, requestBodies, parameters, types } = base
   return {
     operations: isNil(operations) ? new Map() : operations,
@@ -63,7 +63,7 @@ export function createModel(base: Partial<OpenAPIModel> = {}): OpenAPIModel {
   }
 }
 
-export function createContext(base: Partial<FactoryContext> = {}): FactoryContext {
+export function createContext(base: Partial<OpenAPIModel> = {}): OpenAPIModel {
   return {
     config: createConfig(base.config),
     model: createModel(base.model),

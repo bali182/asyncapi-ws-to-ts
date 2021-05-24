@@ -1,10 +1,10 @@
 import { PathsObject } from '../schema'
 import { HttpMethod } from './types'
 import { entries, isNil, values } from '../utils'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { createOperation } from './createOperation'
 
-export function createOperations(input: FactoryInput<PathsObject>, context: FactoryContext): void {
+export function createOperations(input: Input<PathsObject>, context: OpenAPIModel): void {
   const { config } = context
   for (const [url, urlPath] of entries(input.data || {})) {
     const methods: HttpMethod[] = values(HttpMethod)

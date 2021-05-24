@@ -32,26 +32,6 @@ export enum NumberFormat {
   Float = 'float',
 }
 
-export enum StringFormat {
-  DateTime = 'date-time',
-  Date = 'date',
-  Time = 'time',
-  Email = 'email',
-  IdnEmail = 'idn-email',
-  Hostname = 'hostname',
-  IdnHostname = 'idn-hostname',
-  Ipv4 = 'ipv4',
-  Ipv6 = 'ipv6',
-  Uri = 'uri',
-  UriReference = 'uri-reference',
-  Iri = 'iri',
-  IriReference = 'iri-reference',
-  UriTemplate = 'uri-template',
-  JsonPointer = 'json-pointer',
-  RelativeJsonPointer = 'relative-json-pointer',
-  Regex = 'regex',
-}
-
 export enum HttpMethod {
   Get = 'get',
   Put = 'put',
@@ -148,7 +128,7 @@ export type DictionaryType = CommonType & {
 
 export type StringType = CommonType & {
   __type: ModelType.StringType
-  format?: StringFormat
+  format?: string
   pattern?: string
   maxLength?: number
   minLength?: number

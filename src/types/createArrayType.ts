@@ -1,11 +1,11 @@
 import { SchemaObject } from '../schema'
 import { Ref, ModelType, ArrayType, Type } from './types'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ref, noRef } from './ref'
 import { createType } from './createType'
 import { isNil } from '../utils'
 
-export function createArrayType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createArrayType(input: Input<SchemaObject>, context: OpenAPIModel): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description, maxItems, minItems, uniqueItems } = data
   const { model, config } = context

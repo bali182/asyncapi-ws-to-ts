@@ -1,4 +1,4 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { HeadersObject, ReferenceObject, ResponseObject } from '../schema'
 import { entries, isNil, isRefType } from '../utils'
 import { createHeader } from './createHeader'
@@ -7,7 +7,7 @@ import { getContentType } from './getContentType'
 import { noRef, ref } from './ref'
 import { HeaderParameterType, ModelType, Ref, ResponseType, Type } from './types'
 
-function createResponseHeaders(input: FactoryInput<HeadersObject>, context: FactoryContext) {
+function createResponseHeaders(input: Input<HeadersObject>, context: OpenAPIModel) {
   return entries(input.data || {}).map(([name, header]) =>
     createHeader(
       {
@@ -22,8 +22,8 @@ function createResponseHeaders(input: FactoryInput<HeadersObject>, context: Fact
 
 export function createResponse(
   statusCode: number,
-  input: FactoryInput<ResponseObject | ReferenceObject>,
-  context: FactoryContext,
+  input: Input<ResponseObject | ReferenceObject>,
+  context: OpenAPIModel,
 ): Ref<ResponseType> {
   const { data, uri, name } = input
   const { config, model } = context

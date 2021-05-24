@@ -1,4 +1,4 @@
-import { createContext, FactoryContext, OpenAPIConfig } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { OpenAPIObject } from '../schema'
 import { createHeaders } from './createHeaders'
 import { createOperations } from './createOperations'
@@ -7,17 +7,15 @@ import { createRequestBodies } from './createRequestBodies'
 import { createResponses } from './createResponses'
 import { createTypes } from './createTypes'
 
-export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, config: OpenAPIConfig): FactoryContext {
-  const context = createContext({ config })
-  const _uri = context.config.uri.sanitize(uri)
-
-  const { components, paths } = openAPIModel
+export function createOpenAPIModel(input: Input<OpenAPIObject>, context: OpenAPIModel): OpenAPIModel {
+  const { data, uri } = input
+  const { components, paths } = data
   const { schemas, parameters, headers, requestBodies, responses } = components
 
   createTypes(
     {
       data: schemas || {},
-      uri: context.config.uri.append(_uri, 'components', 'schemas'),
+      uri: context.config.uri.append(uri, 'components', 'schemas'),
     },
     context,
   )
@@ -25,7 +23,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
   createParameters(
     {
       data: parameters || {},
-      uri: context.config.uri.append(_uri, 'components', 'parameters'),
+      uri: context.config.uri.append(uri, 'components', 'parameters'),
     },
     context,
   )
@@ -33,7 +31,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
   createHeaders(
     {
       data: headers || {},
-      uri: context.config.uri.append(_uri, 'components', 'headers'),
+      uri: context.config.uri.append(uri, 'components', 'headers'),
     },
     context,
   )
@@ -41,7 +39,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
   createResponses(
     {
       data: responses || {},
-      uri: context.config.uri.append(_uri, 'components', 'responses'),
+      uri: context.config.uri.append(uri, 'components', 'responses'),
     },
     context,
   )
@@ -49,7 +47,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
   createRequestBodies(
     {
       data: requestBodies || {},
-      uri: context.config.uri.append(_uri, 'components', 'requestBodies'),
+      uri: context.config.uri.append(uri, 'components', 'requestBodies'),
     },
     context,
   )
@@ -57,7 +55,7 @@ export function createOpenAPIModel(uri: string, openAPIModel: OpenAPIObject, con
   createOperations(
     {
       data: paths || {},
-      uri: context.config.uri.append(_uri, 'paths'),
+      uri: context.config.uri.append(uri, 'paths'),
     },
     context,
   )

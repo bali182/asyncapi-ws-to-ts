@@ -1,11 +1,11 @@
 import { SchemaObject } from '../schema'
 import { Ref, ModelType, ObjectType, ObjectField, Type } from './types'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { noRef, ref } from './ref'
 import { createType } from './createType'
 import { entries, isNil } from '../utils'
 
-function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryContext): ObjectField[] {
+function createObjectField(input: Input<SchemaObject>, context: OpenAPIModel): ObjectField[] {
   const { data, uri } = input
   const { properties } = data
   const { config } = context
@@ -32,7 +32,7 @@ function createObjectField(input: FactoryInput<SchemaObject>, context: FactoryCo
   )
 }
 
-export function createObjectType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createObjectType(input: Input<SchemaObject>, context: OpenAPIModel): Ref<Type> {
   const { name, data, uri } = input
   const { deprecated, description } = data
   const { model } = context

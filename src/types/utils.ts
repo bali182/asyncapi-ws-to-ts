@@ -1,9 +1,9 @@
 import { Severity, Validator } from '../validation/typings'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 
 export const withValidaton = <T>(
-  input: FactoryInput<any>,
-  context: FactoryContext,
+  input: Input<any>,
+  context: OpenAPIModel,
   validator: Validator<any>,
   fn: () => T,
 ): T => {

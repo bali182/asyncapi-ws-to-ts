@@ -1,10 +1,10 @@
 import { SchemaObject } from '../schema'
 import { Ref, EnumType, EnumValue, ModelType, Type } from './types'
 import { isNil } from '../utils'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { ref } from './ref'
 
-function createEnumValues(input: FactoryInput<SchemaObject>, context: FactoryContext): EnumValue[] {
+function createEnumValues(input: Input<SchemaObject>, context: OpenAPIModel): EnumValue[] {
   const { data, uri } = input
   const varNames = isNil(data['x-enum-varnames']) ? Array.from(data.enum) : data['x-enum-varnames']
   const descriptions = isNil(data['x-enum-descriptions']) ? data.enum.map(() => null) : data['x-enum-descriptions']
@@ -23,7 +23,7 @@ function createEnumValues(input: FactoryInput<SchemaObject>, context: FactoryCon
   })
 }
 
-export function createEnumType(input: FactoryInput<SchemaObject>, context: FactoryContext): Ref<Type> {
+export function createEnumType(input: Input<SchemaObject>, context: OpenAPIModel): Ref<Type> {
   const { name, data, uri } = input
   const { description, deprecated } = data
   const { model } = context

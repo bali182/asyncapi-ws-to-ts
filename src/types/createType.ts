@@ -2,7 +2,7 @@ import { schemaValidator } from '../sanitization/schemaObject'
 import { ReferenceObject, SchemaObject } from '../schema'
 import { Ref, Type } from './types'
 import { isNil, isRefType } from '../utils'
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { withValidaton } from './utils'
 import { ref } from './ref'
 
@@ -15,7 +15,7 @@ import { createObjectType } from './createObjectType'
 import { createArrayType } from './createArrayType'
 import { createUnionType } from './createUnionType'
 
-export function createType(input: FactoryInput<SchemaObject | ReferenceObject>, context: FactoryContext): Ref<Type> {
+export function createType(input: Input<SchemaObject | ReferenceObject>, context: OpenAPIModel): Ref<Type> {
   const { data } = input
   const { config } = context
 

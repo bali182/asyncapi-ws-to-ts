@@ -12,7 +12,6 @@ import {
   primitive,
   union,
 } from '../validation/Validators'
-import { StringFormat } from '../types/types'
 
 export const refValidator = object(fields({ $ref: string() }))
 
@@ -27,7 +26,7 @@ const refOrSchema = () =>
 export const schemaValidator = object(
   fields({
     type: schemaType,
-    format: optional(string(enumeration(Object.values(StringFormat) as string[]))),
+    format: optional(string()),
     deprecated: optional(boolean()),
     multipleOf: optional(number()),
     maximum: optional(number()),

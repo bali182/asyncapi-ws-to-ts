@@ -1,4 +1,4 @@
-import { FactoryContext, FactoryInput } from '../FactoryContext'
+import { OpenAPIModel, Input } from '../FactoryContext'
 import { HeaderObject, ReferenceObject } from '../schema'
 import { isRefType } from '../utils'
 import { createType } from './createType'
@@ -6,8 +6,8 @@ import { ref } from './ref'
 import { HeaderParameterType, ModelType, Ref } from './types'
 
 export function createHeader(
-  input: FactoryInput<HeaderObject | ReferenceObject>,
-  context: FactoryContext,
+  input: Input<HeaderObject | ReferenceObject>,
+  context: OpenAPIModel,
 ): Ref<HeaderParameterType> {
   const { data, uri, name } = input
   const { model, config } = context

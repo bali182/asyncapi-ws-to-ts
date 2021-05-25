@@ -1,4 +1,4 @@
-import URI from 'urijs'
+import URI, { encode, decode } from 'urijs'
 import p from 'path'
 import { pathToFileURL } from 'url'
 import { isUri } from 'valid-url'
@@ -7,11 +7,11 @@ import { dropHead, isEmpty } from '../utils'
 const AcceptedSchemes = ['http', 'https', 'file']
 
 function setFragments(uri: string, fragments: string[]): string {
-  const fragment = fragments.length > 0 ? `/${fragments.join('/')}` : null
+  const fragment = fragments.length > 0 ? `/${fragments.map(encode).join('/')}` : null
   return new URI(uri).fragment(fragment).valueOf()
 }
 
-export function fragments(uri: string): string[] {
+function fragments(uri: string): string[] {
   const fragment = new URI(uri).fragment()
   if (isEmpty(fragment)) {
     return []
@@ -19,7 +19,7 @@ export function fragments(uri: string): string[] {
   if (fragment[0] !== '/') {
     throw new TypeError(`Malformed URI: ${uri}.`)
   }
-  return dropHead(fragment.split('/'))
+  return dropHead(fragment.split('/')).map(decode)
 }
 
 export function append(uri: string, ...pieces: string[]): string {

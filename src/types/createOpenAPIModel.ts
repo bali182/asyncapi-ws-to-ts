@@ -10,7 +10,7 @@ import { createTypes } from './createTypes'
 export function createOpenAPIModel(input: Input<OpenAPIObject>, context: OpenAPIModel): OpenAPIModel {
   const { data, uri } = input
   const { components, paths } = data
-  const { schemas, parameters, headers, requestBodies, responses } = components
+  const { schemas, parameters, headers, requestBodies, responses } = components || {}
 
   createTypes(
     {

@@ -1,9 +1,19 @@
-import { append, fragments, sanitize, resolve } from './uri/defaultFns'
+import { append, sanitize, resolve } from './uri/defaultFns'
 import { OperationType, ParameterType, Type } from './types/types'
 import { isNil } from './utils'
 import { Issue } from './validation/typings'
+import { SourceFile } from 'typescript'
 
-export type URITransform = (uri: string) => string
+export type ContentReader<Config, Context> = (config: Config) => Promise<Context>
+export type Generator<Context, Output> = (context: Context) => Promise<Output>
+export type Writer<Output> = (output: Output) => Promise<void>
+
+export type CompilationUnit<T> = {
+  path: string
+  content: T
+}
+
+export type TsCompilationUnit = CompilationUnit<SourceFile>
 
 export type Input<S> = {
   readonly uri: string
@@ -12,19 +22,18 @@ export type Input<S> = {
 }
 
 export type OpenAPIModel = {
-  readonly model: OpenAPIData
+  readonly model: OpenAPIReadData
   readonly config: OpenAPIConfig
   readonly issues: Issue[]
 }
 
 export type URIManipulator = {
-  fragments(path: string): string[]
   append(path: string, ...segments: string[]): string
   resolve(ref: string, parent: string): string
   sanitize(path: string): string
 }
 
-export type OpenAPIData = {
+export type OpenAPIReadData = {
   readonly types: Map<string, Type>
   readonly operations: Map<string, OperationType>
   readonly parameters: Map<string, ParameterType>
@@ -37,10 +46,9 @@ export type OpenAPIConfig = {
 }
 
 export function createURIManipulator(base: Partial<URIManipulator> = {}): URIManipulator {
-  const { append: _append, fragments: _fragments, resolve: _resolve, sanitize: _sanitize } = base
+  const { append: _append, resolve: _resolve, sanitize: _sanitize } = base
   return {
     append: isNil(_append) ? append : _append,
-    fragments: isNil(_fragments) ? fragments : _fragments,
     resolve: isNil(_resolve) ? resolve : _resolve,
     sanitize: isNil(_sanitize) ? sanitize : _sanitize,
   }
@@ -52,7 +60,7 @@ export function createConfig(base: Partial<OpenAPIConfig> = {}): OpenAPIConfig {
   }
 }
 
-export function createModel(base: Partial<OpenAPIData> = {}): OpenAPIData {
+export function createModel(base: Partial<OpenAPIReadData> = {}): OpenAPIReadData {
   const { operations, responses, requestBodies, parameters, types } = base
   return {
     operations: isNil(operations) ? new Map() : operations,

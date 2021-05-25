@@ -23,7 +23,7 @@ describe('parsing schema', () => {
     console.log(astToString(...asts))
   })
 
-  it('should read schema', async () => {
+  xit('should read adobe', async () => {
     const context = await readSchema('src/sample/adobe.yaml')
 
     const asts = Array.from(context.model.types.values())
@@ -31,5 +31,20 @@ describe('parsing schema', () => {
       .map((type) => makeType(type))
 
     console.log(astToString(...asts))
+  })
+
+  xit('should read nytims', async () => {
+    const context = await readSchema('src/sample/nytimes-books.yaml')
+
+    const asts = Array.from(context.model.types.values())
+      .filter((t) => !isNil(t.name))
+      .map((type) => makeType(type))
+
+    console.log(astToString(...asts))
+  })
+
+  it('should read bbc', async () => {
+    const context = await readSchema('src/sample/bbc.yaml')
+    console.log(context.model.operations)
   })
 })

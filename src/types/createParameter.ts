@@ -1,8 +1,8 @@
 import { OpenAPIModel, Input } from '../FactoryContext'
 import { ParameterObject, ReferenceObject } from '../schema'
-import { isRefType } from '../utils'
+import { isNil, isRefType } from '../utils'
 import { createType } from './createType'
-import { ref } from './ref'
+import { noRef, ref } from './ref'
 import { ModelType, ParameterType, Ref } from './types'
 
 const InMap = {
@@ -35,13 +35,15 @@ export function createParameter(
     urlEncode: !allowReserved,
     deprecated,
     description,
-    type: createType(
-      {
-        uri: config.uri.append(uri, 'schema'),
-        data: schema,
-      },
-      context,
-    ),
+    type: isNil(schema)
+      ? noRef
+      : createType(
+          {
+            uri: config.uri.append(uri, 'schema'),
+            data: schema,
+          },
+          context,
+        ),
   }
 
   model.parameters.set(uri, parameter)

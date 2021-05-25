@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { ContentObject } from '../../schema'
 import { isNil, keys } from '../../utils'
 

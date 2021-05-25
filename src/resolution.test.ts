@@ -6,7 +6,9 @@ import { astToString } from './openapi/ast/astPrint'
 import { createContext } from './openapi/defaults'
 import { harness } from './Harness'
 import { openAPIReader } from './openapi/openAPIReader'
-import { OpenAPIReadModel } from './openapi/OpenAPIReadModel'
+import { OpenAPIReadModel } from './openapi/readTypes'
+import { TsGeneratorOutput } from './openapi/generatorTypes'
+import { combine } from './openapi/generators/combine'
 
 describe('parsing schema', () => {
   xit('should parse schema', () => {
@@ -26,9 +28,9 @@ describe('parsing schema', () => {
   })
 
   it('should do something', async () => {
-    await harness<OpenAPIReadModel, any, any>()
+    await harness<OpenAPIReadModel, TsGeneratorOutput, any>()
       .read(openAPIReader({ root: 'src/sample/adobe.yaml' }))
-      .generate(null)
+      .generate(combine()())
       .write(null)
       .run()
   })

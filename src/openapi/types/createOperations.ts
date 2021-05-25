@@ -1,7 +1,7 @@
 import { PathsObject } from '../../schema'
 import { HttpMethod } from './types'
 import { entries, isNil, values } from '../../utils'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { createOperation } from './createOperation'
 
 export function createOperations(input: Input<PathsObject>, context: OpenAPIReadContext): void {

@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { ParameterObject, ReferenceObject } from '../../schema'
 import { isNil, isRefType } from '../../utils'
 import { createType } from './createType'

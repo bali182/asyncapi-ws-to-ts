@@ -1,6 +1,6 @@
 import { SchemaObject } from '../../schema'
 import { Ref, ModelType, StringType, Type } from './types'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { ref } from './ref'
 
 export function createStringType(input: Input<SchemaObject>, context: OpenAPIReadContext): Ref<Type> {

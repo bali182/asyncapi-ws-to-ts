@@ -48,6 +48,10 @@ export function dropHead<T>(input: ReadonlyArray<T>): T[] {
   return input.slice(1)
 }
 
+export function head<T>(input: T[]): T {
+  return input[0]
+}
+
 export function flatMap<T, X>(
   array: ReadonlyArray<T>,
   fn: (input: T, index: number, array: ReadonlyArray<T>) => X[],

@@ -1,5 +1,5 @@
 import { Severity, Validator } from '../../validation/typings'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 
 export const withValidaton = <T>(
   input: Input<any>,

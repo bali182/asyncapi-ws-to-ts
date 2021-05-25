@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { ReferenceObject, SchemaObject, SchemasObject } from '../../schema'
 import { entries } from '../../utils'
 import { createDiscriminatorFields } from './createDiscriminatorFields'

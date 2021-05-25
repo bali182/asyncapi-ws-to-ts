@@ -1,4 +1,4 @@
-import { URIManipulator } from '../openapi/URIManipulator'
+import { URIManipulator } from '../openapi/readTypes'
 
 export enum ValueType {
   STRING = 'string',

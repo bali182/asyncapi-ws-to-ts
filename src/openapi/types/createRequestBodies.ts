@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { RequestBodiesObject } from '../../schema'
 import { entries } from '../../utils'
 import { createRequestBody } from './createRequestBody'

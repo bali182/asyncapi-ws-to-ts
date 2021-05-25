@@ -2,7 +2,7 @@ import { schemaValidator } from '../sanitization/schemaObject'
 import { ReferenceObject, SchemaObject } from '../../schema'
 import { Ref, Type } from './types'
 import { isNil, isRefType } from '../../utils'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { withValidaton } from './utils'
 import { ref } from './ref'
 

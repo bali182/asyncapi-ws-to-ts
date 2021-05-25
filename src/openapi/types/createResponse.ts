@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { HeadersObject, ReferenceObject, ResponseObject } from '../../schema'
 import { entries, isNil, isRefType } from '../../utils'
 import { createHeader } from './createHeader'

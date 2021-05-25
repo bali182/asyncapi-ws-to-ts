@@ -1,9 +1,6 @@
 import { append, sanitize, resolve } from '../uri/defaultFns'
 import { isNil } from '../utils'
-import { OpenAPIReadConfig } from './OpenAPIReadConfig'
-import { OpenAPIReadContext } from './OpenAPIReadContext'
-import { OpenAPIReadModel } from './OpenAPIReadModel'
-import { URIManipulator } from './URIManipulator'
+import { OpenAPIReadConfig, OpenAPIReadContext, OpenAPIReadModel, URIManipulator } from './readTypes'
 
 export function createURIManipulator(base: Partial<URIManipulator> = {}): URIManipulator {
   const { append: _append, resolve: _resolve, sanitize: _sanitize } = base

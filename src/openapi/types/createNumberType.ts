@@ -1,4 +1,4 @@
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { SchemaObject } from '../../schema'
 import { ref } from './ref'
 import { ModelType, NumberFormat, NumberType, Ref, Type } from './types'

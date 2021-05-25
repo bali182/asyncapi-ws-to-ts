@@ -1,6 +1,6 @@
 import { SchemaObject } from '../../schema'
 import { Ref, ModelType, Type, DictionaryType } from './types'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { noRef, ref } from './ref'
 import { createType } from './createType'
 import { isNil } from '../../utils'

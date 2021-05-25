@@ -1,7 +1,7 @@
 import { SchemaObject } from '../../schema'
 import { Ref, EnumType, EnumValue, ModelType, Type } from './types'
 import { isNil } from '../../utils'
-import { OpenAPIReadContext, Input } from '../OpenAPIReadContext'
+import { OpenAPIReadContext, Input } from '../readTypes'
 import { ref } from './ref'
 
 function createEnumValues(input: Input<SchemaObject>, context: OpenAPIReadContext): EnumValue[] {

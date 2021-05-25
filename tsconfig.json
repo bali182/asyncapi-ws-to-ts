@@ -5,7 +5,6 @@
     "lib": [
       "es2017.object"
     ],
-    "noUnusedLocals": true,
     "noImplicitAny": false,
     "declaration": false,
     "outDir": "./dist",

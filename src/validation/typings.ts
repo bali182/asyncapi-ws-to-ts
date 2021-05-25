@@ -1,4 +1,4 @@
-import { URIManipulator } from '../FactoryContext'
+import { URIManipulator } from '../openapi/URIManipulator'
 
 export enum ValueType {
   STRING = 'string',

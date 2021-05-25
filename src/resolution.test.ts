@@ -1,10 +1,12 @@
-import { makeType } from './ast/astGenerators'
+import { makeType } from './openapi/ast/astGenerators'
 import { isNil } from './utils'
-import { sampleSchema } from './sample/sampleSchema'
-import { createOpenAPIModel } from './types/createOpenAPIModel'
-import { createContext } from './FactoryContext'
-import { readSchema } from './readSchema'
-import { astToString } from './ast/astPrint'
+import { sampleSchema } from './openapi/sample/sampleSchema'
+import { createOpenAPIModel } from './openapi/types/createOpenAPIModel'
+import { astToString } from './openapi/ast/astPrint'
+import { createContext } from './openapi/defaults'
+import { harness } from './Harness'
+import { openAPIReader } from './openapi/openAPIReader'
+import { OpenAPIReadModel } from './openapi/OpenAPIReadModel'
 
 describe('parsing schema', () => {
   xit('should parse schema', () => {
@@ -23,28 +25,11 @@ describe('parsing schema', () => {
     console.log(astToString(...asts))
   })
 
-  xit('should read adobe', async () => {
-    const context = await readSchema('src/sample/adobe.yaml')
-
-    const asts = Array.from(context.model.types.values())
-      .filter((t) => !isNil(t.name))
-      .map((type) => makeType(type))
-
-    console.log(astToString(...asts))
-  })
-
-  xit('should read nytims', async () => {
-    const context = await readSchema('src/sample/nytimes-books.yaml')
-
-    const asts = Array.from(context.model.types.values())
-      .filter((t) => !isNil(t.name))
-      .map((type) => makeType(type))
-
-    console.log(astToString(...asts))
-  })
-
-  it('should read bbc', async () => {
-    const context = await readSchema('src/sample/bbc.yaml')
-    console.log(context.model.operations)
+  it('should do something', async () => {
+    await harness<OpenAPIReadModel, any, any>()
+      .read(openAPIReader({ root: 'src/sample/adobe.yaml' }))
+      .generate(null)
+      .write(null)
+      .run()
   })
 })

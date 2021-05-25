@@ -1,4 +1,4 @@
-import { createURIManipulator } from '../FactoryContext'
+import { createURIManipulator } from '../openapi/defaults'
 import { isNil } from '../utils'
 import { Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } from './typings'
 

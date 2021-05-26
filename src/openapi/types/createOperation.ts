@@ -59,7 +59,7 @@ export function createOperation(
     __type: ModelType.OperationType,
     method,
     url,
-    operationId,
+    name: operationId,
     deprecated,
     description,
     uri,

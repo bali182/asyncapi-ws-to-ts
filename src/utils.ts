@@ -52,6 +52,28 @@ export function head<T>(input: T[]): T {
   return input[0]
 }
 
+export function groupBy<V, K>(input: V[], grouper: (input: V) => K): Map<K, V[]> {
+  return input.reduce((map, item) => {
+    const key = grouper(item)
+    if (!map.has(key)) {
+      map.set(key, [])
+    }
+    map.get(key).push(item)
+    return map
+  }, new Map())
+}
+
+export function uniqueBy<V, K>(input: V[], by: (input: V) => K): V[] {
+  return Array.from(
+    input
+      .reduce((map, item) => {
+        const key = by(item)
+        return map.has(key) ? map : map.set(key, item)
+      }, new Map<K, V>())
+      .values(),
+  )
+}
+
 export function flatMap<T, X>(
   array: ReadonlyArray<T>,
   fn: (input: T, index: number, array: ReadonlyArray<T>) => X[],

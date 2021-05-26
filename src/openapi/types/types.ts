@@ -68,6 +68,15 @@ export type Type =
   | UnionType
   | IntersectionType
 
+export type OpenAPIModelType =
+  | Type
+  | ParameterType
+  | OperationType
+  | ResponseType
+  | RequestBodyType
+  | ObjectField
+  | DiscriminatorField
+
 type HasUri = {
   uri?: string
 }
@@ -171,9 +180,9 @@ export type IntersectionType = CommonType & {
 
 export type OperationType = HasUri &
   HasDescription &
-  HasDeprecation & {
+  HasDeprecation &
+  HasName & {
     __type: ModelType.OperationType
-    operationId: string
     method: HttpMethod
     parameters: Ref<ParameterType>[]
     url: string

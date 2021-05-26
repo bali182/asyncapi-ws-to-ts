@@ -1,37 +1,22 @@
-import { makeType } from './openapi/ast/astGenerators'
-import { isNil } from './utils'
-import { sampleSchema } from './openapi/sample/sampleSchema'
-import { createOpenAPIModel } from './openapi/types/createOpenAPIModel'
-import { astToString } from './openapi/ast/astPrint'
-import { createContext } from './openapi/defaults'
 import { harness } from './Harness'
 import { openAPIReader } from './openapi/openAPIReader'
 import { OpenAPIReadModel } from './openapi/readTypes'
 import { TsGeneratorOutput } from './openapi/generatorTypes'
+import { types } from './openapi/generators/types/types'
 import { combine } from './openapi/generators/combine'
+import { toDisk } from './openapi/writers/toDisk'
+import { prettierStringify } from './openapi/writers/prettierStringify'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+
+const prettierCfg = JSON.parse(readFileSync(resolve('.prettierrc'), 'utf-8'))
 
 describe('parsing schema', () => {
-  xit('should parse schema', () => {
-    const context = createOpenAPIModel(
-      {
-        data: sampleSchema,
-        uri: 'test.json',
-      },
-      createContext(),
-    )
-
-    const asts = Array.from(context.model.types.values())
-      .filter((t) => !isNil(t.name))
-      .map((type) => makeType(type))
-
-    console.log(astToString(...asts))
-  })
-
   it('should do something', async () => {
     await harness<OpenAPIReadModel, TsGeneratorOutput, any>()
-      .read(openAPIReader({ root: 'src/sample/adobe.yaml' }))
-      .generate(combine()())
-      .write(null)
+      .read(openAPIReader({ root: 'src/openapi/sample/kitchenSink.json' }))
+      .generate(combine(types()))
+      .write(toDisk({ stringify: prettierStringify(prettierCfg) }))
       .run()
   })
 })

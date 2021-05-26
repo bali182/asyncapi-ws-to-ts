@@ -1,6 +1,11 @@
 import { append, sanitize, resolve } from '../uri/defaultFns'
 import { isNil } from '../utils'
+import { defaultNameProvider } from './generators/defaultNameProvider'
+import { OpenAPIGeneratorConfig } from './generatorTypes'
 import { OpenAPIReadConfig, OpenAPIReadContext, OpenAPIReadModel, URIManipulator } from './readTypes'
+import { defaultStringify } from './writers/defaultStringify'
+import { defaultWrite } from './writers/defaultWrite'
+import { TsWriterConfig } from './writerTypes'
 
 export function createURIManipulator(base: Partial<URIManipulator> = {}): URIManipulator {
   const { append: _append, resolve: _resolve, sanitize: _sanitize } = base
@@ -34,5 +39,19 @@ export function createContext(base: Partial<OpenAPIReadContext> = {}): OpenAPIRe
     config: createConfig(base.config),
     model: createModel(base.model),
     issues: isNil(base.issues) ? [] : base.issues,
+  }
+}
+
+export function crateGeneratorConfig(base: Partial<OpenAPIGeneratorConfig> = {}): OpenAPIGeneratorConfig {
+  return {
+    nameProvider: base?.nameProvider || defaultNameProvider,
+    pathProvider: null,
+  }
+}
+
+export function createWriterConfig(base: Partial<TsWriterConfig> = {}): TsWriterConfig {
+  return {
+    stringify: base?.stringify || defaultStringify,
+    write: base?.write || defaultWrite,
   }
 }

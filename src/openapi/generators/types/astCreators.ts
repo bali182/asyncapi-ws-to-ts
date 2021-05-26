@@ -1,3 +1,5 @@
+import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, ObjectType, UnionType } from '../../types/types'
+
 import {
   factory as f,
   SyntaxKind,
@@ -8,10 +10,9 @@ import {
   EnumDeclaration,
   JSDoc,
 } from 'typescript'
-import { Ref, ArrayType, DictionaryType, EnumType, ModelType, Type, ObjectType, UnionType } from '../types/types'
-import { isNil } from '../../utils'
+import { isNil } from '../../../utils'
 
-export function makeDocs(type: Type): JSDoc {
+export function generateDocsAst(type: Type): JSDoc {
   if (isNil(type.description)) {
     return undefined
   }
@@ -21,20 +22,20 @@ export function makeDocs(type: Type): JSDoc {
   )
 }
 
-export function makeType(input: Type): Statement {
+export function generateTypeAst(name: string, input: Type): Statement {
   if (ModelType.EnumType === input.__type) {
-    return makeEnumType(input)
+    return generateEnumTypeAst(name, input)
   }
   return f.createTypeAliasDeclaration(
     [],
     [f.createModifier(SyntaxKind.ExportKeyword)],
-    input.name,
+    name,
     [],
-    makeTypeRighthandSide(input),
+    generateTypeRighthandSideAst(input),
   )
 }
 
-export function makeTypeRighthandSide(input: Type): TypeNode {
+export function generateTypeRighthandSideAst(input: Type): TypeNode {
   switch (input.__type) {
     case ModelType.StringType:
       return f.createKeywordTypeNode(SyntaxKind.StringKeyword)
@@ -43,32 +44,32 @@ export function makeTypeRighthandSide(input: Type): TypeNode {
     case ModelType.BooleanType:
       return f.createKeywordTypeNode(SyntaxKind.BooleanKeyword)
     case ModelType.DictionaryType:
-      return makeDictionaryTypeRef(input)
+      return generateDictionaryTypeAst(input)
     case ModelType.ObjectType:
-      return makeObjectTypeRef(input)
+      return generateObjectTypeAst(input)
     case ModelType.ArrayType:
-      return makeArrayTypeRef(input)
+      return generateArrayTypeAst(input)
     case ModelType.EnumType:
-      return makeLiteralUnionType(input)
+      return generateLiteralUnionTypeAst(input)
     case ModelType.UnionType:
-      return makeUnionType(input)
+      return generateUnionTypeAst(input)
   }
   return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
 }
 
-export function makeTypeReference(ref: Ref<Type>): TypeNode {
+export function generateTypeReferenceAst(ref: Ref<Type>): TypeNode {
   const type = ref.get()
   if (isNil(type)) {
     // Shouldnt happen
     return f.createKeywordTypeNode(SyntaxKind.AnyKeyword)
   }
   if (isNil(type.name)) {
-    return makeTypeRighthandSide(type)
+    return generateTypeRighthandSideAst(type)
   }
   return f.createTypeReferenceNode(type.name)
 }
 
-export function makeObjectTypeRef(input: ObjectType): TypeNode {
+export function generateObjectTypeAst(input: ObjectType): TypeNode {
   const discriminatorFields = input.discriminators.map(
     (field): PropertySignature => {
       return f.createPropertySignature(
@@ -85,13 +86,13 @@ export function makeObjectTypeRef(input: ObjectType): TypeNode {
         [],
         field.name,
         field.isRequired ? undefined : f.createToken(SyntaxKind.QuestionToken),
-        makeTypeReference(field.type),
+        generateTypeReferenceAst(field.type),
       ),
   )
   return f.createTypeLiteralNode(discriminatorFields.concat(fields))
 }
 
-export function makeDictionaryTypeRef(input: DictionaryType): TypeNode {
+export function generateDictionaryTypeAst(input: DictionaryType): TypeNode {
   return f.createTypeLiteralNode([
     f.createIndexSignature(
       [],
@@ -106,16 +107,16 @@ export function makeDictionaryTypeRef(input: DictionaryType): TypeNode {
           f.createKeywordTypeNode(SyntaxKind.StringKeyword),
         ),
       ],
-      makeTypeReference(input.valueType),
+      generateTypeReferenceAst(input.valueType),
     ),
   ])
 }
 
-export function makeArrayTypeRef(input: ArrayType): TypeNode {
-  return f.createArrayTypeNode(makeTypeReference(input.itemType))
+export function generateArrayTypeAst(input: ArrayType): TypeNode {
+  return f.createArrayTypeNode(generateTypeReferenceAst(input.itemType))
 }
 
-function createEnumValueNode(value: string | number | boolean) {
+function generateEnumValueAst(value: string | number | boolean) {
   if (typeof value === 'string') {
     return f.createStringLiteral(value)
   } else if (typeof value === 'number') {
@@ -125,23 +126,23 @@ function createEnumValueNode(value: string | number | boolean) {
   }
 }
 
-export function makeEnumType(input: EnumType): EnumDeclaration {
+export function generateEnumTypeAst(name: string, input: EnumType): EnumDeclaration {
   return f.createEnumDeclaration(
     [],
     [f.createModifier(SyntaxKind.ExportKeyword)],
-    input.name,
+    name,
     input.values.map(
       (value): EnumMember => {
-        return f.createEnumMember(value.name, createEnumValueNode(value.value))
+        return f.createEnumMember(value.name, generateEnumValueAst(value.value))
       },
     ),
   )
 }
 
-export function makeLiteralUnionType(input: EnumType): TypeNode {
-  return f.createUnionTypeNode(input.values.map((value) => f.createLiteralTypeNode(createEnumValueNode(value.value))))
+export function generateLiteralUnionTypeAst(input: EnumType): TypeNode {
+  return f.createUnionTypeNode(input.values.map((value) => f.createLiteralTypeNode(generateEnumValueAst(value.value))))
 }
 
-export function makeUnionType(input: UnionType): TypeNode {
-  return f.createUnionTypeNode(Array.from(input.types.keys()).map((ref): TypeNode => makeTypeReference(ref)))
+export function generateUnionTypeAst(input: UnionType): TypeNode {
+  return f.createUnionTypeNode(Array.from(input.types.keys()).map((ref): TypeNode => generateTypeReferenceAst(ref)))
 }

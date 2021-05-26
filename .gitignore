@@ -67,3 +67,6 @@ package-lock.json
 schema.json
 swagger.json
 .DS_Store
+
+# generated trash
+trash

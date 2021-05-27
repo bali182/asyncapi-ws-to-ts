@@ -1,6 +1,7 @@
 import { append, sanitize, resolve } from '../uri/defaultFns'
 import { isNil } from '../utils'
 import { defaultNameProvider } from './generators/defaultNameProvider'
+import { noPathProvider } from './generators/pathProviders'
 import { OpenAPIGeneratorConfig } from './generatorTypes'
 import { OpenAPIReadConfig, OpenAPIReadContext, OpenAPIReadModel, URIManipulator } from './readTypes'
 import { defaultStringify } from './writers/defaultStringify'
@@ -44,8 +45,8 @@ export function createContext(base: Partial<OpenAPIReadContext> = {}): OpenAPIRe
 
 export function crateGeneratorConfig(base: Partial<OpenAPIGeneratorConfig> = {}): OpenAPIGeneratorConfig {
   return {
-    nameProvider: base?.nameProvider || defaultNameProvider,
-    pathProvider: null,
+    name: base?.name || defaultNameProvider,
+    path: base?.path || noPathProvider,
   }
 }
 

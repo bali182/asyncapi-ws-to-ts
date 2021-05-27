@@ -13,8 +13,8 @@ export type TsGeneratorOutput = TsUnit[]
 export type OpenAPIGenerator = Generator<OpenAPIReadModel, TsGeneratorOutput>
 
 export type OpenAPIGeneratorConfig = {
-  nameProvider(input: OpenAPIModelType): string
-  pathProvider(input: OpenAPIReadModel): string
+  name(input: OpenAPIModelType): string
+  path(input: OpenAPIModelType, name: (input: OpenAPIModelType) => string): string
 }
 
 export type OpenAPIGeneratorContext = {

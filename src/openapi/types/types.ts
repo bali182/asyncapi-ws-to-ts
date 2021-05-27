@@ -8,7 +8,6 @@ export enum ModelType {
   BooleanType = 'BooleanType',
   EnumType = 'EnumType',
   UnionType = 'UnionType',
-  IntersectionType = 'IntersectionType',
 
   ObjectField = 'ObjectField',
   DiscriminatorField = 'DiscriminatorField',
@@ -66,7 +65,6 @@ export type Type =
   | BooleanType
   | EnumType
   | UnionType
-  | IntersectionType
 
 export type OpenAPIModelType =
   | Type
@@ -171,11 +169,6 @@ export type UnionType = CommonType & {
   __type: ModelType.UnionType
   property?: string
   types: Map<Ref<Type>, string>
-}
-
-export type IntersectionType = CommonType & {
-  __type: ModelType.IntersectionType
-  types: Ref<Type>[]
 }
 
 export type OperationType = HasUri &

@@ -1,3 +1,4 @@
+import { createArrayType } from './openapi/types/createArrayType'
 import { ReferenceObject, SchemaObject } from './schema'
 
 export function isRefType(input: any): input is ReferenceObject {

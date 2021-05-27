@@ -1,12 +1,21 @@
-import { writeFile } from 'fs'
+import { promises } from 'fs'
+import { dirname, resolve } from 'path'
 
-export function defaultWrite(path: string, content: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    writeFile(path, content, { encoding: 'utf-8' }, (error) => {
-      if (error) {
-        return reject(error)
-      }
-      resolve()
-    })
-  })
+export async function exists(dir: string): Promise<boolean> {
+  try {
+    const stats = await promises.lstat(dir)
+    return stats.isDirectory()
+  } catch (e) {
+    return false
+  }
+}
+
+export async function defaultWrite(path: string, content: string): Promise<void> {
+  const _path = resolve(path)
+  const dir = dirname(_path)
+  const dirExists = await exists(dir)
+  if (!dirExists) {
+    await promises.mkdir(dir, { recursive: true })
+  }
+  await promises.writeFile(_path, content, { encoding: 'utf-8' })
 }

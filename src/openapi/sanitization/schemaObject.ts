@@ -56,8 +56,5 @@ export const schemaValidator = object(
     anyOf: optional(array(itemsOf(refOrSchema()))),
     items: optional(refOrSchema()),
     additionalProperties: optional(refOrSchema()),
-
-    'x-enum-varnames': optional(array(itemsOf(string()))),
-    'x-enum-descriptions': optional(array(itemsOf(string()))),
   }),
 )

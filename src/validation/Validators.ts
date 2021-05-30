@@ -17,26 +17,28 @@ const TypeChecks = {
   [ValueType.STRING]: (input: any) => typeof input === 'string',
 }
 
-const depthStop = <T>(validate: Validator<T>): Validator<T> => (
-  input: any,
-  config: ValidatorConfig = DefaultConfig,
-): Issue[] => (config.depth <= 0 ? [] : validate(input, config))
+const depthStop =
+  <T>(validate: Validator<T>): Validator<T> =>
+  (input: any, config: ValidatorConfig = DefaultConfig): Issue[] =>
+    config.depth <= 0 ? [] : validate(input, config)
 
 export const any: Validator<any> = (): Issue[] => []
 
-export const type = <T>(...types: ValueType[]) => (validate: Validator<T> = any): Validator<any> =>
-  depthStop((input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
-    if (!types.some((type) => TypeChecks[type](input))) {
-      return [
-        {
-          type: IssueType.TYPE,
-          message: types.length === 1 ? `should be a(n) ${types[0]}` : `should be one of [${types.join(', ')}]`,
-          path: config.path,
-        },
-      ]
-    }
-    return validate(input, config)
-  })
+export const type =
+  <T>(...types: ValueType[]) =>
+  (validate: Validator<T> = any): Validator<any> =>
+    depthStop((input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
+      if (!types.some((type) => TypeChecks[type](input))) {
+        return [
+          {
+            type: IssueType.TYPE,
+            message: types.length === 1 ? `should be a(n) ${types[0]}` : `should be one of [${types.join(', ')}]`,
+            path: config.path,
+          },
+        ]
+      }
+      return validate(input, config)
+    })
 
 export const string = type<string>(ValueType.STRING)
 export const number = type<number>(ValueType.NUMBER)
@@ -99,10 +101,7 @@ export const itemsOf = (validate: Validator<any>): Validator<any[]> =>
     return issues
   })
 
-export const fields = (
-  validators: { [key: string]: Validator<any> },
-  extraKeySeverity: Severity = null,
-): Validator<object> =>
+export const fields = <T extends object>(validators: Record<keyof T, Validator<any>>): Validator<T> =>
   depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
     const keys = Object.keys(input)
     const expectedKeys = Object.keys(validators)
@@ -122,12 +121,13 @@ export const fields = (
       )
     }
 
-    if (extraKeys.length > 0 && !isNil(extraKeySeverity)) {
+    // TODO allow extra key validation
+    if (extraKeys.length > 0 && !!false) {
       issues.push(
         ...extraKeys.map(
           (key): Issue => ({
             type: IssueType.EXTRA_KEY,
-            severity: extraKeySeverity,
+            severity: Severity.ERROR,
             message: `should not have key "${key}"`,
             path: pathAccessor.append(path, key),
           }),
@@ -155,12 +155,11 @@ export const dictionaryOf = (validate: Validator<any>): Validator<object> =>
     return issues
   })
 
-export const optional = (validator: Validator<any> = any): Validator<any> => (
-  input: any,
-  config: ValidatorConfig = DefaultConfig,
-): Issue[] => {
-  return isNil(input) ? [] : validator(input, config)
-}
+export const optional =
+  (validator: Validator<any> = any): Validator<any> =>
+  (input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
+    return isNil(input) ? [] : validator(input, config)
+  }
 
 export const combine = <T>(...validators: Validator<T>[]): Validator<T> =>
   depthStop((input: T, config: ValidatorConfig = DefaultConfig): Issue[] => {
@@ -174,18 +173,7 @@ export const combine = <T>(...validators: Validator<T>[]): Validator<T> =>
     return issues
   })
 
-export const chain = <T>(baseValidator: Validator<any>) => (validate: Validator<T> = any): Validator<T> => (
-  input: any,
-  config: ValidatorConfig = DefaultConfig,
-): Issue[] => {
-  const results = baseValidator(input, config)
-  if (results.length === 0) {
-    return validate(input as T, config)
-  }
-  return results
-}
-
-export const union = (validators: { [typeName: string]: Validator<any> }): Validator<any> =>
+export const union = (validators: Record<string, Validator<any>>): Validator<any> =>
   depthStop((input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
     const keys = Object.keys(validators)
 
@@ -210,7 +198,7 @@ export const union = (validators: { [typeName: string]: Validator<any> }): Valid
     ]
   })
 
-export const lazy = <T>(factory: () => Validator<T>): Validator<T> => (
-  input: T,
-  config: ValidatorConfig = DefaultConfig,
-): Issue[] => factory()(input, config)
+export const lazy =
+  <T>(factory: () => Validator<T>): Validator<T> =>
+  (input: T, config: ValidatorConfig = DefaultConfig): Issue[] =>
+    factory()(input, config)

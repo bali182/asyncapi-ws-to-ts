@@ -11,7 +11,7 @@ function setFragments(uri: string, fragments: string[]): string {
   return new URI(uri).fragment(fragment).valueOf()
 }
 
-function fragments(uri: string): string[] {
+export function fragments(uri: string): string[] {
   const fragment = new URI(uri).fragment()
   if (isEmpty(fragment)) {
     return []

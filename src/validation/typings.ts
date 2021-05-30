@@ -25,7 +25,7 @@ export enum IssueType {
 
 export type Issue = {
   severity?: Severity | string
-  type: IssueType | string
+  type?: IssueType | string
   path: string
   message: string
 }

@@ -52,6 +52,7 @@
     "camelcase": "^6.2.0",
     "constant-case": "^2.0.0",
     "is-var-name": "^2.0.0",
+    "openapi3-ts": "^2.0.1",
     "pascalcase": "^1.0.0",
     "prettier": "^2.3.0",
     "urijs": "^1.19.6",

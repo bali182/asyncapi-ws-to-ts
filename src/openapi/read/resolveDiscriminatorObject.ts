@@ -1,10 +1,9 @@
-import { DiscriminatorObject } from 'openapi3-ts'
+import { DiscriminatorObject, SchemaObject } from 'openapi3-ts'
 import { ReadContext, ReadInput } from './types'
 import { validate } from './validate'
 import { entries, isNil } from '../../utils'
 import { discriminatorObject } from './validators/discriminatorObject'
 import { resolveReferenceUri } from './resolveReference'
-import { SchemaObject } from '../../schema'
 import { resolveSchemaObject } from './resolveSchemaObject'
 
 export async function resolveDiscriminatorObject(
@@ -19,11 +18,12 @@ export async function resolveDiscriminatorObject(
 
   if (!isNil(mapping)) {
     for (const [key, ref] of entries(mapping)) {
-      const schemaObject = resolveReferenceUri<SchemaObject>(
+      const refInput = await resolveReferenceUri<SchemaObject>(
         { data: ref, uri: context.uri.append(uri, 'mapping', key) },
         context,
       )
-      await resolveSchemaObject({})
+      await resolveSchemaObject(refInput, context)
+      mapping[key] = refInput.uri
     }
   }
 }

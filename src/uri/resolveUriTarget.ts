@@ -17,14 +17,26 @@ const YAMLContentTypes = [
 
 const YAMLExtensions = ['.yaml', '.yml']
 
-export async function resolveUriTarget<T>(uri: string): Promise<T> {
+function tryParse<T>(content: string, isYaml: boolean): T {
+  const firstParser = isYaml ? YAML.parse : JSON.parse
+  const secondParser = isYaml ? JSON.parse : YAML.parse
+  try {
+    return firstParser(content)
+  } catch {
+    return secondParser(content)
+  }
+}
+
+export async function resolveUriTarget<T>(uri: string, format: 'json' | 'yaml' = null): Promise<T> {
   const _uri = new URI(uri)
   if (_uri.scheme() === 'http' || _uri.scheme() === 'https') {
     const { data, headers } = await request({ url: uri })
-    return YAMLContentTypes.indexOf(headers['content-type']) >= 0 ? YAML.parse(data) : JSON.parse(data)
+    const isYaml = format === 'yaml' || YAMLContentTypes.indexOf(headers['content-type']) >= 0
+    return tryParse(data, isYaml)
   } else if (_uri.scheme() === 'file') {
     const data = await loadFile(uri)
-    return YAMLExtensions.indexOf(extname(fileURLToPath(uri))) >= 0 ? YAML.parse(data) : JSON.parse(data)
+    const isYaml = format === 'yaml' || YAMLExtensions.indexOf(extname(fileURLToPath(uri))) >= 0
+    return tryParse(data, isYaml)
   }
   throw new TypeError(`Unexpeced URI scheme: ${_uri.scheme()} in ${uri}`)
 }

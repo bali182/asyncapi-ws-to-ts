@@ -8,12 +8,13 @@ import { toDisk } from './openapi/writers/toDisk'
 import { prettierStringify } from './openapi/writers/prettierStringify'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
-import { singleFile, byName } from './openapi/generators/pathProviders'
+import { byName } from './openapi/generators/pathProviders'
+import { openAPI } from './openapi/read/openAPI'
 
 const prettierCfg = JSON.parse(readFileSync(resolve('.prettierrc'), 'utf-8'))
 
 describe('parsing schema', () => {
-  it('should do something', async () => {
+  xit('should do something', async () => {
     await harness<OpenAPIReadModel, TsGeneratorOutput, any>()
       .read(
         openAPIReader({
@@ -33,5 +34,9 @@ describe('parsing schema', () => {
         }),
       )
       .run()
+  })
+  it('should not crap the bed', async () => {
+    const { issues, references, spec } = await openAPI({ path: 'src/openapi/sample/kitchenSink.json' })()
+    console.log(JSON.stringify(spec, null, 2))
   })
 })

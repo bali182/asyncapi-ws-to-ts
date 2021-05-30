@@ -1,7 +1,7 @@
-import { isReferenceObject } from 'openapi3-ts'
-import { SchemaObject } from '../../schema'
+import { SchemaObject } from 'openapi3-ts'
 import { entries, isNil } from '../../utils'
-import { resolveReference } from './resolveReference'
+import { resolveDiscriminatorObject } from './resolveDiscriminatorObject'
+import { resolveReferenceable } from './resolveReferenceable'
 import { ReadContext, ReadInput } from './types'
 import { validate } from './validate'
 import { schemaObject } from './validators/schemaObject'
@@ -15,70 +15,62 @@ export async function resolveSchemaObject(input: ReadInput<SchemaObject>, contex
   const { items, not, allOf, oneOf, anyOf, properties, additionalProperties, discriminator } = data
 
   if (!isNil(items)) {
-    const itemsUri = context.uri.append(uri, 'items')
-    if (isReferenceObject(items)) {
-      await resolveReference({ data: items, uri: itemsUri }, context)
-    } else {
-      await resolveSchemaObject({ data: items, uri: itemsUri }, context)
-    }
+    await resolveReferenceable({ data: items, uri: context.uri.append(uri, 'items') }, context, resolveSchemaObject)
   }
+
   if (!isNil(not)) {
-    const notUri = context.uri.append(uri, 'not')
-    if (isReferenceObject(not)) {
-      await resolveReference({ data: not, uri: notUri }, context)
-    } else {
-      await resolveSchemaObject({ data: not, uri: notUri }, context)
-    }
+    await resolveReferenceable({ data: not, uri: context.uri.append(uri, 'not') }, context, resolveSchemaObject)
   }
-  if (!isNil(additionalProperties)) {
-    const apUri = context.uri.append(uri, 'additionalProperties')
-    if (isReferenceObject(additionalProperties)) {
-      await resolveReference({ data: additionalProperties, uri: apUri }, context)
-    } else {
-      await resolveSchemaObject({ data: additionalProperties, uri: apUri }, context)
-    }
+
+  if (!isNil(discriminator)) {
+    await resolveDiscriminatorObject({ data: discriminator, uri: context.uri.append(uri, 'discriminator') }, context)
   }
+
+  if (!isNil(additionalProperties) && typeof additionalProperties !== 'boolean') {
+    await resolveReferenceable(
+      { data: additionalProperties, uri: context.uri.append(uri, 'additionalProperties') },
+      context,
+      resolveSchemaObject,
+    )
+  }
+
   if (!isNil(allOf)) {
     for (let i = 0; i < allOf.length; i += 1) {
-      const item = allOf[i]
-      const itemUri = context.uri.append(uri, 'allOf', i.toString())
-      if (isReferenceObject(item)) {
-        await resolveReference({ data: item, uri: itemUri }, context)
-      } else {
-        await resolveSchemaObject({ data: item, uri: itemUri }, context)
-      }
+      await resolveReferenceable(
+        { data: allOf[i], uri: context.uri.append(uri, 'allOf', i.toString()) },
+        context,
+        resolveSchemaObject,
+      )
     }
   }
+
   if (!isNil(oneOf)) {
     for (let i = 0; i < oneOf.length; i += 1) {
-      const item = oneOf[i]
-      const itemUri = context.uri.append(uri, 'oneOf', i.toString())
-      if (isReferenceObject(item)) {
-        await resolveReference({ data: item, uri: itemUri }, context)
-      } else {
-        await resolveSchemaObject({ data: item, uri: itemUri }, context)
-      }
+      await resolveReferenceable(
+        { data: oneOf[i], uri: context.uri.append(uri, 'oneOf', i.toString()) },
+        context,
+        resolveSchemaObject,
+      )
     }
   }
+
   if (!isNil(anyOf)) {
     for (let i = 0; i < anyOf.length; i += 1) {
-      const item = anyOf[i]
-      const itemUri = context.uri.append(uri, 'anyOf', i.toString())
-      if (isReferenceObject(item)) {
-        await resolveReference({ data: item, uri: itemUri }, context)
-      } else {
-        await resolveSchemaObject({ data: item, uri: itemUri }, context)
-      }
+      await resolveReferenceable(
+        { data: anyOf[i], uri: context.uri.append(uri, 'anyOf', i.toString()) },
+        context,
+        resolveSchemaObject,
+      )
     }
   }
+
   if (!isNil(properties)) {
     for (const [name, propSchema] of entries(properties)) {
-      const propUri = context.uri.append(uri, 'properties', name)
-      if (isReferenceObject(propSchema)) {
-        await resolveReference({ data: propSchema, uri: propUri }, context)
-      } else {
-        await resolveSchemaObject({ data: propSchema, uri: propUri }, context)
-      }
+      await resolveReferenceable(
+        { data: propSchema, uri: context.uri.append(uri, 'properties', name) },
+        context,
+        resolveSchemaObject,
+      )
     }
   }
 }

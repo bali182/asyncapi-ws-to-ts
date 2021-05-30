@@ -1,16 +1,8 @@
 import { ReferenceObject } from 'openapi3-ts'
 import { Severity } from '../../validation/typings'
 import { ReadContext, ReadInput } from './types'
-
 import { isNil } from '../../utils'
-
-function findInSpec<T>(document: any, fragments: string[]): T {
-  if (fragments.length === 0) {
-    return document
-  }
-  const [head, ...tail] = fragments
-  return findInSpec(document[head], tail)
-}
+import { findByFragments } from './findByFragments'
 
 export function getReferenceTarget<T>(uri: string, context: ReadContext): T {
   const specUri = context.uri.document(uri)
@@ -28,7 +20,7 @@ export function getReferenceTarget<T>(uri: string, context: ReadContext): T {
   const fragments = context.uri.fragments(uri)
 
   try {
-    return findInSpec(spec, fragments)
+    return findByFragments(spec, fragments)
   } catch (e) {
     context.issues.push({
       message: `Can't resolve "${uri}"`,
@@ -39,7 +31,7 @@ export function getReferenceTarget<T>(uri: string, context: ReadContext): T {
   }
 }
 
-export async function resolveReferenceUri<T>(input: ReadInput<string>, context: ReadContext): Promise<T> {
+export async function resolveReferenceUri<T>(input: ReadInput<string>, context: ReadContext): Promise<ReadInput<T>> {
   const { data, uri } = input
   const fullUri = context.uri.resolve(data, uri)
   const specUri = context.uri.document(fullUri)
@@ -48,8 +40,9 @@ export async function resolveReferenceUri<T>(input: ReadInput<string>, context: 
     try {
       const spec = await context.resolve(specUri)
       context.specs.set(specUri, spec)
-      return getReferenceTarget(fullUri, context)
+      return { uri: fullUri, data: getReferenceTarget<T>(fullUri, context) }
     } catch (e) {
+      console.log(e)
       context.issues.push({
         path: specUri,
         message: `Failed to load document at "${specUri}".`,
@@ -58,10 +51,13 @@ export async function resolveReferenceUri<T>(input: ReadInput<string>, context: 
     }
   }
 
-  return getReferenceTarget(fullUri, context)
+  return { uri: fullUri, data: getReferenceTarget<T>(fullUri, context) }
 }
 
-export async function resolveReference<T>(input: ReadInput<ReferenceObject>, context: ReadContext): Promise<T> {
+export async function resolveReference<T>(
+  input: ReadInput<ReferenceObject>,
+  context: ReadContext,
+): Promise<ReadInput<T>> {
   const { data, uri } = input
 
   data.$ref = context.uri.resolve(data.$ref, uri)

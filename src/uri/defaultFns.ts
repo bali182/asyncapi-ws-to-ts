@@ -47,3 +47,7 @@ export function sanitize(path: string): string {
   }
   return pathToFileURL(p.resolve(path)).toString()
 }
+
+export function document(path: string): string {
+  return new URI(path).fragment('').hash('').valueOf()
+}

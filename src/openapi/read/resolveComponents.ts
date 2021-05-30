@@ -1,17 +1,11 @@
-import { ComponentsObject } from 'openapi3-ts'
+import { ComponentsObject, HeaderObject, ParameterObject, SchemaObject } from 'openapi3-ts'
 import { ReadContext, ReadInput } from './types'
-import { resolveCallbacks } from './resolveCallbacks'
-import { resolveExamples } from './resolveExamples'
-import { resolveHeaders } from './resolveHeaders'
-import { resolveLinks } from './resolveLinks'
-import { resolveParameters } from './resolveParameters'
-import { resolveRequestBodies } from './resolveRequestBodies'
-import { resolveResponses } from './resolveResponses'
-import { resolveSchemas } from './resolveSchemas'
-import { resolveSecuritySchemes } from './resolveSecuritySchemes'
 import { validate } from './validate'
 import { componentsObject } from './validators/componentsObject'
-import { isNil } from '../../utils'
+import { entries, isNil } from '../../utils'
+import { resolveReferenceable } from './resolveReferenceable'
+import { resolveSchemaObject } from './resolveSchemaObject'
+import { resolveHeaderObject, resolveParameterObject } from './resolveParameterObject'
 
 export async function resolveComponents(input: ReadInput<ComponentsObject>, context: ReadContext): Promise<void> {
   if (!validate(input, context, componentsObject)) {
@@ -23,31 +17,46 @@ export async function resolveComponents(input: ReadInput<ComponentsObject>, cont
 
   context.visited.add(uri)
 
-  if (!isNil(callbacks)) {
-    await resolveCallbacks({ data: callbacks, uri: context.uri.append(uri, 'callbacks') }, context)
+  if (!isNil(schemas)) {
+    for (const [name, schemaOrRef] of entries(schemas)) {
+      await resolveReferenceable<SchemaObject>(
+        { data: schemaOrRef, uri: context.uri.append(uri, 'schemas', name) },
+        context,
+        resolveSchemaObject,
+      )
+    }
   }
+
+  if (!isNil(parameters)) {
+    for (const [name, paramOrRef] of entries(parameters)) {
+      await resolveReferenceable<ParameterObject>(
+        { data: paramOrRef, uri: context.uri.append(uri, 'parameters', name) },
+        context,
+        resolveParameterObject,
+      )
+    }
+  }
+
   if (!isNil(headers)) {
-    await resolveHeaders({ data: headers, uri: context.uri.append(uri, 'headers') }, context)
+    for (const [name, headerOrRef] of entries(headers)) {
+      await resolveReferenceable<HeaderObject>(
+        { data: headerOrRef, uri: context.uri.append(uri, 'headers', name) },
+        context,
+        resolveHeaderObject,
+      )
+    }
+  }
+
+  if (!isNil(callbacks)) {
   }
   if (!isNil(links)) {
-    await resolveLinks({ data: links, uri: context.uri.append(uri, 'links') }, context)
   }
   if (!isNil(examples)) {
-    await resolveExamples({ data: examples, uri: context.uri.append(uri, 'examples') }, context)
-  }
-  if (!isNil(parameters)) {
-    await resolveParameters({ data: parameters, uri: context.uri.append(uri, 'parameters') }, context)
   }
   if (!isNil(requestBodies)) {
-    await resolveRequestBodies({ data: requestBodies, uri: context.uri.append(uri, 'requestBodies') }, context)
   }
   if (!isNil(responses)) {
-    await resolveResponses({ data: responses, uri: context.uri.append(uri, 'responses') }, context)
-  }
-  if (!isNil(schemas)) {
-    await resolveSchemas({ data: schemas, uri: context.uri.append(uri, 'schemas') }, context)
   }
   if (!isNil(securitySchemes)) {
-    await resolveSecuritySchemes({ data: securitySchemes, uri: context.uri.append(uri, 'securitySchemes') }, context)
   }
 }

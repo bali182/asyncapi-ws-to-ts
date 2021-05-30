@@ -6,7 +6,7 @@ import { OpenAPIReadOutput } from '../types/OpenAPIReadOutput'
 import { TypeScriptUnit } from '../types/TypeScriptUnit'
 import { mergeUnits } from './mergeUnits'
 
-export const combine =
+export const openAPIGenerator =
   (...generators: OpenAPIGenerator[]): OpenAPIGenerator =>
   (config: OpenAPIGlobalConfig) =>
   async (data: OpenAPIReadOutput): Promise<OpenAPIGeneratorOutput> => {

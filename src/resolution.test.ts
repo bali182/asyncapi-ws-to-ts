@@ -1,26 +1,32 @@
 import { document } from './defaults/defaultUriManipulator'
 import { harness } from './Harness'
-import { openAPI } from './openapi/read/openAPI'
+import { openAPIGenerator } from './openapi/generators/openAPIGenerator'
+import { singleFile } from './openapi/generators/pathProviders'
+import { schemaTypesGenerator } from './openapi/generators/schemas/schemaTypesGenerator'
+import { openAPIReader } from './openapi/read/openAPIReader'
+import { OpenAPIGeneratorOutput } from './openapi/types/OpenAPIGeneratorOutput'
 import { OpenAPIGlobalConfig } from './openapi/types/OpenAPIGlobalConfig'
-import { OpenAPIReadConfig } from './openapi/types/OpenAPIReadConfig'
 import { OpenAPIReadOutput } from './openapi/types/OpenAPIReadOutput'
+import { openAPIWriter } from './openapi/writers/openAPIWriter'
 
 // const prettierCfg = JSON.parse(readFileSync(resolve('.prettierrc'), 'utf-8'))
 
 describe('parsing schema', () => {
-  xit('should do something', async () => {
-    const { document, documents } = await harness<
-      OpenAPIGlobalConfig,
-      OpenAPIReadOutput,
-      OpenAPIReadOutput,
-      OpenAPIReadOutput
-    >()
-      .read(openAPI({ path: 'src/openapi/sample/kitchenSink.json' }))
-      .generate(() => async (data) => data)
-      .write(() => async (data) => data)
+  it('should do something', async () => {
+    await harness<OpenAPIGlobalConfig, OpenAPIReadOutput, OpenAPIGeneratorOutput, any>()
+      .read(
+        openAPIReader({
+          path: 'src/openapi/sample/kitchenSink.json',
+        }),
+      )
+      .generate(
+        openAPIGenerator(
+          schemaTypesGenerator({
+            path: singleFile('trash/test.ts'),
+          }),
+        ),
+      )
+      .write(openAPIWriter())
       .run()
-
-    console.log(document)
-    console.log(documents)
   })
 })

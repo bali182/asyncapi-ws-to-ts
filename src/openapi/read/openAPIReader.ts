@@ -8,7 +8,7 @@ import { OpenAPIReadOutput } from '../types/OpenAPIReadOutput'
 import { resolveOpenAPIObject } from './resolveOpenAPIObject'
 import { ReadContext } from './types'
 
-export const openAPI =
+export const openAPIReader =
   (readConfig: Partial<OpenAPIReadConfig> = {}) =>
   (globalConfig: Partial<OpenAPIGlobalConfig> = {}) =>
   async (): Promise<OpenAPIReadOutput> => {

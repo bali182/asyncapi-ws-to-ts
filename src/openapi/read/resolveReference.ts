@@ -2,7 +2,7 @@ import { ReferenceObject } from 'openapi3-ts'
 import { Severity } from '../../validation/typings'
 import { ReadContext, ReadInput } from './types'
 import { isNil } from '../../utils'
-import { findByFragments } from './findByFragments'
+import { findByFragments } from '../findByFragments'
 
 export function getReferenceTarget<T>(uri: string, context: ReadContext): T {
   const specUri = context.uri.document(uri)

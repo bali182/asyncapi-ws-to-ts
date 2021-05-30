@@ -8,7 +8,7 @@ import {
   SyntaxKind,
 } from 'typescript'
 import { flatMap, groupBy, head, uniqueBy } from '../../utils'
-import { TsUnit } from '../generatorTypes'
+import { TypeScriptUnit } from '../types/TypeScriptUnit'
 
 function mergeNamedImports(bindings: NamedImportBindings[]): NamedImports {
   return factory.createNamedImports(
@@ -34,9 +34,9 @@ function mergeImports(imps: ImportDeclaration[]): ImportDeclaration[] {
   )
 }
 
-export function mergeUnits(units: TsUnit[]): TsUnit[] {
+export function mergeUnits(units: TypeScriptUnit[]): TypeScriptUnit[] {
   return Array.from(groupBy(units, (unit) => unit.path).values()).map(
-    (units): TsUnit => ({
+    (units): TypeScriptUnit => ({
       content: flatMap(units, (unit) => unit.content),
       imports: mergeImports(flatMap(units, (unit) => unit.imports)),
       path: head(units).path,

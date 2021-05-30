@@ -3,6 +3,8 @@ import p from 'path'
 import { pathToFileURL } from 'url'
 import { isUri } from 'valid-url'
 import { dropHead, isEmpty } from '../utils'
+import { URIManipulator } from '../openapi/types/URIManipulator'
+import { isNil } from '../utils'
 
 const AcceptedSchemes = ['http', 'https', 'file']
 
@@ -50,4 +52,15 @@ export function sanitize(path: string): string {
 
 export function document(path: string): string {
   return new URI(path).fragment('').hash('').valueOf()
+}
+
+export function defaultURIManipulator(config: Partial<URIManipulator> = {}): URIManipulator {
+  const { append: _append, document: _document, fragments: _fragments, resolve: _resolve, sanitize: _sanitize } = config
+  return {
+    append: isNil(_append) ? append : _append,
+    resolve: isNil(_resolve) ? resolve : _resolve,
+    sanitize: isNil(_sanitize) ? sanitize : _sanitize,
+    document: isNil(_document) ? document : _document,
+    fragments: isNil(_fragments) ? fragments : _fragments,
+  }
 }

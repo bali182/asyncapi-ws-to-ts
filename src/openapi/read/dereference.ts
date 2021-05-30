@@ -1,7 +1,7 @@
 import { OpenAPIObject } from 'openapi3-ts'
 import { isNil } from '../../utils'
+import { URIManipulator } from '../types/URIManipulator'
 import { findByFragments } from './findByFragments'
-import { URIManipulator } from './types'
 
 export const dereference =
   (specs: Map<string, OpenAPIObject>, uri: URIManipulator) =>

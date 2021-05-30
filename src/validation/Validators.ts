@@ -1,12 +1,5 @@
-import { createURIManipulator } from '../openapi/defaults'
 import { isNil } from '../utils'
 import { Issue, Validator, IssueType, Severity, ValidatorConfig, ValueType } from './typings'
-
-const DefaultConfig: ValidatorConfig = {
-  depth: Infinity,
-  path: null,
-  pathAccessor: createURIManipulator(),
-}
 
 const TypeChecks = {
   [ValueType.ARRAY]: Array.isArray,
@@ -19,7 +12,7 @@ const TypeChecks = {
 
 const depthStop =
   <T>(validate: Validator<T>): Validator<T> =>
-  (input: any, config: ValidatorConfig = DefaultConfig): Issue[] =>
+  (input: any, config: ValidatorConfig): Issue[] =>
     config.depth <= 0 ? [] : validate(input, config)
 
 export const any: Validator<any> = (): Issue[] => []
@@ -27,7 +20,7 @@ export const any: Validator<any> = (): Issue[] => []
 export const type =
   <T>(...types: ValueType[]) =>
   (validate: Validator<T> = any): Validator<any> =>
-    depthStop((input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
+    depthStop((input: any, config: ValidatorConfig): Issue[] => {
       if (!types.some((type) => TypeChecks[type](input))) {
         return [
           {
@@ -49,7 +42,7 @@ export const object = type<object>(ValueType.OBJECT)
 export const primitive = type<string | number | boolean>(ValueType.STRING, ValueType.NUMBER, ValueType.BOOLEAN)
 
 export const enumeration = <T>(values: T[]): Validator<any> =>
-  depthStop((input: T, config: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: T, config: ValidatorConfig): Issue[] => {
     if (values.indexOf(input) < 0) {
       return [
         {
@@ -63,7 +56,7 @@ export const enumeration = <T>(values: T[]): Validator<any> =>
   })
 
 export const items = (...validators: Validator<any>[]): Validator<any> =>
-  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig): Issue[] => {
     if (input.length !== validators.length) {
       return [
         {
@@ -87,7 +80,7 @@ export const items = (...validators: Validator<any>[]): Validator<any> =>
   })
 
 export const itemsOf = (validate: Validator<any>): Validator<any[]> =>
-  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: any[], { path, depth, pathAccessor }: ValidatorConfig): Issue[] => {
     const issues: Issue[] = []
     for (let i = 0; i < input.length; i += 1) {
       issues.push(
@@ -102,7 +95,7 @@ export const itemsOf = (validate: Validator<any>): Validator<any[]> =>
   })
 
 export const fields = <T extends object>(validators: Record<keyof T, Validator<any>>): Validator<T> =>
-  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig): Issue[] => {
     const keys = Object.keys(input)
     const expectedKeys = Object.keys(validators)
     const extraKeys: string[] = keys.filter((key) => expectedKeys.indexOf(key) < 0)
@@ -139,7 +132,7 @@ export const fields = <T extends object>(validators: Record<keyof T, Validator<a
   })
 
 export const dictionaryOf = (validate: Validator<any>): Validator<object> =>
-  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: object, { path, depth, pathAccessor }: ValidatorConfig): Issue[] => {
     const issues: Issue[] = []
     const keys = Object.keys(input)
     for (let i = 0; i < keys.length; i += 1) {
@@ -157,12 +150,12 @@ export const dictionaryOf = (validate: Validator<any>): Validator<object> =>
 
 export const optional =
   (validator: Validator<any> = any): Validator<any> =>
-  (input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
+  (input: any, config: ValidatorConfig): Issue[] => {
     return isNil(input) ? [] : validator(input, config)
   }
 
 export const combine = <T>(...validators: Validator<T>[]): Validator<T> =>
-  depthStop((input: T, config: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: T, config: ValidatorConfig): Issue[] => {
     const issues: Issue[] = []
     for (let i = 0; i < validators.length; i += 1) {
       const partialIssues = validators[i](input, config)
@@ -174,7 +167,7 @@ export const combine = <T>(...validators: Validator<T>[]): Validator<T> =>
   })
 
 export const union = (validators: Record<string, Validator<any>>): Validator<any> =>
-  depthStop((input: any, config: ValidatorConfig = DefaultConfig): Issue[] => {
+  depthStop((input: any, config: ValidatorConfig): Issue[] => {
     const keys = Object.keys(validators)
 
     for (let i = 0; i < keys.length; i += 1) {
@@ -200,5 +193,5 @@ export const union = (validators: Record<string, Validator<any>>): Validator<any
 
 export const lazy =
   <T>(factory: () => Validator<T>): Validator<T> =>
-  (input: T, config: ValidatorConfig = DefaultConfig): Issue[] =>
+  (input: T, config: ValidatorConfig): Issue[] =>
     factory()(input, config)

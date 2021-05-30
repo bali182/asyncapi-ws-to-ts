@@ -1,14 +1,3 @@
-import { createArrayType } from './openapi/types/createArrayType'
-import { ReferenceObject, SchemaObject } from './schema'
-
-export function isRefType(input: any): input is ReferenceObject {
-  return isObject(input) && Boolean(input.$ref)
-}
-
-export function isSchemaType(input: any): input is SchemaObject {
-  return isObject(input) && !Boolean(input.$ref)
-}
-
 export function isNil(input: any): input is null | undefined {
   return input === null || input === undefined
 }

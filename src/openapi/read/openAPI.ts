@@ -1,14 +1,21 @@
 import { OpenAPIObject } from 'openapi3-ts'
+import { defaultOpenAPIGlobalConfig } from '../../defaults/defaultOpenAPIGlobalConfig'
+import { defaultOpenAPIReadConfig } from '../defaults/defaultOpenAPIReadConfig'
 import { Severity } from '../../validation/typings'
-import { dereference } from './dereference'
+import { OpenAPIGlobalConfig } from '../types/OpenAPIGlobalConfig'
+import { OpenAPIReadConfig } from '../types/OpenAPIReadConfig'
+import { OpenAPIReadOutput } from '../types/OpenAPIReadOutput'
 import { resolveOpenAPIObject } from './resolveOpenAPIObject'
-import { defaultOpenAPIReadConfig, OpenAPIReadConfig, OpenAPIReadResult, ReadContext } from './types'
+import { ReadContext } from './types'
 
 export const openAPI =
-  (config: Partial<OpenAPIReadConfig> = {}) =>
-  async (): Promise<OpenAPIReadResult> => {
-    const { path, resolve, uri, format } = defaultOpenAPIReadConfig(config)
-    const rootUri = uri.sanitize(path)
+  (globalConfig: Partial<OpenAPIGlobalConfig> = {}) =>
+  (readConfig: Partial<OpenAPIReadConfig> = {}) =>
+  async (): Promise<OpenAPIReadOutput> => {
+    const { path, resolve, format } = defaultOpenAPIReadConfig(readConfig)
+    const { uri } = defaultOpenAPIGlobalConfig(globalConfig)
+
+    const documentUri = uri.sanitize(path)
 
     const context: ReadContext = {
       resolve,
@@ -19,24 +26,26 @@ export const openAPI =
     }
 
     try {
-      const rootSpec = await resolve(rootUri, format)
-      await resolveOpenAPIObject({ data: rootSpec, uri: rootUri }, context)
+      const rootSpec = await resolve(documentUri, format)
+      await resolveOpenAPIObject({ data: rootSpec, uri: documentUri }, context)
       const hasIssues = context.issues.some((issue) => issue.severity === Severity.ERROR)
       return {
+        documentUri,
+        document: hasIssues ? null : rootSpec,
+        documents: hasIssues ? null : context.specs,
         issues: context.issues,
-        references: hasIssues ? null : context.specs,
-        spec: hasIssues ? null : rootSpec,
       }
     } catch (e) {
       context.issues.push({
         message: e.message,
-        path: rootUri,
+        path: documentUri,
         severity: Severity.ERROR,
       })
       return {
+        documentUri,
         issues: context.issues,
-        references: null,
-        spec: null,
+        documents: null,
+        document: null,
       }
     }
   }

@@ -9,10 +9,10 @@ import { resolveOpenAPIObject } from './resolveOpenAPIObject'
 import { ReadContext } from './types'
 
 export const openAPI =
-  (globalConfig: Partial<OpenAPIGlobalConfig> = {}) =>
   (readConfig: Partial<OpenAPIReadConfig> = {}) =>
+  (globalConfig: Partial<OpenAPIGlobalConfig> = {}) =>
   async (): Promise<OpenAPIReadOutput> => {
-    const { path, resolve, format } = defaultOpenAPIReadConfig(readConfig)
+    const { path, resolve } = defaultOpenAPIReadConfig(readConfig)
     const { uri } = defaultOpenAPIGlobalConfig(globalConfig)
 
     const documentUri = uri.sanitize(path)
@@ -26,7 +26,7 @@ export const openAPI =
     }
 
     try {
-      const rootSpec = await resolve(documentUri, format)
+      const rootSpec = await resolve(documentUri)
       await resolveOpenAPIObject({ data: rootSpec, uri: documentUri }, context)
       const hasIssues = context.issues.some((issue) => issue.severity === Severity.ERROR)
       return {

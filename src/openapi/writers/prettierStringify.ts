@@ -1,7 +1,7 @@
-import { TsUnit } from '../generatorTypes'
 import prettier, { Options } from 'prettier'
+import { TypeScriptUnit } from '../types/TypeScriptUnit'
 import { defaultStringify } from './defaultStringify'
 
-export const prettierStringify = (options: Options = {}) => async (data: TsUnit): Promise<string> => {
+export const prettierStringify = (options: Options = {}) => async (data: TypeScriptUnit): Promise<string> => {
   return prettier.format(await defaultStringify(data), options)
 }

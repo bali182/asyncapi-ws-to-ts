@@ -31,6 +31,6 @@ export class Harness<C, R, G, W> {
   }
 }
 
-export function harness<C, R, G, W>(config: C = null): Harness<C, R, G, W> {
+export function harness<C, R, G, W>(config: C = undefined): Harness<C, R, G, W> {
   return new Harness(config)
 }

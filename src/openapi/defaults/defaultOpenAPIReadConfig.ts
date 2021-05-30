@@ -72,26 +72,25 @@ function tryParse<T>(content: string, isYaml: boolean): T {
   }
 }
 
-export async function resolveUriTarget<T>(uri: string, format: 'json' | 'yaml' = null): Promise<T> {
+export async function resolveUriTarget<T>(uri: string): Promise<T> {
   const _uri = new URI(uri)
   if (_uri.scheme() === 'http' || _uri.scheme() === 'https') {
     const { data, headers } = await request(uri)
-    const isYaml = format === 'yaml' || YAMLContentTypes.indexOf(headers['content-type']) >= 0
+    const isYaml = YAMLContentTypes.indexOf(headers['content-type']) >= 0
     return tryParse(data, isYaml)
   } else if (_uri.scheme() === 'file') {
     const data = await loadFile(uri)
-    const isYaml = format === 'yaml' || YAMLExtensions.indexOf(extname(fileURLToPath(uri))) >= 0
+    const isYaml = YAMLExtensions.indexOf(extname(fileURLToPath(uri))) >= 0
     return tryParse(data, isYaml)
   }
   throw new TypeError(`Unexpeced URI scheme: ${_uri.scheme()} in ${uri}`)
 }
 
 export function defaultOpenAPIReadConfig(config: Partial<OpenAPIReadConfig> = {}): OpenAPIReadConfig {
-  const { resolve, path, format } = config
+  const { resolve, path } = config
 
   return {
     resolve: isNil(resolve) ? resolveUriTarget : resolve,
     path: path,
-    format: format,
   }
 }

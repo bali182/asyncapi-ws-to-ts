@@ -7,7 +7,7 @@ export type ReadContext = {
   issues: Issue[]
   uri: URIManipulator
   visited: Set<string>
-  resolve(uri: string, format?: 'json' | 'yaml'): Promise<OpenAPIObject>
+  resolve(uri: string): Promise<OpenAPIObject>
 }
 
 export type ReadInput<T> = {

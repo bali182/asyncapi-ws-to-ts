@@ -1,6 +1,6 @@
-import { TsUnit } from './generatorTypes'
+import { TypeScriptUnit } from './types/TypeScriptUnit'
 
 export type TsWriterConfig = {
-  stringify(input: TsUnit): Promise<string>
+  stringify(input: TypeScriptUnit): Promise<string>
   write(path: string, data: string): Promise<void>
 }

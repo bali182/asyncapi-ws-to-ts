@@ -1,16 +1,26 @@
-import { entries } from '../../../utils'
 import { OpenAPIGeneratorOutput } from '../../types/OpenAPIGeneratorOutput'
-import { OpenAPIGlobalConfig } from '../../types/OpenAPIGlobalConfig'
-import { OpenAPIReadOutput } from '../../types/OpenAPIReadOutput'
-import { SchemaTypesGeneratorConfig } from '../types'
+import { TypeScriptUnit } from '../../types/TypeScriptUnit'
+import { GeneratorContext } from '../types'
+import { collectNamedSchemas } from './collectNamedTypes'
+import { generateTypeAst } from './generateTypeAst'
+import { SchemaContext, SchemaTypesGeneratorConfig } from './types'
 
 export const schemaTypesGenerator =
   (config: SchemaTypesGeneratorConfig) =>
-  (globalConfig: OpenAPIGlobalConfig) =>
-  async (data: OpenAPIReadOutput): Promise<OpenAPIGeneratorOutput> => {
-    const { document, documents } = data
-    entries(document?.components?.schemas || {}).map(([key, schemaOrRef]) => {
-      
+  async (input: GeneratorContext): Promise<OpenAPIGeneratorOutput> => {
+    const context: SchemaContext = { ...input, ...config }
+
+    const schemas = collectNamedSchemas(context)
+    const units = schemas.map((schema): TypeScriptUnit => {
+      const statement = generateTypeAst({ data: schema, uri: 'TODO' }, context)
+      const path = context.path(context.utils.nameOf(schema), schema)
+      const imports = []
+      return {
+        content: [statement],
+        path,
+        imports,
+      }
     })
-    return { issues: [], units: [] }
+
+    return { issues: context.issues, units }
   }

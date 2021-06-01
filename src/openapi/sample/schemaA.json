@@ -1,0 +1,21 @@
+{
+  "openapi": "3.1",
+  "components": {
+    "schemas": {
+      "AString": {
+        "type": "string"
+      },
+      "A": {
+        "type": "object",
+        "properties": {
+          "aString": {
+            "$ref": "#/components/schemas/AString"
+          },
+          "b": {
+            "$ref": "schemaB.json#/components/schemas/B"
+          }
+        }
+      }
+    }
+  }
+}

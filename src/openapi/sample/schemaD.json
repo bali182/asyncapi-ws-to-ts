@@ -1,0 +1,18 @@
+{
+  "openapi": "3.1",
+  "components": {
+    "schemas": {
+      "UnrelatedD": {
+        "type": "string"
+      },
+      "D": {
+        "type": "object",
+        "properties": {
+          "d": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

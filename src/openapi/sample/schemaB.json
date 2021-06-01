@@ -1,0 +1,29 @@
+{
+  "openapi": "3.1",
+  "components": {
+    "schemas": {
+      "BString": {
+        "type": "string"
+      },
+      "B": {
+        "type": "object",
+        "properties": {
+          "aString": {
+            "$ref": "#/components/schemas/BString"
+          },
+          "b": {
+            "$ref": "schemaC.json#/components/schemas/C"
+          }
+        }
+      },
+      "DRef": {
+        "type": "object",
+        "properties": {
+          "dRef": {
+            "$ref": "schemaD.json#/components/schemas/D"
+          }
+        }
+      }
+    }
+  }
+}

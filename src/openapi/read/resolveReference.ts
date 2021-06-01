@@ -3,10 +3,13 @@ import { Severity } from '../../validation/typings'
 import { ReadContext, ReadInput } from './types'
 import { isNil } from '../../utils'
 import { findByFragments } from '../findByFragments'
+import { register } from './register'
+import { validate } from './validate'
+import { referenceObject } from './validators/referenceObject'
 
 export function getReferenceTarget<T>(uri: string, context: ReadContext): T {
   const specUri = context.uri.document(uri)
-  const spec = context.specs.get(specUri)
+  const spec = context.documents.get(specUri)
 
   if (isNil(spec)) {
     context.issues.push({
@@ -36,10 +39,10 @@ export async function resolveReferenceUri<T>(input: ReadInput<string>, context: 
   const fullUri = context.uri.resolve(data, uri)
   const specUri = context.uri.document(fullUri)
 
-  if (!context.specs.has(specUri)) {
+  if (!context.documents.has(specUri)) {
     try {
       const spec = await context.resolve(specUri)
-      context.specs.set(specUri, spec)
+      context.documents.set(specUri, spec)
       return { uri: fullUri, data: getReferenceTarget<T>(fullUri, context) }
     } catch (e) {
       console.log(e)
@@ -60,8 +63,9 @@ export async function resolveReference<T>(
 ): Promise<ReadInput<T>> {
   const { data, uri } = input
 
+  register(input, context)
+
   data.$ref = context.uri.resolve(data.$ref, uri)
-  context.visited.add(uri)
 
   return resolveReferenceUri(
     {

@@ -5,6 +5,7 @@ import { entries, isNil } from '../../utils'
 import { discriminatorObject } from './validators/discriminatorObject'
 import { resolveReferenceUri } from './resolveReference'
 import { resolveSchemaObject } from './resolveSchemaObject'
+import { register } from './register'
 
 export async function resolveDiscriminatorObject(
   input: ReadInput<DiscriminatorObject>,
@@ -13,6 +14,9 @@ export async function resolveDiscriminatorObject(
   if (!validate(input, context, discriminatorObject)) {
     return
   }
+
+  register(input, context)
+
   const { data, uri } = input
   const { mapping } = data
 

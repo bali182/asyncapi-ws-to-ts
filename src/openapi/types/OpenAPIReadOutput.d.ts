@@ -5,5 +5,6 @@ export type OpenAPIReadOutput = {
   documentUri: string
   document: OpenAPIObject
   documents: Map<string, OpenAPIObject>
+  uris: Map<any, string>
   issues: Issue[]
 }

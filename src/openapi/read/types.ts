@@ -3,10 +3,11 @@ import { Issue } from '../../validation/typings'
 import { URIManipulator } from '../types/URIManipulator'
 
 export type ReadContext = {
-  specs: Map<string, OpenAPIObject>
+  documents: Map<string, OpenAPIObject>
+  byUri: Map<string, any>
+  byComponent: Map<any, string>
   issues: Issue[]
   uri: URIManipulator
-  visited: Set<string>
   resolve(uri: string): Promise<OpenAPIObject>
 }
 

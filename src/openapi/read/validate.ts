@@ -9,5 +9,5 @@ export function validate<T>(input: ReadInput<T>, context: ReadContext, validator
   }
   const issues = validator(data, { depth: Infinity, path: uri, pathAccessor: context.uri })
   context.issues.push(...issues)
-  return issues.length === 0
+  return issues.length === 0 || context.byUri.has(uri)
 }

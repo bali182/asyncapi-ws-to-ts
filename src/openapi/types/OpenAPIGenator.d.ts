@@ -1,5 +1,5 @@
 import { Generator } from '../../typings'
-import { GeneratorContext } from '../generators/schemas/types'
+import { GeneratorContext } from '../generators/types'
 import { OpenAPIGeneratorOutput } from './OpenAPIGeneratorOutput'
 import { OpenAPIGlobalConfig } from './OpenAPIGlobalConfig'
 import { OpenAPIReadOutput } from './OpenAPIReadOutput'

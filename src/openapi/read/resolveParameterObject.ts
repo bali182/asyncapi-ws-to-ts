@@ -1,6 +1,7 @@
 import { BaseParameterObject, HeaderObject, ParameterObject } from 'openapi3-ts'
 import { entries, isNil } from '../../utils'
 import { Validator } from '../../validation/typings'
+import { register } from './register'
 import { resolveMediaTypeObject } from './resolveMediaTypeObject'
 import { resolveReferenceable } from './resolveReferenceable'
 import { resolveSchemaObject } from './resolveSchemaObject'
@@ -14,6 +15,8 @@ const resolveBaseParameter =
     if (!validate(input, context, headerObject)) {
       return
     }
+
+    register(input, context)
 
     const { data, uri } = input
     const { content, schema } = data

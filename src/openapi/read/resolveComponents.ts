@@ -6,16 +6,17 @@ import { entries, isNil } from '../../utils'
 import { resolveReferenceable } from './resolveReferenceable'
 import { resolveSchemaObject } from './resolveSchemaObject'
 import { resolveHeaderObject, resolveParameterObject } from './resolveParameterObject'
+import { register } from './register'
 
 export async function resolveComponents(input: ReadInput<ComponentsObject>, context: ReadContext): Promise<void> {
   if (!validate(input, context, componentsObject)) {
     return
   }
 
+  register(input, context)
+
   const { data, uri } = input
   const { callbacks, headers, links, examples, parameters, requestBodies, responses, schemas, securitySchemes } = data
-
-  context.visited.add(uri)
 
   if (!isNil(schemas)) {
     for (const [name, schemaOrRef] of entries(schemas)) {

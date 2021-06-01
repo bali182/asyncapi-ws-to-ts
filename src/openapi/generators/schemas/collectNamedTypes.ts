@@ -14,6 +14,10 @@ function collectNamedTypesForSchema(
 
   const schema = isReferenceObject(input) ? context.utils.dereference<SchemaObject>(input) : input
 
+  if (schemas.has(schema)) {
+    return
+  }
+
   if (!isNil(context.utils.nameOf(schema))) {
     schemas.add(schema)
   }

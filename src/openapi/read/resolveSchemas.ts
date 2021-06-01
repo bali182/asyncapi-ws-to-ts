@@ -1,5 +1,6 @@
 import { ReferenceObject, SchemaObject } from 'openapi3-ts'
 import { entries } from '../../utils'
+import { register } from './register'
 import { resolveReferenceable } from './resolveReferenceable'
 import { resolveSchemaObject } from './resolveSchemaObject'
 import { ReadContext, ReadInput } from './types'
@@ -13,7 +14,11 @@ export async function resolveSchemas(
   if (!validate(input, context, recordOfObjects)) {
     return
   }
+
+  register(input, context)
+
   const { data, uri } = input
+
   for (const [name, schemaOrRef] of entries(data)) {
     await resolveReferenceable<SchemaObject>(
       { data: schemaOrRef, uri: context.uri.append(uri, name) },

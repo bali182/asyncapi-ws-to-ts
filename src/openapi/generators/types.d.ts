@@ -7,6 +7,7 @@ export type OpenAPIUtils = {
   dereferenceUri<T>(uri: string): T
   dereference<T>(input: T | ReferenceObject): T
   nameOf(input: any): string
+  uriOf(input: any): string
 }
 
 export type GeneratorContext = OpenAPIReadOutput & {

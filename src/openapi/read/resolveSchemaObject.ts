@@ -1,5 +1,6 @@
 import { SchemaObject } from 'openapi3-ts'
 import { entries, isNil } from '../../utils'
+import { register } from './register'
 import { resolveDiscriminatorObject } from './resolveDiscriminatorObject'
 import { resolveReferenceable } from './resolveReferenceable'
 import { ReadContext, ReadInput } from './types'
@@ -13,6 +14,8 @@ export async function resolveSchemaObject(input: ReadInput<SchemaObject>, contex
 
   const { data, uri } = input
   const { items, not, allOf, oneOf, anyOf, properties, additionalProperties, discriminator } = data
+
+  register(input, context)
 
   if (!isNil(items)) {
     await resolveReferenceable({ data: items, uri: context.uri.append(uri, 'items') }, context, resolveSchemaObject)

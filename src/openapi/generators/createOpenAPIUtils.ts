@@ -5,6 +5,7 @@ import { URIManipulator } from '../types/URIManipulator'
 import { OpenAPIUtils } from './types'
 
 type OpenAPIDocuments = Map<string, OpenAPIObject>
+type ComponentToUri = Map<any, string>
 
 function getOwnerDocument(uri: URIManipulator, documents: OpenAPIDocuments, ref: string): OpenAPIObject {
   const documentUri = uri.document(ref)
@@ -21,17 +22,13 @@ function addNameMappings<T>(docPart: Record<string, T>, mappings: Map<any, strin
   }
 }
 
-function addNameMappingsForDocument(document: OpenAPIObject, mappings: Map<any, string>): void {
-  const { headers, parameters, schemas } = document?.components || {}
-  addNameMappings(headers || {}, mappings)
-  addNameMappings(parameters || {}, mappings)
-  addNameMappings(schemas || {}, mappings)
-}
-
 function createNameMappings(documents: OpenAPIDocuments): Map<any, string> {
   const mappings = new Map<any, string>()
   for (const document of Array.from(documents.values())) {
-    addNameMappingsForDocument(document, mappings)
+    const { headers, parameters, schemas } = document?.components || {}
+    addNameMappings(headers || {}, mappings)
+    addNameMappings(parameters || {}, mappings)
+    addNameMappings(schemas || {}, mappings)
   }
   return mappings
 }
@@ -53,10 +50,20 @@ export const nameOf = (documents: OpenAPIDocuments) => {
   return (input: any): string => mapping.get(input)
 }
 
-export function createOpenAPIUtils(uri: URIManipulator, documents: OpenAPIDocuments): OpenAPIUtils {
+export const uriOf =
+  (compToUri: ComponentToUri) =>
+  (input: any): string =>
+    compToUri.get(input)
+
+export function createOpenAPIUtils(
+  uri: URIManipulator,
+  documents: OpenAPIDocuments,
+  compToUri: ComponentToUri,
+): OpenAPIUtils {
   return {
     dereference: dereference(uri, documents),
     dereferenceUri: dereferenceUri(uri, documents),
     nameOf: nameOf(documents),
+    uriOf: uriOf(compToUri),
   }
 }

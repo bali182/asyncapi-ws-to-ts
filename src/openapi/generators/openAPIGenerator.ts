@@ -20,7 +20,7 @@ export const openAPIGenerator =
       ...data,
       uri: uri,
       issues: [],
-      utils: createOpenAPIUtils(uri, data.documents),
+      utils: createOpenAPIUtils(uri, data.documents, data.uris),
     }
     for (const generator of generators) {
       const { issues, units } = await generator(context)

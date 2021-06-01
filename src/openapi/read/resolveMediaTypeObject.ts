@@ -1,5 +1,6 @@
 import { MediaTypeObject } from 'openapi3-ts'
 import { isNil } from '../../utils'
+import { register } from './register'
 import { resolveReferenceable } from './resolveReferenceable'
 import { resolveSchemaObject } from './resolveSchemaObject'
 import { ReadContext, ReadInput } from './types'
@@ -10,6 +11,8 @@ export async function resolveMediaTypeObject(input: ReadInput<MediaTypeObject>, 
   if (!validate(input, context, mediaTypeObject)) {
     return
   }
+
+  register(input, context)
 
   const { data, uri } = input
   const { schema, encoding } = data

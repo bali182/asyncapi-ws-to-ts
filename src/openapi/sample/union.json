@@ -1,0 +1,54 @@
+{
+  "openapi": "3.1",
+  "components": {
+    "schemas": {
+      "Mammal": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "mammalType",
+          "mapping": {
+            "Human": "#/components/schemas/Human",
+            "Animal": "#/components/schemas/Animal"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Animal"
+          },
+          {
+            "$ref": "#/components/schemas/Human"
+          }
+        ]
+      },
+      "Animal": {
+        "discriminator": {
+          "propertyName": "animalType",
+          "mapping": {
+            "Dog": "#/components/schemas/Dog",
+            "Cat": "#/components/schemas/Cat"
+          }
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Cat"
+          },
+          {
+            "$ref": "#/components/schemas/Dog"
+          }
+        ]
+      },
+      "Cat": {
+        "type": "object",
+        "properties": {}
+      },
+      "Dog": {
+        "type": "object",
+        "properties": {}
+      },
+      "Human": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  }
+}

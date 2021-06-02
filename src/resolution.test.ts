@@ -18,7 +18,7 @@ describe('parsing schema', () => {
     await harness<OpenAPIGlobalConfig, OpenAPIReadOutput, OpenAPIGeneratorOutput, any>()
       .read(
         openAPIReader({
-          path: 'src/openapi/sample/schemaA.json',
+          path: 'src/openapi/sample/union.json',
         }),
       )
       .generate(

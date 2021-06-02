@@ -1,6 +1,7 @@
-import { ReferenceObject, SchemaObject } from 'openapi3-ts'
+import { isReferenceObject, ReferenceObject, SchemaObject } from 'openapi3-ts'
 import { EnumMember, factory as f, PropertySignature, Statement, SyntaxKind, TypeNode } from 'typescript'
-import { entries, isNil } from '../../../utils'
+import { entries, hasOwnProperty, isNil } from '../../../utils'
+import { findDiscriminatorFields } from '../findDiscriminatorFields'
 import { GeneratorInput } from '../types'
 import { SchemaContext } from './types'
 
@@ -42,21 +43,34 @@ export function generateTypeReferenceAst(
   return f.createTypeReferenceNode(name)
 }
 
-// TODO discriminators
 export function generateObjectTypeAst(input: GeneratorInput<SchemaObject>, context: SchemaContext): TypeNode {
   const { data } = input
+  const discriminators = findDiscriminatorFields(data, context)
 
-  const fields = entries(data.properties || {}).map(
-    ([name, schema]): PropertySignature =>
-      f.createPropertySignature(
-        [],
-        name,
-        data?.required?.indexOf(name) >= 0 ? undefined : f.createToken(SyntaxKind.QuestionToken),
-        generateTypeReferenceAst({ data: schema, uri: 'TODO' }, context),
-      ),
-  )
-  return f.createTypeLiteralNode(fields)
+  const discriminatorFields = entries(discriminators || {}).map(([name, value]): PropertySignature => {
+    return f.createPropertySignature([], name, undefined, f.createLiteralTypeNode(f.createStringLiteral(value)))
+  })
+
+  const fields = entries(data.properties || {})
+    .filter(([name]) => !hasOwnProperty(discriminators, name))
+    .map(
+      ([name, schema]): PropertySignature =>
+        f.createPropertySignature(
+          [],
+          name,
+          data?.required?.indexOf(name) >= 0 ? undefined : f.createToken(SyntaxKind.QuestionToken),
+          generateTypeReferenceAst({ data: schema, uri: 'TODO' }, context),
+        ),
+    )
+  return f.createTypeLiteralNode(discriminatorFields.concat(fields))
 }
+
+export function generateUnionTypeAst(input: GeneratorInput<SchemaObject>, context: SchemaContext): TypeNode {
+  const { data } = input
+  const types = data.oneOf.map((type) => generateTypeReferenceAst({ data: type, uri: 'TODO' }, context))
+  return f.createUnionTypeNode(types)
+}
+
 export function generateDictionaryTypeAst(
   input: GeneratorInput<SchemaObject | ReferenceObject>,
   context: SchemaContext,
@@ -75,8 +89,21 @@ export function generateArrayTypeAst(input: GeneratorInput<SchemaObject>, contex
   return f.createArrayTypeNode(generateTypeReferenceAst({ data: data.items, uri: 'TODO' }, context))
 }
 
+export function generateLiteralUnionTypeAst(input: GeneratorInput<SchemaObject>, context: SchemaContext): TypeNode {
+  const { data } = input
+  return f.createUnionTypeNode(data.enum.map((value) => f.createLiteralTypeNode(generateEnumValueAst(value.value))))
+}
+
 export function generateRighthandSideAst(input: GeneratorInput<SchemaObject>, context: SchemaContext): TypeNode {
   const { data } = input
+  if (!isNil(data.oneOf)) {
+    return generateUnionTypeAst(input, context)
+  }
+
+  if (!isNil(data.enum)) {
+    return generateLiteralUnionTypeAst(input, context)
+  }
+
   switch (data.type) {
     case 'string':
       return f.createKeywordTypeNode(SyntaxKind.StringKeyword)

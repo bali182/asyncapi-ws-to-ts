@@ -130,3 +130,7 @@ const Keywords = new Set([
 export function isValidIdentifier(name: string): boolean {
   return !Keywords.has(name) && /^[a-z_]\\w*$/.test(name)
 }
+
+export function hasOwnProperty(object: object, property: string): boolean {
+  return Object.prototype.hasOwnProperty.call(object, property)
+}

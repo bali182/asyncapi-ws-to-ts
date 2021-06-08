@@ -4,19 +4,14 @@ import { promises } from 'fs'
 import { dirname, resolve } from 'path'
 import { isNil } from '../../utils'
 
-import { createPrinter, NewLineKind, factory as f, SyntaxKind, NodeFlags, Statement, Node } from 'typescript'
-
 import { TypeScriptUnit } from '../types/TypeScriptUnit'
+import { program, Statement, file } from '@babel/types'
+import generate from '@babel/generator'
 
 export async function defaultStringify(data: TypeScriptUnit): Promise<string> {
-  const printer = createPrinter({
-    newLine: NewLineKind.LineFeed,
-    removeComments: false,
-    omitTrailingSemicolon: true,
-  })
-  const eof = f.createToken(SyntaxKind.EndOfFileToken)
-  const content = (data.imports as Node[]).concat(data.content) as Statement[]
-  return printer.printFile(f.createSourceFile(content, eof, NodeFlags.None))
+  const content: Statement[] = (data.imports as Statement[]).concat(data.content)
+  const ast = file(program(content, [], 'module'))
+  return generate(ast, { compact: false }).code
 }
 
 export const prettierStringify =

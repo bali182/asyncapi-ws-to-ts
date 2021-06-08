@@ -45,6 +45,8 @@
     "ws": "7.4.5"
   },
   "dependencies": {
+    "@babel/generator": "^7.14.3",
+    "@babel/types": "^7.14.4",
     "@types/urijs": "^1.19.15",
     "@types/valid-url": "^1.0.3",
     "argparse": "^1.0.10",

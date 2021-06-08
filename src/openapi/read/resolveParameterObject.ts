@@ -12,7 +12,7 @@ import { headerObject, parameterObject } from './validators/parameterObject'
 const resolveBaseParameter =
   <T extends BaseParameterObject>(validator: Validator<any>) =>
   async (input: ReadInput<T>, context: ReadContext): Promise<void> => {
-    if (!validate(input, context, headerObject)) {
+    if (!validate(input, context, validator)) {
       return
     }
 

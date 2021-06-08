@@ -1,4 +1,4 @@
-import { ImportDeclaration, Statement } from 'typescript'
+import { ImportDeclaration, Statement } from '@babel/types'
 
 export type TypeScriptUnit = {
   path: string

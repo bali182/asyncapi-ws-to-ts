@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { harness } from './Harness'
-import { prettierStringify } from './openapi/defaults/defaultOpenAPIWriteConfig'
+import { defaultStringify, prettierStringify } from './openapi/defaults/defaultOpenAPIWriteConfig'
 import { openAPIGenerator } from './openapi/generators/openAPIGenerator'
 import { singleFile } from './openapi/generators/pathProviders'
 import { schemaTypesGenerator } from './openapi/generators/schemas/schemaTypesGenerator'
@@ -18,7 +18,7 @@ describe('parsing schema', () => {
     await harness<OpenAPIGlobalConfig, OpenAPIReadOutput, OpenAPIGeneratorOutput, any>()
       .read(
         openAPIReader({
-          path: 'src/openapi/sample/union.json',
+          path: 'src/openapi/sample/kitchenSink.json',
         }),
       )
       .generate(
